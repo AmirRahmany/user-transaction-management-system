@@ -1,7 +1,7 @@
-package com.dev.user_transaction_management_system.helper;
+package com.dev.user_transaction_management_system.util;
 
 import com.dev.user_transaction_management_system.domain.user.*;
-import com.dev.user_transaction_management_system.entity.UserEntity;
+import com.dev.user_transaction_management_system.model.UserEntity;
 
 public class UserMapper {
 

@@ -2,9 +2,9 @@ package com.dev.user_transaction_management_system.unit;
 
 import com.dev.user_transaction_management_system.application.UserRegistration;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.entity.UserEntity;
+import com.dev.user_transaction_management_system.model.UserEntity;
 import com.dev.user_transaction_management_system.exceptions.CouldNotRegisterUserAlreadyExists;
-import com.dev.user_transaction_management_system.helper.UserMapper;
+import com.dev.user_transaction_management_system.util.UserMapper;
 import com.dev.user_transaction_management_system.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -88,9 +88,8 @@ class UserRegistrationTests {
     @Test
     void can_not_register_user_with_repetitive_email() {
         final String mail = "amirrahmani@gmail.com";
-        var existingUser = user().withEmail(mail).build();
 
-        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(userMapper.toEntity(existingUser,0)));
+        when(userRepository.isUserAlreadyExists(mail)).thenReturn(true);
 
         final User newUser = user().withEmail("amirrahmani@gmail.com").build();
 

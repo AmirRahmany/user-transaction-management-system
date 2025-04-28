@@ -3,7 +3,7 @@ package com.dev.user_transaction_management_system.integration;
 import com.dev.user_transaction_management_system.UserTransactionManagementSystemApplication;
 import com.dev.user_transaction_management_system.application.UserRegistration;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.entity.UserEntity;
+import com.dev.user_transaction_management_system.model.UserEntity;
 import com.dev.user_transaction_management_system.exceptions.CouldNotRegisterUserAlreadyExists;
 import com.dev.user_transaction_management_system.repository.UserRepository;
 import org.junit.jupiter.api.Test;

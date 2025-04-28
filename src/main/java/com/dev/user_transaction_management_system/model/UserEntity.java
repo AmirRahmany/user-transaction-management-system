@@ -1,4 +1,4 @@
-package com.dev.user_transaction_management_system.entity;
+package com.dev.user_transaction_management_system.model;
 
 import jakarta.persistence.*;
 

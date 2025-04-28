@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.repository;
 
-import com.dev.user_transaction_management_system.entity.UserEntity;
+import com.dev.user_transaction_management_system.model.UserEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Repository;
@@ -35,5 +35,10 @@ public class UserRepositoryImpl implements UserRepository {
         } catch (NoResultException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public boolean isUserAlreadyExists(String email) {
+        return findByEmail(email).isPresent();
     }
 }
