@@ -124,7 +124,7 @@ public class UserFake {
     }
 
     public User build() {
-        final FullName fullName = new FullName(firstName, lastName);
+        final FullName fullName = FullName.of(firstName, lastName);
         final Email mail = Email.of(this.email);
         final PhoneNumber phone = PhoneNumber.of(phoneNumber);
         final Password password = Password.of(plainPassword);

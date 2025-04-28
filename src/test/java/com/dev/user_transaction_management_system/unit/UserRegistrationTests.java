@@ -2,8 +2,11 @@ package com.dev.user_transaction_management_system.unit;
 
 import com.dev.user_transaction_management_system.application.UserRegistration;
 import com.dev.user_transaction_management_system.domain.user.User;
+import com.dev.user_transaction_management_system.entity.UserEntity;
 import com.dev.user_transaction_management_system.exceptions.CouldNotRegisterUserAlreadyExists;
+import com.dev.user_transaction_management_system.helper.UserMapper;
 import com.dev.user_transaction_management_system.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -28,15 +31,22 @@ class UserRegistrationTests {
     @InjectMocks
     private UserRegistration userRegistration;
 
+    private UserMapper userMapper;
+
+
+    @BeforeEach
+    void setUp() {
+        this.userMapper = new UserMapper();
+    }
 
     @Test
     void register_user_without_any_throw_exception() {
         var user = user().build();
 
-        doNothing().when(userRepository).enroll(any(User.class));
+        doNothing().when(userRepository).enroll(any(UserEntity.class));
 
         assertThatNoException().isThrownBy(() -> userRegistration.register(user));
-        verify(userRepository).enroll(user);
+        verify(userRepository).enroll(userMapper.toEntity(user,0));
     }
 
     @Test
@@ -80,7 +90,7 @@ class UserRegistrationTests {
         final String mail = "amirrahmani@gmail.com";
         var existingUser = user().withEmail(mail).build();
 
-        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(existingUser));
+        when(userRepository.findByEmail(mail)).thenReturn(Optional.of(userMapper.toEntity(existingUser,0)));
 
         final User newUser = user().withEmail("amirrahmani@gmail.com").build();
 
@@ -107,4 +117,5 @@ class UserRegistrationTests {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> userRegistration.register(user().password("12345678").build()));
     }
+
 }

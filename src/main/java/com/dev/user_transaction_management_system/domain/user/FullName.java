@@ -6,7 +6,7 @@ public final class FullName {
     private final String firstName;
     private final String lastName;
 
-    public FullName(String firstName, String lastName) {
+    private FullName(String firstName, String lastName) {
         if (isValidName(firstName, lastName)) throw new IllegalArgumentException();
 
         this.firstName = firstName;
@@ -19,6 +19,10 @@ public final class FullName {
 
     private static boolean isNull(String field) {
         return field == null;
+    }
+
+    public static FullName of(String firstName, String lastName) {
+        return new FullName(firstName,lastName);
     }
 
     public String firstName() {

@@ -30,7 +30,7 @@ public class User {
                           Credential credential,
                           LocalDateTime createdAt) {
 
-        return new User(fullName, phoneNumber,credential, createdAt, false);
+        return new User(fullName, phoneNumber, credential, createdAt, false);
     }
 
 
@@ -51,5 +51,29 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(fullName, phoneNumber, credential, createdAt, isActive);
+    }
+
+    public String firstName() {
+        return fullName.firstName();
+    }
+
+    public String lastName() {
+        return fullName.lastName();
+    }
+
+    public String phoneNumber(){
+        return phoneNumber.value();
+    }
+
+    public String password() {
+        return credential.password();
+    }
+
+    public LocalDateTime createdAt() {
+        return createdAt;
+    }
+
+    public boolean isActive() {
+        return isActive;
     }
 }
