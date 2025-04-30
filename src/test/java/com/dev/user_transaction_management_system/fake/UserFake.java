@@ -3,8 +3,6 @@ package com.dev.user_transaction_management_system.fake;
 import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.dto.UserInformation;
 
-import java.time.LocalDateTime;
-
 public class UserFake {
 
     public static final String BLANK = " ";

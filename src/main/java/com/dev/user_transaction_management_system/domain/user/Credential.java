@@ -1,10 +1,14 @@
 package com.dev.user_transaction_management_system.domain.user;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+
+@EqualsAndHashCode
+@ToString
 
 public class Credential {
-    private Password password;
-    private Email email;
+    private final Password password;
+    private final Email email;
 
     private Credential(Email email, Password password) {
         this.password = password;
@@ -21,18 +25,5 @@ public class Credential {
 
     public String email() {
         return email.value();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Credential that = (Credential) o;
-        return Objects.equals(password, that.password) && Objects.equals(email, that.email);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(password, email);
     }
 }

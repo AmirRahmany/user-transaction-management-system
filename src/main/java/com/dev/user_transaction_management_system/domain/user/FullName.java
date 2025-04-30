@@ -1,7 +1,10 @@
 package com.dev.user_transaction_management_system.domain.user;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
+@EqualsAndHashCode
+@ToString
 public final class FullName {
     private final String firstName;
     private final String lastName;
@@ -32,26 +35,4 @@ public final class FullName {
     public String lastName() {
         return lastName;
     }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) return true;
-        if (obj == null || obj.getClass() != this.getClass()) return false;
-        var that = (FullName) obj;
-        return Objects.equals(this.firstName, that.firstName) &&
-                Objects.equals(this.lastName, that.lastName);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(firstName, lastName);
-    }
-
-    @Override
-    public String toString() {
-        return "FullName[" +
-                "firstName=" + firstName + ", " +
-                "lastName=" + lastName + ']';
-    }
-
 }

@@ -12,7 +12,7 @@ Built with **Spring Boot**, **PostgreSQL**, and **Docker**, this project follows
 - ✅ View Transaction History per User
 - ✅ Balance Calculation
 - ✅ Suspicious Transaction Detection
-- ✅ MongoDB Integration
+- ✅ PostgreSQL Integration
 - ✅ Dockerized Setup with `docker-compose`
 - ✅ Unit & Integration Testing
 - ✅ Clean Code & TDD Practices
@@ -27,5 +27,4 @@ Built with **Spring Boot**, **PostgreSQL**, and **Docker**, this project follows
 - **Version Control:** Git, GitHub Flow
 - **Testing:** JUnit 5, Mockito
 - **Build Tool:** Maven
-
 ---

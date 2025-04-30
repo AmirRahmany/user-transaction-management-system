@@ -18,7 +18,7 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void enroll(UserEntity user) {
-        entityManager.persist(user);
+        entityManager.merge(user);
     }
 
     @Override
@@ -29,7 +29,6 @@ public class UserRepositoryImpl implements UserRepository {
             final UserEntity userEntity = entityManager.createQuery(sql, UserEntity.class)
                     .setParameter("email", email)
                     .getSingleResult();
-
             return Optional.ofNullable(userEntity);
 
         } catch (NoResultException e) {
