@@ -1,4 +1,4 @@
-create table IF NOT EXISTS transaction_user(
+CREATE TABLE IF NOT EXISTS transaction_user (
     id int auto_increment primary key,
     first_name varchar (65) not null,
     last_name varchar (65) not null,

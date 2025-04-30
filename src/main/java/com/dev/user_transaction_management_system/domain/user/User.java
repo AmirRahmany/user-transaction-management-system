@@ -27,30 +27,14 @@ public class User {
 
     public static User of(FullName fullName,
                           PhoneNumber phoneNumber,
-                          Credential credential,
-                          LocalDateTime createdAt) {
+                          Credential credential) {
 
-        return new User(fullName, phoneNumber, credential, createdAt, false);
+        return new User(fullName, phoneNumber, credential, LocalDateTime.now(), false);
     }
 
 
     public String email() {
         return credential.email();
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return isActive == user.isActive && Objects.equals(fullName, user.fullName) &&
-                Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(credential, user.credential) &&
-                Objects.equals(createdAt, user.createdAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fullName, phoneNumber, credential, createdAt, isActive);
     }
 
     public String firstName() {
@@ -75,5 +59,21 @@ public class User {
 
     public boolean isActive() {
         return isActive;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return isActive == user.isActive && Objects.equals(fullName, user.fullName) &&
+                Objects.equals(phoneNumber, user.phoneNumber) &&
+                Objects.equals(credential, user.credential) &&
+                Objects.equals(createdAt, user.createdAt);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(fullName, phoneNumber, credential, createdAt, isActive);
     }
 }

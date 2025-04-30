@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.user.*;
+import com.dev.user_transaction_management_system.dto.UserInformation;
 
 import java.time.LocalDateTime;
 
@@ -12,24 +13,18 @@ public class UserFake {
     private String email;
     private String plainPassword;
     private String phoneNumber;
-    private LocalDateTime createdAt;
-    private boolean isActive;
 
 
     private UserFake(String firstName,
                      String lastName,
                      String email,
                      String password,
-                     String phoneNumber,
-                     LocalDateTime createdAt,
-                     boolean isActive) {
+                     String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.plainPassword = password;
         this.phoneNumber = phoneNumber;
-        this.createdAt = createdAt;
-        this.isActive = isActive;
     }
 
     private UserFake() {
@@ -40,8 +35,11 @@ public class UserFake {
     }
 
     public UserFake getUser() {
-        return new UserFake("amir", "rahmani", "amir@gmail.com", "abcD1234#",
-                "09907994339", LocalDateTime.now(), false);
+        return new UserFake("amir",
+                "rahmani",
+                "amir@gmail.com",
+                "abcD1234#",
+                "09907994339");
     }
 
     public UserFake withFirstName(String firstName) {
@@ -50,7 +48,7 @@ public class UserFake {
         return this;
     }
 
-    public UserFake lastName(String lastName) {
+    public UserFake withLastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
@@ -61,33 +59,18 @@ public class UserFake {
         return this;
     }
 
-    public UserFake password(String password) {
+    public UserFake withPassword(String password) {
         this.plainPassword = password;
 
         return this;
     }
 
-    public UserFake phoneNumber(String phoneNumber) {
+    public UserFake withPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
 
         return this;
     }
 
-    public UserFake createAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-
-        return this;
-    }
-
-    public UserFake active() {
-        this.isActive = true;
-        return this;
-    }
-
-    public UserFake deActive() {
-        this.isActive = false;
-        return this;
-    }
 
     public UserFake withNullPhoneNumber() {
         this.phoneNumber = null;
@@ -111,16 +94,13 @@ public class UserFake {
         return getUser().withEmail("jjsgjiojtjijtij.com").build();
     }
 
-    public User withNullName() {
-        return getUser().withFirstName(null).build();
-    }
 
     public User withNullPassword() {
-        return user().password(null).build();
+        return user().withPassword(null).build();
     }
 
     public User withEmptyPassword() {
-        return user().password(BLANK).build();
+        return user().withPassword(BLANK).build();
     }
 
     public User build() {
@@ -130,6 +110,12 @@ public class UserFake {
         final Password password = Password.of(plainPassword);
         final Credential credential = Credential.of(mail,password);
 
-        return User.of(fullName, phone,credential, createdAt);
+        return User.of(fullName, phone,credential);
     }
+
+    public UserInformation buildDTO() {
+        return new UserInformation(firstName, lastName,email,plainPassword,phoneNumber);
+    }
+
+
 }

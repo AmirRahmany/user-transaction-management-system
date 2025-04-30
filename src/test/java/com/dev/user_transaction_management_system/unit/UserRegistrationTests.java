@@ -13,8 +13,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Optional;
-
 import static com.dev.user_transaction_management_system.fake.UserFake.user;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -55,13 +53,13 @@ class UserRegistrationTests {
                 .isThrownBy(() -> userRegistration.register(user().withFirstName(null).build()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(user().lastName(null).build()));
+                .isThrownBy(() -> userRegistration.register(user().withLastName(null).build()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> userRegistration.register(user().withFirstName(" ").build()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(user().lastName(" ").build()));
+                .isThrownBy(() -> userRegistration.register(user().withLastName(" ").build()));
     }
 
     @Test
@@ -111,10 +109,10 @@ class UserRegistrationTests {
     @Test
     void can_not_register_user_with_invalid_password() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(user().password("12345").build()));
+                .isThrownBy(() -> userRegistration.register(user().withPassword("12345").build()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(user().password("12345678").build()));
+                .isThrownBy(() -> userRegistration.register(user().withPassword("12345678").build()));
     }
 
 }

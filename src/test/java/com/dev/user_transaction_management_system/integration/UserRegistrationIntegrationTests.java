@@ -1,28 +1,32 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.UserTransactionManagementSystemApplication;
 import com.dev.user_transaction_management_system.application.UserRegistration;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.model.UserEntity;
 import com.dev.user_transaction_management_system.exceptions.CouldNotRegisterUserAlreadyExists;
 import com.dev.user_transaction_management_system.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+
 
 import static com.dev.user_transaction_management_system.fake.UserFake.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-@SpringBootTest(classes = UserTransactionManagementSystemApplication.class)
+@SpringBootTest
 @ActiveProfiles("test")
 @Transactional
 class UserRegistrationIntegrationTests {
 
     @Autowired
     private UserRegistration userRegistration;
+
+    @Autowired
+    private static EntityManager entityManager;
 
     @Autowired
     private UserRepository userRepository;

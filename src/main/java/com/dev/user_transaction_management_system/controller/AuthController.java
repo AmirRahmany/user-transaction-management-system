@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
-public class UserController {
+public class AuthController {
 
     private final UserRegistration userRegistration;
     private final UserMapper userMapper;
 
-    public UserController(UserRegistration userRegistration) {
+    public AuthController(UserRegistration userRegistration) {
         this.userRegistration = userRegistration;
         this.userMapper = new UserMapper();
     }

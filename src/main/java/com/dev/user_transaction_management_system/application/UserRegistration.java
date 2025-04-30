@@ -7,8 +7,6 @@ import com.dev.user_transaction_management_system.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Random;
-
 @Service
 public class UserRegistration implements Registration {
 
