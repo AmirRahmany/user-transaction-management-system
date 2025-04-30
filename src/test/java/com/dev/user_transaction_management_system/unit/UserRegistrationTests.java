@@ -12,11 +12,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import static com.dev.user_transaction_management_system.fake.UserFake.user;
 import static java.time.LocalDateTime.now;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.assertj.core.api.Assertions.assertThatNoException;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -29,22 +29,23 @@ class UserRegistrationTests {
     @InjectMocks
     private UserRegistration userRegistration;
 
-    private UserMapper userMapper;
-
-
-    @BeforeEach
-    void setUp() {
-        this.userMapper = new UserMapper();
-    }
+    @Mock
+    private PasswordEncoder passwordEncoder;
 
     @Test
-    void register_user_without_any_throw_exception() {
+    void register_user_successfully() {
         var user = user().build();
 
+        when(passwordEncoder.encode(user.password())).thenReturn("hashedPassword");
         doNothing().when(userRepository).enroll(any(UserEntity.class));
-
         assertThatNoException().isThrownBy(() -> userRegistration.register(user));
-        verify(userRepository).enroll(userMapper.toEntity(user,0));
+
+
+        verify(passwordEncoder).encode(user.password());
+        verify(userRepository).enroll(argThat(entity -> {
+            assertThat(entity.getPassword()).isEqualTo("hashedPassword");
+            return true;
+        }));
     }
 
     @Test

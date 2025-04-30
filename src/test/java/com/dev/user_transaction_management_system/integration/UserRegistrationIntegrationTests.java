@@ -26,9 +26,6 @@ class UserRegistrationIntegrationTests {
     private UserRegistration userRegistration;
 
     @Autowired
-    private static EntityManager entityManager;
-
-    @Autowired
     private UserRepository userRepository;
 
     @Test
@@ -40,8 +37,8 @@ class UserRegistrationIntegrationTests {
         UserEntity userSaved = userRepository.findByEmail(user.email()).orElse(null);
 
         assertThat(userSaved).isNotNull();
-        assertThat(userSaved.firstName()).isEqualTo(user.firstName());
-        System.out.println(userSaved.firstName());
+        assertThat(userSaved.getFirstName()).isEqualTo(user.firstName());
+        System.out.println(userSaved.getFirstName());
     }
 
     @Test
