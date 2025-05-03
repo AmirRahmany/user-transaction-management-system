@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.user.*;
-import com.dev.user_transaction_management_system.dto.UserInformation;
+import com.dev.user_transaction_management_system.dto.UserRegistrationRequest;
 
 public class UserFake {
 
@@ -111,8 +111,8 @@ public class UserFake {
         return User.of(fullName, phone,credential);
     }
 
-    public UserInformation buildDTO() {
-        return new UserInformation(firstName, lastName,email,plainPassword,phoneNumber);
+    public UserRegistrationRequest buildDTO() {
+        return new UserRegistrationRequest(firstName, lastName,email,plainPassword,phoneNumber);
     }
 
 

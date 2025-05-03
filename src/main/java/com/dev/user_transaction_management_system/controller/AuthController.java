@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.controller;
 
 import com.dev.user_transaction_management_system.application.UserRegistration;
-import com.dev.user_transaction_management_system.dto.UserInformation;
+import com.dev.user_transaction_management_system.dto.UserRegistrationRequest;
 import com.dev.user_transaction_management_system.util.UserMapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -24,10 +24,12 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserInformation> register(@RequestBody UserInformation userInformation) {
+    public ResponseEntity<UserRegistrationRequest> register(
+            @RequestBody UserRegistrationRequest userRegistrationRequest) {
+
         try {
-            userRegistration.register(userMapper.toDomain(userInformation));
-            return ResponseEntity.ok(userInformation);
+            userRegistration.register(userMapper.toDomain(userRegistrationRequest));
+            return ResponseEntity.ok(userRegistrationRequest);
         } catch (RuntimeException exception) {
             return new ResponseEntity<>(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()));
         }

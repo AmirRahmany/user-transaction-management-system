@@ -1,10 +1,8 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.dto.UserInformation;
-import com.dev.user_transaction_management_system.fake.UserFake;
+import com.dev.user_transaction_management_system.dto.UserRegistrationRequest;
 import com.dev.user_transaction_management_system.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +35,7 @@ class AuthControllerTests {
     @Test
     void register_user_successfully() throws Exception {
         final String email = "amir.ssofi@gmail.com";
-        final UserInformation userInformation = user()
+        final UserRegistrationRequest userRegistrationRequest = user()
                 .withFirstName("amir")
                 .withLastName("sofi")
                 .withEmail(email)
@@ -46,20 +44,20 @@ class AuthControllerTests {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userInformation)))
+                .content(objectMapper.writeValueAsString(userRegistrationRequest)))
                 .andExpect(status().isOk());
 
         assertThat(userRepository.isUserAlreadyExists(email)).isTrue();
-        assertThat(userRepository.findByEmail(email).get().getFirstName()).isEqualTo(userInformation.firstName());
+        assertThat(userRepository.findByEmail(email).get().getFirstName()).isEqualTo(userRegistrationRequest.firstName());
     }
 
     @Test
     void cant_register_user_with_invalid_email() throws Exception {
-        final UserInformation userInformation = user().withEmail("amir.com").buildDTO();
+        final UserRegistrationRequest userRegistrationRequest = user().withEmail("amir.com").buildDTO();
 
         mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(userInformation)))
+                .content(objectMapper.writeValueAsString(userRegistrationRequest)))
                 .andExpect(status().isBadRequest());
     }
 }
