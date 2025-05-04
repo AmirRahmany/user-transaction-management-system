@@ -3,22 +3,24 @@ package com.dev.user_transaction_management_system.fake;
 import com.dev.user_transaction_management_system.domain.transaction.Account;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 
+import java.time.LocalDateTime;
+
 public class AccountFake {
-    private String accountId = "32";
+    private Integer accountId = 32;
     private String accountNumber = "6210457865432109";
-    private String userId = "user_987fbc97-4bed-5078-8f07-9141ba07c9f3";
+    private Integer userId = 45;
     private Amount balance = Amount.of(5000.50);
 
     public static AccountFake account() {
         return new AccountFake();
     }
 
-    public AccountFake withAccountId(String accountId) {
+    public AccountFake withAccountId(Integer accountId) {
         this.accountId = accountId;
         return this;
     }
 
-    public AccountFake withUserId(String userId) {
+    public AccountFake withUserId(Integer userId) {
         this.userId = userId;
         return this;
     }
@@ -39,6 +41,7 @@ public class AccountFake {
     }
 
     public Account open() {
-        return Account.open(accountId, accountNumber, userId, balance);
+        LocalDateTime createdAt=LocalDateTime.of(2025,6,14,8,16,15);
+        return Account.open(accountId, accountNumber, userId, balance,createdAt );
     }
 }

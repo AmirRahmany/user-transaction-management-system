@@ -11,12 +11,15 @@ public class Credential {
     private final Email email;
 
     private Credential(Email email, Password password) {
+        if (email == null || password == null) {
+            throw new IllegalArgumentException("email or password must not be null");
+        }
         this.password = password;
         this.email = email;
     }
 
-    public static Credential of(Email email,Password password){
-        return new Credential(email,password);
+    public static Credential of(Email email, Password password) {
+        return new Credential(email, password);
     }
 
     public String password() {

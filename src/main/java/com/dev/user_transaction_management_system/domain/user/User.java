@@ -1,15 +1,19 @@
 package com.dev.user_transaction_management_system.domain.user;
 
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import org.springframework.validation.annotation.Validated;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class User {
 
-    private final FullName fullName;
-    private final PhoneNumber phoneNumber;
-    private final Credential credential;
-    private final LocalDateTime createdAt;
-    private final boolean isActive;
+    private  final FullName fullName;
+    private  final PhoneNumber phoneNumber;
+    private  final Credential credential;
+    private  final LocalDateTime createdAt;
+    private  final boolean isActive;
 
     private User(FullName fullName,
                  PhoneNumber phoneNumber,
@@ -17,6 +21,9 @@ public class User {
                  LocalDateTime createdAt,
                  boolean isActive) {
 
+        if (fullName == null){
+            throw  new IllegalArgumentException("full name must not be null");
+        }
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.credential = credential;

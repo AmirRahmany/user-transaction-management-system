@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
-import com.dev.user_transaction_management_system.domain.user.User;
+import com.dev.user_transaction_management_system.model.TransactionEntity;
 
 import java.time.LocalDateTime;
 
@@ -10,42 +10,80 @@ import static java.time.LocalDateTime.now;
 public class Transaction {
 
     private final int transactionId;
-    private final String userId;
-    private final Account account;
+    private final Integer fromAccountId;
+    private final Integer toAccountId;
+    private final Amount amount;
+    private final String description;
     private final TransactionStatus transactionStatus;
     private final LocalDateTime createdAt;
-    private final Amount amount;
     private final TransactionType transactionType;
+    private final String referenceNumber;
 
 
-    private Transaction(String userId,
-                        Account from,
+    private Transaction(Integer transactionId, Integer fromAccountId,
+                        Integer toAccountId,
                         Amount amount,
-                        TransactionType transactionType) {
+                        TransactionType transactionType,
+                        String description,
+                        String referenceNumber,
+                        LocalDateTime createdAt) {
 
-        this.transactionId = 0;
-        this.userId = userId;
-        this.account = from;
+        this.transactionId = transactionId;
+        this.fromAccountId = fromAccountId;
+        this.toAccountId = toAccountId;
         this.amount = amount;
         this.transactionType = transactionType;
-        this.createdAt = now();
+        this.createdAt = createdAt;
         this.transactionStatus = PROCESSING;
+        this.description = description;
+        this.referenceNumber = referenceNumber;
     }
 
-    public static Transaction of(String userId,
-                                 Account account,
-                                 Amount amount,
-                                 TransactionType transactionType) {
+    public static Transaction of(
+            Integer transactionId,
+            Integer fromAccountId,
+            Integer toAccountId,
+            Amount amount,
+            TransactionType transactionType,
+            String description,
+            String referenceNumber,
+            LocalDateTime createdAt) {
 
-        return new Transaction(userId, account, amount, transactionType);
+        return new Transaction(transactionId,
+                fromAccountId,
+                toAccountId,
+                amount,
+                transactionType,
+                description,
+                referenceNumber,
+                createdAt);
     }
 
-    public boolean isBalanceSufficient() {
-        return account.hasEnoughBalance(amount);
+    public TransactionEntity toEntity() {
+        return TransactionEntity.initOf(
+                fromAccountId,
+                toAccountId,
+                amount.toValue(),
+                transactionStatus,
+                transactionType,
+                description,
+                referenceNumber,
+                createdAt
+        );
     }
 
-    public boolean isBalanceInsufficient() {
-        return !isBalanceSufficient();
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "transactionId=" + transactionId +
+                ", fromAccountId=" + fromAccountId +
+                ", toAccountId=" + toAccountId +
+                ", amount=" + amount +
+                ", description='" + description + '\'' +
+                ", transactionStatus=" + transactionStatus +
+                ", createdAt=" + createdAt +
+                ", transactionType=" + transactionType +
+                ", referenceNumber='" + referenceNumber + '\'' +
+                '}';
     }
-
 }

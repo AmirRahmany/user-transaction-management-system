@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Amount {
     private final double amount;
@@ -19,5 +20,26 @@ public class Amount {
 
     public double toValue(){
         return amount;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Amount amount1 = (Amount) o;
+        return Double.compare(amount, amount1.amount) == 0;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(amount);
+    }
+
+    @Override
+    public String toString() {
+        return "Amount{" +
+                "amount=" + amount +
+                '}';
     }
 }
