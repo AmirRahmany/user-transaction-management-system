@@ -15,6 +15,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.dev.user_transaction_management_system.fake.UserFake.user;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -42,7 +43,7 @@ class AuthControllerTests {
                 .withPassword("@Abcd123")
                 .withPhoneNumber("09214567845").buildDTO();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/register")
+        mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userRegistrationRequest)))
                 .andExpect(status().isOk());
@@ -55,7 +56,7 @@ class AuthControllerTests {
     void cant_register_user_with_invalid_email() throws Exception {
         final UserRegistrationRequest userRegistrationRequest = user().withEmail("amir.com").buildDTO();
 
-        mockMvc.perform(MockMvcRequestBuilders.post("/api/auth/register")
+        mockMvc.perform(post("/api/auth/register")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userRegistrationRequest)))
                 .andExpect(status().isBadRequest());

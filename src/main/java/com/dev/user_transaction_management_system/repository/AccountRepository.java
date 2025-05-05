@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.repository;
 
+import com.dev.user_transaction_management_system.domain.transaction.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.model.AccountEntity;
 
@@ -14,4 +15,6 @@ public interface AccountRepository {
     void increaseBalance(Integer accountId, Amount amount) throws IllegalAccessException;
 
     void decreaseBalance(Integer accountId, Amount amount);
+
+    boolean accountNumberExists(AccountNumber accountNumber);
 }

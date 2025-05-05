@@ -36,11 +36,12 @@ class UserRegistrationTests {
     void register_user_successfully() {
         var user = user().build();
 
+
         when(passwordEncoder.encode(user.password())).thenReturn("hashedPassword");
         doNothing().when(userRepository).enroll(any(UserEntity.class));
+
+
         assertThatNoException().isThrownBy(() -> userRegistration.register(user));
-
-
         verify(passwordEncoder).encode(user.password());
         verify(userRepository).enroll(argThat(entity -> {
             assertThat(entity.getPassword()).isEqualTo("hashedPassword");

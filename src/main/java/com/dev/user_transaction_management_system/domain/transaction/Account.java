@@ -6,14 +6,23 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class Account {
+    public static final int MINIMUM_BALANCE = 100;
+
     private final Integer accountId;
-    private final String accountNumber;
+    private final AccountNumber accountNumber;
     private final Integer userId;
     private Amount balance;
     private final LocalDateTime createdAt;
     private final AccountStatus status;
 
-    private Account(Integer accountId, String accountNumber, Integer userId, Amount balance, LocalDateTime createdAt) {
+    private Account(Integer accountId, AccountNumber accountNumber, Integer userId, Amount balance, LocalDateTime createdAt) {
+        if (!hasMinimumBalance(balance))
+            throw new IllegalArgumentException("an account can't be opened unless the user deposits at least $100");
+
+        if (!isAssociateToAnyUser(userId)){
+            throw new IllegalArgumentException("each account should be associate to a user");
+        }
+
         this.accountId = accountId;
         this.accountNumber = accountNumber;
         this.userId = userId;
@@ -22,7 +31,7 @@ public class Account {
         this.status = AccountStatus.DISABLE;
     }
 
-    public static Account open(Integer accountId, String accountNumber, Integer userId, Amount balance, LocalDateTime createdAt) {
+    public static Account open(Integer accountId, AccountNumber accountNumber, Integer userId, Amount balance, LocalDateTime createdAt) {
         return new Account(accountId, accountNumber, userId, balance, createdAt);
     }
 
@@ -45,7 +54,7 @@ public class Account {
     public AccountEntity toEntity() {
         return AccountEntity.openWith(
                 accountId,
-                accountNumber,
+                accountNumber.toString(),
                 userId,
                 balance
         );
@@ -59,6 +68,18 @@ public class Account {
     public void decreaseBalance(Amount amount) {
         final double decreasedValue = this.balance.toValue() - amount.toValue();
         this.balance = Amount.of(decreasedValue);
+    }
+
+    public boolean isTheSameAccountWith(Account to) {
+        return accountId.equals(to.accountId);
+    }
+
+    private boolean hasMinimumBalance(Amount balance) {
+        return balance.toValue() >= MINIMUM_BALANCE;
+    }
+
+    private boolean isAssociateToAnyUser(Integer userId) {
+        return userId != null;
     }
 
     @Override
@@ -90,7 +111,4 @@ public class Account {
                 '}';
     }
 
-    public boolean isTheSameAccountWith(Account to) {
-        return accountId.equals(to.accountId);
-    }
 }

@@ -43,6 +43,10 @@ public class AccountEntity {
     }
 
     public static AccountEntity openWith(Integer accountId, String accountNumber, Integer userId, Amount balance) {
-        return new AccountEntity(accountId,accountNumber,userId,balance);
+        return new AccountEntity(accountId, accountNumber, userId, balance);
+    }
+
+    public boolean hasSameAccountId(Integer accountId) {
+        return this.accountId.equals(accountId);
     }
 }

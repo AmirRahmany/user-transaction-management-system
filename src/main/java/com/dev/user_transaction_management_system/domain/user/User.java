@@ -1,9 +1,5 @@
 package com.dev.user_transaction_management_system.domain.user;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotNull;
-import org.springframework.validation.annotation.Validated;
-
 import java.time.LocalDateTime;
 import java.util.Objects;
 

@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.transaction.Account;
+import com.dev.user_transaction_management_system.domain.transaction.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 
 import java.time.LocalDateTime;
@@ -41,7 +42,12 @@ public class AccountFake {
     }
 
     public Account open() {
-        LocalDateTime createdAt=LocalDateTime.of(2025,6,14,8,16,15);
-        return Account.open(accountId, accountNumber, userId, balance,createdAt );
+        LocalDateTime createdAt = LocalDateTime.of(2025, 6, 14, 8, 16, 15);
+        return Account.open(accountId, AccountNumber.of(accountNumber), userId, balance, createdAt);
+    }
+
+    public AccountFake withNoUser() {
+        userId = null;
+        return this;
     }
 }
