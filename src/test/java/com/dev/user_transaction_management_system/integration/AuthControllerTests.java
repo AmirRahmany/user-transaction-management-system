@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.dto.UserRegistrationRequest;
-import com.dev.user_transaction_management_system.repository.UserRepository;
+import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
+import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -11,7 +11,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import static com.dev.user_transaction_management_system.fake.UserFake.user;
 import static org.assertj.core.api.Assertions.assertThat;

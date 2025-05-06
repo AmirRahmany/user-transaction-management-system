@@ -1,9 +1,9 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.domain.transaction.AccountNumber;
+import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
-import com.dev.user_transaction_management_system.model.AccountEntity;
-import com.dev.user_transaction_management_system.repository.AccountRepository;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.domain.account.AccountRepository;
 
 import java.util.LinkedList;
 import java.util.List;

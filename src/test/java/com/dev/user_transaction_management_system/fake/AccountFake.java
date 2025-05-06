@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.domain.transaction.Account;
-import com.dev.user_transaction_management_system.domain.transaction.AccountNumber;
+import com.dev.user_transaction_management_system.domain.account.Account;
+import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 
 import java.time.LocalDateTime;

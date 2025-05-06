@@ -1,14 +1,14 @@
 package com.dev.user_transaction_management_system.unit;
 
-import com.dev.user_transaction_management_system.application.DepositTransaction;
-import com.dev.user_transaction_management_system.domain.transaction.Account;
+import com.dev.user_transaction_management_system.use_case.DepositTransaction;
+import com.dev.user_transaction_management_system.domain.account.Account;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.transaction.Transaction;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionType;
-import com.dev.user_transaction_management_system.exceptions.CouldNotProcessTransaction;
-import com.dev.user_transaction_management_system.model.AccountEntity;
-import com.dev.user_transaction_management_system.repository.AccountRepository;
-import com.dev.user_transaction_management_system.repository.TransactionRepository;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.domain.account.AccountRepository;
+import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

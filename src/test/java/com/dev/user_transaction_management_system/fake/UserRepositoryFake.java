@@ -1,8 +1,7 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.model.UserEntity;
-import com.dev.user_transaction_management_system.repository.UserRepository;
-import org.w3c.dom.stylesheets.LinkStyle;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.domain.user.UserRepository;
 
 import java.util.LinkedList;
 import java.util.List;

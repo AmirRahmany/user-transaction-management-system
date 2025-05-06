@@ -1,7 +1,6 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.domain.transaction.Account;
-import com.dev.user_transaction_management_system.dto.AccountRequest;
+import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 
 public class AccountRequestFakeBuilder {
     public static final Integer NO_USER = null;

@@ -1,23 +1,21 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.application.UserRegistration;
-import com.dev.user_transaction_management_system.domain.transaction.AccountNumber;
+import com.dev.user_transaction_management_system.use_case.UserRegistration;
+import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.dto.AccountRequest;
-import com.dev.user_transaction_management_system.dto.AccountResponse;
-import com.dev.user_transaction_management_system.model.AccountEntity;
-import com.dev.user_transaction_management_system.model.UserEntity;
-import com.dev.user_transaction_management_system.repository.AccountRepository;
-import com.dev.user_transaction_management_system.repository.UserRepository;
+import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
+import com.dev.user_transaction_management_system.use_case.dto.AccountResponse;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.domain.account.AccountRepository;
+import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.assertj.core.api.OptionalAssert;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 

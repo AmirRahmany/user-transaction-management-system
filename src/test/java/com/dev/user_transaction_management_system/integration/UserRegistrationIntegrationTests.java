@@ -1,11 +1,10 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.application.UserRegistration;
+import com.dev.user_transaction_management_system.use_case.UserRegistration;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.model.UserEntity;
-import com.dev.user_transaction_management_system.exceptions.CouldNotRegisterUserAlreadyExists;
-import com.dev.user_transaction_management_system.repository.UserRepository;
-import jakarta.persistence.EntityManager;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
+import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

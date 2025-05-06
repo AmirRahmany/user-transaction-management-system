@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.domain.user;
 
-import com.dev.user_transaction_management_system.model.UserEntity;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 
 import java.time.LocalDateTime;
 import java.util.Objects;

@@ -1,12 +1,10 @@
 package com.dev.user_transaction_management_system.unit;
 
-import com.dev.user_transaction_management_system.application.UserRegistration;
+import com.dev.user_transaction_management_system.use_case.UserRegistration;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.model.UserEntity;
-import com.dev.user_transaction_management_system.exceptions.CouldNotRegisterUserAlreadyExists;
-import com.dev.user_transaction_management_system.util.UserMapper;
-import com.dev.user_transaction_management_system.repository.UserRepository;
-import org.junit.jupiter.api.BeforeEach;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
+import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

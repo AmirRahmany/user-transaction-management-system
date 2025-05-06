@@ -1,12 +1,10 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.application.DepositTransaction;
-import com.dev.user_transaction_management_system.domain.transaction.Account;
+import com.dev.user_transaction_management_system.use_case.DepositTransaction;
+import com.dev.user_transaction_management_system.domain.account.Account;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
-import com.dev.user_transaction_management_system.domain.transaction.Transaction;
-import com.dev.user_transaction_management_system.exceptions.CouldNotProcessTransaction;
-import com.dev.user_transaction_management_system.model.AccountEntity;
-import com.dev.user_transaction_management_system.repository.TransactionRepository;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;

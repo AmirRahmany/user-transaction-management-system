@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.user.*;
-import com.dev.user_transaction_management_system.dto.UserRegistrationRequest;
+import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 
 public class UserFake {
 
