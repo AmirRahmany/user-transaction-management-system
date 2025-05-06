@@ -10,11 +10,11 @@ public interface AccountRepository {
 
     void save(AccountEntity accountEntity);
 
-    Optional<AccountEntity> findById(Integer accountId);
+    Optional<AccountEntity> findByAccountNumber(AccountNumber accountNumber);
 
-    void increaseBalance(Integer accountId, Amount amount) throws IllegalAccessException;
+    void increaseBalance(AccountNumber accountNumber, Amount amount) throws IllegalAccessException;
 
-    void decreaseBalance(Integer accountId, Amount amount);
+    void decreaseBalance(AccountNumber accountNumber, Amount amount);
 
     boolean accountNumberExists(AccountNumber accountNumber);
 }

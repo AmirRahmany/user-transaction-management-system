@@ -1,5 +1,7 @@
 package com.dev.user_transaction_management_system.domain.user;
 
+import com.dev.user_transaction_management_system.model.UserEntity;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
@@ -78,5 +80,14 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(fullName, phoneNumber, credential, createdAt, isActive);
+    }
+
+    public UserEntity toEntity() {
+        return new UserEntity(fullName.firstName(),
+                fullName.lastName(),
+                phoneNumber.value(),
+                email(),
+                password(),
+                createdAt,isActive);
     }
 }

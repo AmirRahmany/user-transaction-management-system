@@ -9,6 +9,11 @@ public class AccountNumber {
     private AccountNumber(String accountNumber) {
         if (accountNumber == null || accountNumber.isBlank())
             throw new IllegalArgumentException("Account number can't be null or empty!");
+
+        if (accountNumber.length() != ACCOUNT_NUMBER_LENGTH) {
+            throw new IllegalArgumentException("account number length should be equal with: " + ACCOUNT_NUMBER_LENGTH);
+        }
+
         this.accountNumber = accountNumber;
     }
 

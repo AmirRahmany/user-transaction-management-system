@@ -7,6 +7,7 @@ import com.dev.user_transaction_management_system.domain.transaction.Transaction
 import com.dev.user_transaction_management_system.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.repository.AccountRepository;
 import com.dev.user_transaction_management_system.repository.TransactionRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,6 +24,7 @@ public class DepositTransaction {
         this.accountRepository = accountRepository;
     }
 
+    @Transactional
     public Transaction deposit(Amount amount, Account from, Account to, String description, LocalDateTime createdAt) {
         if (from.isTheSameAccountWith(to)) throw CouldNotProcessTransaction.becauseSourceAndTargetAccountsAreTheSame();
         validateBalanceSufficient(amount, from);

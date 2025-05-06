@@ -22,10 +22,16 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
+    public Optional<UserEntity> findById(Integer userId) {
+        final UserEntity userEntity = entityManager.find(UserEntity.class, userId);
+        return Optional.ofNullable(userEntity);
+    }
+
+    @Override
     public Optional<UserEntity> findByEmail(String email) {
         final String sql = "FROM UserEntity where email=:email";
 
-        try{
+        try {
             final UserEntity userEntity = entityManager.createQuery(sql, UserEntity.class)
                     .setParameter("email", email)
                     .getSingleResult();

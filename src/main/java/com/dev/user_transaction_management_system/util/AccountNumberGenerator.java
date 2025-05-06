@@ -1,13 +1,15 @@
 package com.dev.user_transaction_management_system.util;
 
 import com.dev.user_transaction_management_system.domain.transaction.AccountNumber;
+import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
-public class AccountNumberGenerator {
+@Component
+public class AccountNumberGenerator implements IAccountNumberGenerator {
     private static final  int ACCOUNT_NUMBER_LENGTH = 13;
     private static final  String PREFIX = "0300";
-    private Random random;
+    private final Random random;
 
     public AccountNumberGenerator() {
         this.random = new Random();

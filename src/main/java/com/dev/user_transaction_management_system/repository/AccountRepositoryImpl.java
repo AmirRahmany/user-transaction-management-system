@@ -24,14 +24,19 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public Optional<AccountEntity> findById(Integer accountId) {
-        final AccountEntity accountEntity = entityManager.find(AccountEntity.class, accountId);
+    public Optional<AccountEntity> findByAccountNumber(AccountNumber accountNumber) {
+        final String sql = "FROM AccountEntity WHERE accountNumber=:accountNumber";
+
+        final AccountEntity accountEntity = entityManager.createQuery(sql,AccountEntity.class)
+                .setParameter("accountNumber",accountNumber.toString())
+                .getSingleResult();
+
         return Optional.ofNullable(accountEntity);
     }
 
     @Override
-    public void increaseBalance(Integer accountId, Amount amount) {
-        final AccountEntity account = getAccountBy(accountId);
+    public void increaseBalance(AccountNumber accountNumber, Amount amount) {
+        final AccountEntity account = getAccountBy(accountNumber);
 
         account.setBalance(account.getBalance() + amount.toValue());
 
@@ -39,8 +44,8 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public void decreaseBalance(Integer accountId, Amount amount) {
-        final AccountEntity account = getAccountBy(accountId);
+    public void decreaseBalance(AccountNumber accountNumber, Amount amount) {
+        final AccountEntity account = getAccountBy(accountNumber);
 
         account.setBalance(account.getBalance() - amount.toValue());
         entityManager.merge(account);
@@ -55,9 +60,9 @@ public class AccountRepositoryImpl implements AccountRepository {
 
     }
 
-    private AccountEntity getAccountBy(Integer accountId) {
-        final Optional<AccountEntity> account = findById(accountId);
+    private AccountEntity getAccountBy(AccountNumber accountNumber) {
+        final Optional<AccountEntity> account = findByAccountNumber(accountNumber);
 
-        return account.orElseThrow(() -> CouldNotFindAccount.withId(accountId));
+        return account.orElseThrow(() -> CouldNotFindAccount.withId(accountNumber.toString()));
     }
 }

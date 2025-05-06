@@ -49,4 +49,8 @@ public class AccountEntity {
     public boolean hasSameAccountId(Integer accountId) {
         return this.accountId.equals(accountId);
     }
+
+    public boolean hasSameAccountNumber(String accountNumber) {
+        return accountNumber.equals(accountNumber);
+    }
 }

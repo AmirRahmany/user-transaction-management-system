@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
+import com.dev.user_transaction_management_system.dto.AccountResponse;
 import com.dev.user_transaction_management_system.model.AccountEntity;
 
 import java.time.LocalDateTime;
@@ -111,4 +112,7 @@ public class Account {
                 '}';
     }
 
+    public AccountResponse toResponse(String fullName) {
+        return new AccountResponse(accountNumber.toString(),fullName,balance.toValue(),createdAt,status);
+    }
 }

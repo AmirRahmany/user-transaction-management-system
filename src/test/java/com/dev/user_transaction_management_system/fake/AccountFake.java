@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 
 public class AccountFake {
     private Integer accountId = 32;
-    private String accountNumber = "6210457865432109";
+    private String accountNumber = "6210457865432";
     private Integer userId = 45;
     private Amount balance = Amount.of(5000.50);
 
