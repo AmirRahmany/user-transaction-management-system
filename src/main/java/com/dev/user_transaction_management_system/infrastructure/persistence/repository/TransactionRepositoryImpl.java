@@ -23,12 +23,12 @@ public class TransactionRepositoryImpl implements TransactionRepository {
     }
 
     @Override
-    public Optional<AccountEntity> findAccountById(Integer accountId) {
-        final AccountEntity account = entityManager
-                .createQuery("FROM AccountEntity WHERE accountId=:accountId", AccountEntity.class)
-                .setParameter("accountId", accountId)
+    public Optional<TransactionEntity> findById(Integer transactionId) {
+        final TransactionEntity transaction = entityManager
+                .createQuery("FROM TransactionEntity WHERE transactionId=:transactionId", TransactionEntity.class)
+                .setParameter("transactionId", transactionId)
                 .getSingleResult();
 
-        return Optional.ofNullable(account);
+        return Optional.ofNullable(transaction);
     }
 }

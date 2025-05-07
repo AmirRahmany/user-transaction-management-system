@@ -8,5 +8,5 @@ import java.util.Optional;
 public interface TransactionRepository {
     void save(TransactionEntity transactionEntity);
 
-    Optional<AccountEntity> findAccountById(Integer accountId);
+    Optional<TransactionEntity> findById(Integer transactionId);
 }

@@ -22,7 +22,7 @@ public class AccountController {
     }
 
     @PostMapping("/account")
-    public ResponseEntity open(@RequestBody AccountRequest accountRequest) {
+    public ResponseEntity<?> open(@RequestBody AccountRequest accountRequest) {
         try {
             final AccountResponse accountResponse = accountOpening.open(accountRequest);
             return ResponseEntity.ok(accountResponse);

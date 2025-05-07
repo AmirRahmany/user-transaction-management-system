@@ -19,13 +19,13 @@ public class WithdrawalTransaction {
     }
 
     public Transaction withdraw(Account account, Amount amount, String description) {
-        if (account.isBalanceInsufficient(amount))
-            throw CouldNotProcessTransaction.becauseInsufficientBalance();
+        account.ensureSufficientBalanceFor(amount);
 
         String referenceNumber = UUID.randomUUID().toString();
         final Transaction transaction = Transaction.of(
-                0, account.accountId(),
-                account.accountId(),
+                0,
+                null,
+               null,
                 amount, TransactionType.WITHDRAWAL, description, referenceNumber, LocalDateTime.now());
 
         transactionRepository.save(transaction.toEntity());

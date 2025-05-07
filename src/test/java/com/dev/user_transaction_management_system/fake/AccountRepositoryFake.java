@@ -16,7 +16,7 @@ public class AccountRepositoryFake implements AccountRepository {
     @Override
     public void save(AccountEntity accountEntity) {
         if (accountEntity == null)
-            throw new IllegalArgumentException("account must not be empty");
+            throw new IllegalArgumentException("anAccount must not be empty");
         records.add(accountEntity);
     }
 

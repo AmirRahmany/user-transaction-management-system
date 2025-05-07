@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
+import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
 
 import java.time.LocalDateTime;
@@ -10,8 +11,8 @@ import static java.time.LocalDateTime.now;
 public class Transaction {
 
     private final int transactionId;
-    private final Integer fromAccountId;
-    private final Integer toAccountId;
+    private final AccountNumber fromAccountNumber;
+    private final AccountNumber toAccountNumber;
     private final Amount amount;
     private final String description;
     private final TransactionStatus transactionStatus;
@@ -20,8 +21,9 @@ public class Transaction {
     private final String referenceNumber;
 
 
-    private Transaction(Integer transactionId, Integer fromAccountId,
-                        Integer toAccountId,
+    private Transaction(Integer transactionId,
+                        AccountNumber fromAccountNumber,
+                        AccountNumber toAccountNumber,
                         Amount amount,
                         TransactionType transactionType,
                         String description,
@@ -29,8 +31,8 @@ public class Transaction {
                         LocalDateTime createdAt) {
 
         this.transactionId = transactionId;
-        this.fromAccountId = fromAccountId;
-        this.toAccountId = toAccountId;
+        this.fromAccountNumber = fromAccountNumber;
+        this.toAccountNumber = toAccountNumber;
         this.amount = amount;
         this.transactionType = transactionType;
         this.createdAt = createdAt;
@@ -41,8 +43,8 @@ public class Transaction {
 
     public static Transaction of(
             Integer transactionId,
-            Integer fromAccountId,
-            Integer toAccountId,
+            AccountNumber fromAccountNumber,
+            AccountNumber toAccountNumber,
             Amount amount,
             TransactionType transactionType,
             String description,
@@ -50,8 +52,8 @@ public class Transaction {
             LocalDateTime createdAt) {
 
         return new Transaction(transactionId,
-                fromAccountId,
-                toAccountId,
+                fromAccountNumber,
+                toAccountNumber,
                 amount,
                 transactionType,
                 description,
@@ -61,8 +63,8 @@ public class Transaction {
 
     public TransactionEntity toEntity() {
         return TransactionEntity.initOf(
-                fromAccountId,
-                toAccountId,
+                fromAccountNumber.toString(),
+                toAccountNumber.toString(),
                 amount.toValue(),
                 transactionStatus,
                 transactionType,
@@ -76,8 +78,8 @@ public class Transaction {
     public String toString() {
         return "Transaction{" +
                 "transactionId=" + transactionId +
-                ", fromAccountId=" + fromAccountId +
-                ", toAccountId=" + toAccountId +
+                ", fromAccountId=" + fromAccountNumber +
+                ", toAccountId=" + toAccountNumber +
                 ", amount=" + amount +
                 ", description='" + description + '\'' +
                 ", transactionStatus=" + transactionStatus +

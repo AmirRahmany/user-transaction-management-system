@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.domain.account;
 
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.use_case.dto.AccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
@@ -37,20 +38,18 @@ public class Account {
         return new Account(accountId, accountNumber, userId, balance, createdAt);
     }
 
-    public boolean isBalanceSufficient(Amount amount) {
-        return balance.toValue() >= amount.toValue();
+    public void ensureSufficientBalanceFor(Amount amount) {
+        if (!isBalanceSufficient(amount)) {
+            throw CouldNotProcessTransaction.becauseInsufficientBalance();
+        }
     }
 
-    public boolean isBalanceInsufficient(Amount amount) {
-        return !isBalanceSufficient(amount);
+    private boolean isBalanceSufficient(Amount amount) {
+        return balance.toValue() >= amount.toValue();
     }
 
     public double amount() {
         return balance.toValue();
-    }
-
-    public Integer accountId() {
-        return accountId;
     }
 
     public AccountEntity toEntity() {
@@ -86,6 +85,14 @@ public class Account {
 
     public AccountResponse toResponse(String fullName) {
         return new AccountResponse(accountNumber.toString(),fullName,balance.toValue(),createdAt,status);
+    }
+
+    public AccountNumber accountNumber() {
+        return accountNumber;
+    }
+
+    public String accountNumberAsString() {
+        return accountNumber.toString();
     }
 
     @Override

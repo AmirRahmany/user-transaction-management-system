@@ -64,6 +64,6 @@ public class AccountRepositoryImpl implements AccountRepository {
     private AccountEntity getAccountBy(AccountNumber accountNumber) {
         final Optional<AccountEntity> account = findByAccountNumber(accountNumber);
 
-        return account.orElseThrow(() -> CouldNotFindAccount.withId(accountNumber.toString()));
+        return account.orElseThrow(() -> CouldNotFindAccount.withAccountNumber(accountNumber.toString()));
     }
 }

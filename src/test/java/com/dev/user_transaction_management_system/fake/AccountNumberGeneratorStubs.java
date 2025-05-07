@@ -1,4 +1,4 @@
-package com.dev.user_transaction_management_system.unit;
+package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.account.IAccountNumberGenerator;

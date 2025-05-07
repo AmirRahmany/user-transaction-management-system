@@ -14,7 +14,8 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
+
+import static java.time.LocalDateTime.now;
 
 @Service
 public class AccountOpening {
@@ -33,30 +34,30 @@ public class AccountOpening {
 
     @Transactional
     public AccountResponse open(AccountRequest accountRequest) {
-        final AccountNumber accountNumber = accountNumberGenerator.generate();
-        if (accountRepository.accountNumberExists(accountNumber))
-            throw new IllegalArgumentException("Account Number must be unique");
+        final AccountNumber accountNumber = generateAccountNumber();
 
         final Account account = openAccount(accountRequest, accountNumber);
 
         accountRepository.save(account.toEntity());
-        final Optional<UserEntity> userEntity = userRepository.findById(accountRequest.userId());
-        if (userEntity.isEmpty()) throw CouldNotFoundUser.withId(accountRequest.userId());
+        UserEntity userEntity = userRepository.findById(accountRequest.userId())
+                .orElseThrow(() -> CouldNotFoundUser.withId(accountRequest.userId()));
 
-        return account.toResponse(userEntity.get().fullName());
+        return account.toResponse(userEntity.fullName());
+    }
+
+    private AccountNumber generateAccountNumber() {
+        final AccountNumber accountNumber = accountNumberGenerator.generate();
+        if (accountRepository.accountNumberExists(accountNumber)) {
+            throw new IllegalArgumentException("Account Number must be unique");
+        }
+        return accountNumber;
     }
 
     private static Account openAccount(AccountRequest accountRequest, AccountNumber accountNumber) {
         final double balance = accountRequest.balance();
         final int new_account = 0;
-        final LocalDateTime createdAt = LocalDateTime.now();
-        return Account.open(
-                new_account,
-                accountNumber,
-                accountRequest.userId(),
-                Amount.of(balance),
-                createdAt
-        );
+        final LocalDateTime createdAt = now();
+        return Account.open(new_account, accountNumber, accountRequest.userId(), Amount.of(balance), createdAt);
     }
 
 }

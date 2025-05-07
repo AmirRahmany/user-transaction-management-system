@@ -51,6 +51,6 @@ public class AccountEntity {
     }
 
     public boolean hasSameAccountNumber(String accountNumber) {
-        return accountNumber.equals(accountNumber);
+        return this.accountNumber.equals(accountNumber);
     }
 }

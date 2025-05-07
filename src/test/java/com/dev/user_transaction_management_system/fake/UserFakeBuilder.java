@@ -3,7 +3,7 @@ package com.dev.user_transaction_management_system.fake;
 import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 
-public class UserFake {
+public class UserFakeBuilder {
 
     public static final String BLANK = " ";
     private String firstName;
@@ -13,11 +13,11 @@ public class UserFake {
     private String phoneNumber;
 
 
-    private UserFake(String firstName,
-                     String lastName,
-                     String email,
-                     String password,
-                     String phoneNumber) {
+    private UserFakeBuilder(String firstName,
+                            String lastName,
+                            String email,
+                            String password,
+                            String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -25,57 +25,57 @@ public class UserFake {
         this.phoneNumber = phoneNumber;
     }
 
-    private UserFake() {
+    private UserFakeBuilder() {
     }
 
-    public static UserFake user() {
-        return new UserFake().getUser();
+    public static UserFakeBuilder aUser() {
+        return new UserFakeBuilder().getUser();
     }
 
-    public UserFake getUser() {
-        return new UserFake("amir",
+    private UserFakeBuilder getUser() {
+        return new UserFakeBuilder("amir",
                 "rahmani",
                 "amir@gmail.com",
                 "abcD1234#",
                 "09907994339");
     }
 
-    public UserFake withFirstName(String firstName) {
+    public UserFakeBuilder withFirstName(String firstName) {
         this.firstName = firstName;
 
         return this;
     }
 
-    public UserFake withLastName(String lastName) {
+    public UserFakeBuilder withLastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
 
-    public UserFake withEmail(String email) {
+    public UserFakeBuilder withEmail(String email) {
         this.email = email;
 
         return this;
     }
 
-    public UserFake withPassword(String password) {
+    public UserFakeBuilder withPassword(String password) {
         this.plainPassword = password;
 
         return this;
     }
 
-    public UserFake withPhoneNumber(String phoneNumber) {
+    public UserFakeBuilder withPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
 
         return this;
     }
 
 
-    public UserFake withNullPhoneNumber() {
+    public UserFakeBuilder withNullPhoneNumber() {
         this.phoneNumber = null;
         return this;
     }
 
-    public UserFake withBlankPhoneNumber() {
+    public UserFakeBuilder withBlankPhoneNumber() {
         this.phoneNumber = BLANK;
         return this;
     }
@@ -94,11 +94,11 @@ public class UserFake {
 
 
     public User withNullPassword() {
-        return user().withPassword(null).build();
+        return aUser().withPassword(null).build();
     }
 
     public User withEmptyPassword() {
-        return user().withPassword(BLANK).build();
+        return aUser().withPassword(BLANK).build();
     }
 
     public User build() {

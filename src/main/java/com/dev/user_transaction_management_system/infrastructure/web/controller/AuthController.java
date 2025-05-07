@@ -26,12 +26,11 @@ public class AuthController {
     @PostMapping("/register")
     public ResponseEntity<UserRegistrationRequest> register(
             @RequestBody UserRegistrationRequest userRegistrationRequest) {
-
         try {
             userRegistration.register(userMapper.toDomain(userRegistrationRequest));
             return ResponseEntity.ok(userRegistrationRequest);
         } catch (RuntimeException exception) {
-            return new ResponseEntity<>(HttpStatusCode.valueOf(HttpStatus.BAD_REQUEST.value()));
+            return ResponseEntity.badRequest().build();
         }
     }
 }

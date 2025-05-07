@@ -12,8 +12,8 @@ public class CouldNotFindAccount extends RuntimeException {
         super(message);
     }
 
-    public static CouldNotFindAccount withId(String accountNumber) {
-        final String message = String.format("Could not find an account with ID %s", accountNumber);
+    public static CouldNotFindAccount withAccountNumber(String accountNumber) {
+        final String message = String.format("Could not find an account with account number %s", accountNumber);
         return new CouldNotFindAccount(message);
     }
 }

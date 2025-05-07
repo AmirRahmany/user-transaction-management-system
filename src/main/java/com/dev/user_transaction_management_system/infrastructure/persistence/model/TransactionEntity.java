@@ -17,9 +17,9 @@ import java.time.LocalDateTime;
 public class TransactionEntity {
 
     @Id
-    private int transactionId;
-    private Integer fromAccountId;
-    private Integer toAccountId;
+    private Integer transactionId;
+    private String fromAccountNumber;
+    private String toAccountNumber;
     private Double amount;
     private TransactionStatus transactionStatus;
     private LocalDateTime createdAt;
@@ -28,8 +28,8 @@ public class TransactionEntity {
     private String referenceNumber;
 
     private TransactionEntity(int transactionId,
-                              Integer fromAccountId,
-                              Integer toAccountId,
+                              String fromAccountNumber,
+                              String toAccountNumber,
                               Double amount,
                               TransactionStatus transactionStatus,
                               LocalDateTime createdAt,
@@ -37,8 +37,8 @@ public class TransactionEntity {
                               String description,
                               String referenceNumber) {
         this.transactionId = transactionId;
-        this.fromAccountId = fromAccountId;
-        this.toAccountId = toAccountId;
+        this.fromAccountNumber = fromAccountNumber;
+        this.toAccountNumber = toAccountNumber;
         this.amount = amount;
         this.transactionStatus = transactionStatus;
         this.createdAt = createdAt;
@@ -48,8 +48,8 @@ public class TransactionEntity {
     }
 
     public static TransactionEntity
-    initOf(Integer fromAccountId,
-           Integer toAccountId,
+    initOf(String fromAccountNumber,
+           String toAccountNumber,
            double amount,
            TransactionStatus transactionStatus,
            TransactionType transactionType,
@@ -58,8 +58,8 @@ public class TransactionEntity {
            LocalDateTime createdAt
     ) {
         return new TransactionEntity(0,
-                fromAccountId,
-                toAccountId,
+                fromAccountNumber,
+                toAccountNumber,
                 amount,
                 transactionStatus,
                 createdAt,

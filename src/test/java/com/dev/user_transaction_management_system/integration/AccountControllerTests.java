@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.integration;
 
+import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
 import com.dev.user_transaction_management_system.use_case.UserRegistration;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.user.User;
@@ -21,7 +22,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
 
-import static com.dev.user_transaction_management_system.fake.UserFake.user;
+import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,11 +49,11 @@ class AccountControllerTests {
 
     @Test
     void open_an_account_successfully() throws Exception {
-        final User user = user().build();
-        userRegistration.register(user);
-        final Optional<UserEntity> savedUser = userRepository.findByEmail(user.email());
-        assertThat(savedUser).isPresent();
+        final User user = havingRegistered(aUser().withFirstName("Amir").withLastName("Rahmani"));
 
+        final Optional<UserEntity> savedUser = userRepository.findByEmail(user.email());
+
+        assertThat(savedUser).isPresent();
         final AccountRequest accountRequest = new AccountRequest(savedUser.get().getId(), 5000);
 
         final String response = mockMvc.perform(post("/api/account")
@@ -68,5 +69,11 @@ class AccountControllerTests {
         assertThat(accountResponse).isNotNull();
         assertThat(accountEntity).isPresent();
         System.out.println(accountResponse);
+    }
+
+    private User havingRegistered(UserFakeBuilder userFakeBuilder) {
+        final User user = userFakeBuilder.build();
+        userRegistration.register(user);
+        return user;
     }
 }

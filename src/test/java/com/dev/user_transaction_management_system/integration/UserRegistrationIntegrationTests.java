@@ -12,7 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
 
-import static com.dev.user_transaction_management_system.fake.UserFake.user;
+import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
@@ -29,7 +29,7 @@ class UserRegistrationIntegrationTests {
 
     @Test
     void register_user_successfully() {
-        final User user = user().build();
+        final User user = aUser().build();
 
         userRegistration.register(user);
 
@@ -42,11 +42,11 @@ class UserRegistrationIntegrationTests {
 
     @Test
     void can_not_register_user_with_repetitive_email() {
-        final User user = user().withEmail("duplicate@email.com").build();
+        final User user = aUser().withEmail("duplicate@email.com").build();
 
         userRegistration.register(user);
 
-        assertThat(userRepository.findByEmail(user.email()).isPresent()).isTrue();
+        assertThat(userRepository.findByEmail(user.email())).isPresent();
         assertThatExceptionOfType(CouldNotRegisterUserAlreadyExists.class)
                 .isThrownBy(()->userRegistration.register(user));
     }
