@@ -1,6 +1,5 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Amount {

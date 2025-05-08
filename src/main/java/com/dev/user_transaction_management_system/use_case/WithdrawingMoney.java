@@ -1,0 +1,63 @@
+package com.dev.user_transaction_management_system.use_case;
+
+import com.dev.user_transaction_management_system.domain.account.Account;
+import com.dev.user_transaction_management_system.domain.account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.account.AccountRepository;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
+import com.dev.user_transaction_management_system.domain.transaction.*;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.util.AccountMapper;
+import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Service
+public class WithdrawingMoney {
+
+    private final TransactionRepository transactionRepository;
+    private final AccountRepository accountRepository;
+    private final AccountMapper accountMapper;
+
+    public WithdrawingMoney(TransactionRepository transactionRepository,
+                            AccountRepository accountRepository) {
+
+        this.transactionRepository = transactionRepository;
+        this.accountRepository = accountRepository;
+        this.accountMapper = new AccountMapper();
+    }
+
+    public Transaction withdraw(WithdrawalRequest withdrawalRequest) {
+        final Account account = finAccountBy(withdrawalRequest.accountNumber());
+
+        final Amount amount = Amount.of(withdrawalRequest.funds());
+        account.ensureSufficientBalanceFor(amount);
+
+        account.decreaseBalance(amount);
+        String referenceNumber = UUID.randomUUID().toString();
+        final Transaction transaction = initTransaction(withdrawalRequest, account, amount, referenceNumber);
+
+        accountRepository.save(account.toEntity());
+        transactionRepository.save(transaction.toEntity());
+        return transaction;
+    }
+
+    private static Transaction initTransaction(WithdrawalRequest withdrawalRequest, Account account, Amount amount, String referenceNumber) {
+        return Withdrawal.of(
+                0,
+                account.accountNumber(),
+                TransactionDetail.of(amount,
+                        TransactionType.WITHDRAWAL,
+                        withdrawalRequest.description()),
+                referenceNumber, LocalDateTime.now());
+    }
+
+    private Account finAccountBy(String reqAccountNumber) {
+        final AccountNumber accountNumber = AccountNumber.of(reqAccountNumber);
+        final AccountEntity accountEntity = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> CouldNotFindAccount.withAccountNumber(accountNumber.toString()));
+
+        return accountMapper.toDomain(accountEntity);
+    }
+}

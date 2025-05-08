@@ -71,10 +71,6 @@ public class Account {
         this.balance = Amount.of(decreasedValue);
     }
 
-    public boolean isTheSameAccountWith(Account to) {
-        return accountId.equals(to.accountId);
-    }
-
     private boolean hasMinimumBalance(Amount balance) {
         return balance.toValue() >= MINIMUM_BALANCE;
     }

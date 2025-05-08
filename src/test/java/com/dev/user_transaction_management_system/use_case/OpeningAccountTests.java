@@ -17,14 +17,14 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatNoException;
 
 @ExtendWith(MockitoExtension.class)
-class AccountOpeningTests {
+class OpeningAccountTests {
 
-    private final AccountOpening accountOpening;
+    private final OpeningAccount openingAccount;
     private final UserRepository userRepository;
 
-    public AccountOpeningTests() {
+    public OpeningAccountTests() {
         userRepository = new UserRepositoryFake();
-        accountOpening = new AccountOpening(new AccountRepositoryFake(),
+        openingAccount = new OpeningAccount(new AccountRepositoryFake(),
                 new AccountNumberGeneratorStubs(),
                 userRepository);
     }
@@ -33,30 +33,30 @@ class AccountOpeningTests {
     void open_an_account_successfully() {
         final UserEntity entity = havingRegistered(aUser());
         assertThatNoException().isThrownBy(() ->
-                accountOpening.open(accountRequest().withUserId(entity.getId()).open()));
+                openingAccount.open(accountRequest().withUserId(entity.getId()).open()));
     }
 
     @Test
     void cannot_open_account_with_deposit_less_than_100_dolor() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> accountOpening.open(accountRequest().withBalance(80).open()));
+                .isThrownBy(() -> openingAccount.open(accountRequest().withBalance(80).open()));
 
     }
 
     @Test
     void cannot_open_account_without_any_user() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> accountOpening.open(accountRequest().withNoUser().open()));
+                .isThrownBy(() -> openingAccount.open(accountRequest().withNoUser().open()));
     }
 
     @Test
     void cannot_open_account_with_duplicate_account_number() {
         final UserEntity user = havingRegistered(aUser());
 
-        accountOpening.open(accountRequest().withUserId(user.getId()).open());
+        openingAccount.open(accountRequest().withUserId(user.getId()).open());
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> accountOpening.open(accountRequest().open()));
+                .isThrownBy(() -> openingAccount.open(accountRequest().open()));
     }
 
     private UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {

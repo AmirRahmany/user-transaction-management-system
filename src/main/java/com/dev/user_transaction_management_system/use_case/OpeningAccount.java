@@ -18,13 +18,13 @@ import java.time.LocalDateTime;
 import static java.time.LocalDateTime.now;
 
 @Service
-public class AccountOpening {
+public class OpeningAccount {
 
     private final AccountRepository accountRepository;
     private final IAccountNumberGenerator accountNumberGenerator;
     private final UserRepository userRepository;
 
-    public AccountOpening(AccountRepository accountRepository,
+    public OpeningAccount(AccountRepository accountRepository,
                           IAccountNumberGenerator accountNumberGenerator,
                           UserRepository userRepository) {
         this.accountRepository = accountRepository;

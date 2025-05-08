@@ -8,7 +8,6 @@ import com.dev.user_transaction_management_system.fake.AccountFakeBuilder;
 import com.dev.user_transaction_management_system.fake.AccountRepositoryFake;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,15 +19,15 @@ import static java.time.LocalDateTime.of;
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class DepositTransactionTests {
+class DepositingMoneyTests {
 
     private final AccountRepository accountRepository;
 
-    private final DepositTransaction transactionService;
+    private final DepositingMoney transactionService;
 
-    public DepositTransactionTests() {
+    public DepositingMoneyTests() {
         this.accountRepository = new AccountRepositoryFake();
-        this.transactionService = new DepositTransaction(new TransactionRepositoryFake(), accountRepository);
+        this.transactionService = new DepositingMoney(new TransactionRepositoryFake(), accountRepository);
     }
 
 
