@@ -2,7 +2,6 @@ package com.dev.user_transaction_management_system.infrastructure.persistence.re
 
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.account.AccountRepository;
-import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 import jakarta.persistence.EntityManager;
@@ -36,24 +35,7 @@ public class AccountRepositoryImpl implements AccountRepository {
     }
 
     @Override
-    public void increaseBalance(AccountNumber accountNumber, Amount amount) {
-        final AccountEntity account = getAccountBy(accountNumber);
-
-        account.setBalance(account.getBalance() + amount.toValue());
-
-        entityManager.merge(account);
-    }
-
-    @Override
-    public void decreaseBalance(AccountNumber accountNumber, Amount amount) {
-        final AccountEntity account = getAccountBy(accountNumber);
-
-        account.setBalance(account.getBalance() - amount.toValue());
-        entityManager.merge(account);
-    }
-
-    @Override
-    public boolean accountNumberExists(AccountNumber accountNumber) {
+    public boolean accountExists(AccountNumber accountNumber) {
         final int isExist = entityManager.createNativeQuery("SELECT EXISTS(SELECT 1 FROM account where accountNumber=:accountNumber)")
                 .setParameter("accountNumber", accountNumber)
                 .getFirstResult();

@@ -2,6 +2,7 @@ package com.dev.user_transaction_management_system.domain.account;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.use_case.dto.AccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 
@@ -11,14 +12,14 @@ import java.util.Objects;
 public class Account {
     public static final int MINIMUM_BALANCE = 100;
 
-    private final Integer accountId;
+    private final AccountId accountId;
     private final AccountNumber accountNumber;
-    private final Integer userId;
+    private final UserId userId;
     private Amount balance;
     private final LocalDateTime createdAt;
     private final AccountStatus status;
 
-    private Account(Integer accountId, AccountNumber accountNumber, Integer userId, Amount balance, LocalDateTime createdAt) {
+    private Account(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
         if (!hasMinimumBalance(balance))
             throw new IllegalArgumentException("an account can't be opened unless the user deposits at least $100");
 
@@ -34,7 +35,7 @@ public class Account {
         this.status = AccountStatus.DISABLE;
     }
 
-    public static Account open(Integer accountId, AccountNumber accountNumber, Integer userId, Amount balance, LocalDateTime createdAt) {
+    public static Account open(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
         return new Account(accountId, accountNumber, userId, balance, createdAt);
     }
 
@@ -42,23 +43,6 @@ public class Account {
         if (!isBalanceSufficient(amount)) {
             throw CouldNotProcessTransaction.becauseInsufficientBalance();
         }
-    }
-
-    private boolean isBalanceSufficient(Amount amount) {
-        return balance.toValue() >= amount.toValue();
-    }
-
-    public double amount() {
-        return balance.toValue();
-    }
-
-    public AccountEntity toEntity() {
-        return AccountEntity.openWith(
-                accountId,
-                accountNumber.toString(),
-                userId,
-                balance
-        );
     }
 
     public void increaseAmount(Amount amount) {
@@ -71,11 +55,28 @@ public class Account {
         this.balance = Amount.of(decreasedValue);
     }
 
+    private boolean isBalanceSufficient(Amount amount) {
+        return balance.toValue() >= amount.toValue();
+    }
+
+    public double amount() {
+        return balance.toValue();
+    }
+
+    public AccountEntity toEntity() {
+        return AccountEntity.openWith(
+                accountId.toInt(),
+                accountNumber.toString(),
+                userId.toInt(),
+                balance
+        );
+    }
+
     private boolean hasMinimumBalance(Amount balance) {
         return balance.toValue() >= MINIMUM_BALANCE;
     }
 
-    private boolean isAssociateToAnyUser(Integer userId) {
+    private boolean isAssociateToAnyUser(UserId userId) {
         return userId != null;
     }
 

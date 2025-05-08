@@ -1,5 +1,7 @@
 package com.dev.user_transaction_management_system.domain.account;
 
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
+
 import java.util.Objects;
 
 public class AccountNumber {
@@ -12,19 +14,23 @@ public class AccountNumber {
         if (accountNumber == null || accountNumber.isBlank())
             throw new IllegalArgumentException("Account number can't be null or empty!");
 
-        if (accountNumber.length() != ACCOUNT_NUMBER_LENGTH) {
+        if (!hasMinimumLength(accountNumber)) {
             throw new IllegalArgumentException("account number length should be equal with: " + ACCOUNT_NUMBER_LENGTH);
         }
 
         this.accountNumber = accountNumber;
     }
 
-    public boolean isSameAs(AccountNumber toAccountNumber) {
-        return accountNumber.equals(toAccountNumber.toString());
+    private boolean hasMinimumLength(String accountNumber) {
+        return accountNumber.length() == ACCOUNT_NUMBER_LENGTH;
     }
 
     public static AccountNumber of(String accountNumber) {
         return new AccountNumber(accountNumber);
+    }
+
+    public boolean isSameAs(AccountNumber toAccountNumber) {
+        return accountNumber.equals(toAccountNumber.toString());
     }
 
     @Override
@@ -37,11 +43,17 @@ public class AccountNumber {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         AccountNumber that = (AccountNumber) o;
-        return ACCOUNT_NUMBER_LENGTH == that.ACCOUNT_NUMBER_LENGTH && Objects.equals(accountNumber, that.accountNumber);
+        return Objects.equals(accountNumber, that.accountNumber);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(ACCOUNT_NUMBER_LENGTH, accountNumber);
+    }
+
+    public void ensureDistinctAccounts(AccountNumber target) {
+        if (isSameAs(target)) {
+            throw CouldNotProcessTransaction.becauseSourceAndTargetAccountsAreTheSame();
+        }
     }
 }

@@ -25,13 +25,13 @@ public class UserRegistration{
 
     @Transactional
     public void register(User user) {
-        validateUserAlreadyExists(user);
+        ensureUserDoesNotExists(user);
 
         final String hashedPassword = passwordEncoder.encode(user.password());
         userRepository.enroll(userMapper.toEntity(user, hashedPassword));
     }
 
-    private void validateUserAlreadyExists(User user) {
+    private void ensureUserDoesNotExists(User user) {
         if (userRepository.isUserAlreadyExists(user.email())) {
             throw new CouldNotRegisterUserAlreadyExists();
         }

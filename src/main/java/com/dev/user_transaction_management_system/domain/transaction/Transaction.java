@@ -8,16 +8,16 @@ import static com.dev.user_transaction_management_system.domain.transaction.Tran
 
 public abstract class Transaction {
 
-    protected final int transactionId;
+    protected final TransactionId transactionId;
     protected TransactionDetail transactionDetail;
     protected final TransactionStatus transactionStatus;
     protected final LocalDateTime createdAt;
-    protected final String referenceNumber;
+    protected final ReferenceNumber referenceNumber;
 
 
-    Transaction(Integer transactionId,
+    Transaction(TransactionId transactionId,
                 TransactionDetail transactionDetail,
-                String referenceNumber,
+                ReferenceNumber referenceNumber,
                 LocalDateTime createdAt) {
 
         this.transactionId = transactionId;

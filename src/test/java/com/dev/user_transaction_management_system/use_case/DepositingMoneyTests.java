@@ -11,6 +11,7 @@ import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.DepositRequestBuilder.aDepositRequest;
@@ -27,7 +28,9 @@ class DepositingMoneyTests {
 
     public DepositingMoneyTests() {
         this.accountRepository = new AccountRepositoryFake();
-        this.transactionService = new DepositingMoney(new TransactionRepositoryFake(), accountRepository);
+        final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
+        WithdrawingMoney withdrawingMoney = new WithdrawingMoney(transactionRepository, accountRepository);
+        this.transactionService = new DepositingMoney(transactionRepository, accountRepository,withdrawingMoney);
     }
 
 

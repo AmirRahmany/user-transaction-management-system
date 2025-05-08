@@ -9,19 +9,28 @@ public class Withdrawal extends Transaction{
     private final AccountNumber accountNumber;
 
 
-    Withdrawal(Integer transactionId,AccountNumber accountNumber,TransactionDetail transactionDetail, String referenceNumber, LocalDateTime createdAt) {
+    Withdrawal(TransactionId transactionId,
+               AccountNumber accountNumber,
+               TransactionDetail transactionDetail,
+               ReferenceNumber referenceNumber,
+               LocalDateTime createdAt) {
+
         super(transactionId, transactionDetail, referenceNumber, createdAt);
         this.accountNumber = accountNumber;
     }
 
     public static Transaction of(
-            Integer transactionId,
+            TransactionId transactionId,
             AccountNumber fromAccountNumber,
             TransactionDetail transactionDetail,
-            String referenceNumber,
+            ReferenceNumber referenceNumber,
             LocalDateTime createdAt) {
 
-        return new Withdrawal(transactionId, fromAccountNumber, transactionDetail, referenceNumber, createdAt);
+        return new Withdrawal(transactionId,
+                fromAccountNumber,
+                transactionDetail,
+                referenceNumber,
+                createdAt);
     }
 
     @Override
@@ -33,7 +42,7 @@ public class Withdrawal extends Transaction{
                 transactionStatus,
                 transactionDetail.transactionType(),
                 transactionDetail.description(),
-                referenceNumber,
+                referenceNumber.toString(),
                 createdAt
         );
     }

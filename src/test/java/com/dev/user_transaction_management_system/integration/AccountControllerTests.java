@@ -49,7 +49,7 @@ class AccountControllerTests {
 
     @Test
     void open_an_account_successfully() throws Exception {
-        final User user = havingRegistered(aUser().withFirstName("Amir").withLastName("Rahmani"));
+        final User user = havingRegistered(aUser().withEnabledStatus().withFirstName("Amir").withLastName("Rahmani"));
 
         final Optional<UserEntity> savedUser = userRepository.findByEmail(user.email());
 

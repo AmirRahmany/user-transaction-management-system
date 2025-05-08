@@ -43,21 +43,23 @@ public class WithdrawingMoney {
         return transaction;
     }
 
-    private static Transaction initTransaction(WithdrawalRequest withdrawalRequest, Account account, Amount amount, String referenceNumber) {
-        return Withdrawal.of(
-                0,
-                account.accountNumber(),
-                TransactionDetail.of(amount,
-                        TransactionType.WITHDRAWAL,
-                        withdrawalRequest.description()),
-                referenceNumber, LocalDateTime.now());
-    }
-
     private Account finAccountBy(String reqAccountNumber) {
         final AccountNumber accountNumber = AccountNumber.of(reqAccountNumber);
+
         final AccountEntity accountEntity = accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> CouldNotFindAccount.withAccountNumber(accountNumber.toString()));
 
         return accountMapper.toDomain(accountEntity);
+    }
+
+    private static Transaction
+    initTransaction(WithdrawalRequest withdrawalRequest, Account account, Amount amount, String referenceNumber) {
+
+        return Withdrawal.of(
+                TransactionId.autoGenerateByDb(),
+                account.accountNumber(),
+                TransactionDetail.of(amount, TransactionType.WITHDRAWAL, withdrawalRequest.description()),
+                ReferenceNumber.fromString(referenceNumber),
+                LocalDateTime.now());
     }
 }

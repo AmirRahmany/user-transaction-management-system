@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.model;
 
+import com.dev.user_transaction_management_system.domain.user.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -34,7 +35,8 @@ public class UserEntity {
     private LocalDateTime createdAt;
 
     @Column(name = "is_active")
-    private boolean isActive;
+    @Enumerated(value = EnumType.STRING)
+    private UserStatus userStatus;
 
 
     public UserEntity(
@@ -44,14 +46,14 @@ public class UserEntity {
             String email,
             String password,
             LocalDateTime createdAt,
-            boolean isActive) {
+            UserStatus userStatus) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.email = email;
         this.password = password;
         this.createdAt = createdAt;
-        this.isActive = isActive;
+        this.userStatus = userStatus;
     }
 
     public String fullName() {

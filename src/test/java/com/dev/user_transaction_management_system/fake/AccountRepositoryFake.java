@@ -1,7 +1,6 @@
 package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 import com.dev.user_transaction_management_system.domain.account.AccountRepository;
 
@@ -27,17 +26,7 @@ public class AccountRepositoryFake implements AccountRepository {
     }
 
     @Override
-    public void increaseBalance(AccountNumber accountNumber, Amount amount) {
-
-    }
-
-    @Override
-    public void decreaseBalance(AccountNumber accountNumber, Amount amount) {
-
-    }
-
-    @Override
-    public boolean accountNumberExists(AccountNumber accountNumber) {
+    public boolean accountExists(AccountNumber accountNumber) {
         return records.stream().anyMatch(accountEntity -> accountEntity.getAccountNumber().equals(accountNumber.toString()));
     }
 }

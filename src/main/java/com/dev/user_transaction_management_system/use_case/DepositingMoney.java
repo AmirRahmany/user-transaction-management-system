@@ -4,11 +4,11 @@ import com.dev.user_transaction_management_system.domain.account.Account;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
 import com.dev.user_transaction_management_system.domain.transaction.*;
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.account.AccountRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.AccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
+import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +19,14 @@ public class DepositingMoney {
 
     private final TransactionRepository transactionRepository;
     private final AccountRepository accountRepository;
-    private WithdrawingMoney withdrawingMoney;
+    private final WithdrawingMoney withdrawingMoney;
     private final AccountMapper accountMapper;
 
     public DepositingMoney(TransactionRepository transactionRepository,
-                           AccountRepository accountRepository) {
+                           AccountRepository accountRepository, WithdrawingMoney withdrawingMoney) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
+        this.withdrawingMoney = withdrawingMoney;
         this.accountMapper = new AccountMapper();
     }
 
@@ -34,19 +35,20 @@ public class DepositingMoney {
         final AccountNumber fromAccountNumber = AccountNumber.of(depositRequest.fromAccountNumber());
         final AccountNumber toAccountNumber = AccountNumber.of(depositRequest.toAccountNumber());
 
-        ensureSourceAndTargetAccountsAreDifferent(fromAccountNumber, toAccountNumber);
+        fromAccountNumber.ensureDistinctAccounts(toAccountNumber);
 
-        final Account from = finAccountBy(fromAccountNumber);
+        final WithdrawalRequest withdrawalRequest = new WithdrawalRequest(
+                depositRequest.amount(),
+                depositRequest.fromAccountNumber(),
+                depositRequest.description());
+
+       withdrawingMoney.withdraw(withdrawalRequest);
+
         final Account to = finAccountBy(toAccountNumber);
-        final Amount amount = Amount.of(depositRequest.amount());
-
-        from.ensureSufficientBalanceFor(amount);
-        from.decreaseBalance(amount);
-        to.increaseAmount(amount);
+        to.increaseAmount(Amount.of(depositRequest.amount()));
         final Transaction transaction = initiateTransaction(depositRequest);
 
 
-        accountRepository.save(from.toEntity());
         accountRepository.save(to.toEntity());
         transactionRepository.save(transaction.toEntity());
 
@@ -60,21 +62,18 @@ public class DepositingMoney {
         return accountMapper.toDomain(fromEntity);
     }
 
-    private void
-    ensureSourceAndTargetAccountsAreDifferent(AccountNumber fromAccountNumber, AccountNumber toAccountNumber) {
-        if (fromAccountNumber.isSameAs(toAccountNumber)) {
-            throw CouldNotProcessTransaction.becauseSourceAndTargetAccountsAreTheSame();
-        }
-    }
-
     private Transaction initiateTransaction(DepositRequest depositRequest) {
         String referenceNumber = UUID.randomUUID().toString();
+        final Amount amount = Amount.of(depositRequest.amount());
+        final String description = depositRequest.description();
+        final TransactionDetail transactionDetail = TransactionDetail.of(amount, TransactionType.DEPOSIT, description);
+
         return Deposit.of(
-                0,
-                TransactionDetail.of(Amount.of(depositRequest.amount()),TransactionType.DEPOSIT, depositRequest.description()),
+                TransactionId.autoGenerateByDb(),
+                transactionDetail,
                 AccountNumber.of(depositRequest.fromAccountNumber()),
                 AccountNumber.of(depositRequest.toAccountNumber()),
-                referenceNumber,
+                ReferenceNumber.fromString(referenceNumber),
                 depositRequest.createdAt());
     }
 }

@@ -9,11 +9,11 @@ public class Deposit extends Transaction {
     private final AccountNumber fromAccountNumber;
     private final AccountNumber toAccountNumber;
 
-    public Deposit(Integer transactionId,
+    public Deposit(TransactionId transactionId,
                    TransactionDetail transactionDetail,
                    AccountNumber fromAccountNumber,
                    AccountNumber toAccountNumber,
-                   String referenceNumber,
+                   ReferenceNumber referenceNumber,
                    LocalDateTime createdAt) {
 
         super(transactionId, transactionDetail, referenceNumber, createdAt);
@@ -22,11 +22,11 @@ public class Deposit extends Transaction {
     }
 
     public static Transaction of(
-            Integer transactionId,
+            TransactionId transactionId,
             TransactionDetail transactionDetail,
             AccountNumber fromAccountNumber,
             AccountNumber toAccountNumber,
-            String referenceNumber,
+            ReferenceNumber referenceNumber,
             LocalDateTime createdAt) {
 
         return new Deposit(transactionId, transactionDetail, fromAccountNumber, toAccountNumber, referenceNumber, createdAt);
@@ -41,7 +41,7 @@ public class Deposit extends Transaction {
                 transactionStatus,
                 transactionDetail.transactionType(),
                 transactionDetail.description(),
-                referenceNumber,
+                referenceNumber.toString(),
                 createdAt
         );
     }

@@ -6,11 +6,14 @@ import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationR
 public class UserFakeBuilder {
 
     public static final String BLANK = " ";
+
+    private Integer userId = 0;
     private String firstName;
     private String lastName;
     private String email;
     private String plainPassword;
     private String phoneNumber;
+    private UserStatus userStatus = UserStatus.DISABLE;
 
 
     private UserFakeBuilder(String firstName,
@@ -38,6 +41,11 @@ public class UserFakeBuilder {
                 "amir@gmail.com",
                 "abcD1234#",
                 "09907994339");
+    }
+
+    public UserFakeBuilder withUSerId(Integer userId){
+        this.userId = userId;
+        return this;
     }
 
     public UserFakeBuilder withFirstName(String firstName) {
@@ -101,19 +109,29 @@ public class UserFakeBuilder {
         return aUser().withPassword(BLANK).build();
     }
 
+    public UserFakeBuilder withDisabledStatus(){
+        this.userStatus = UserStatus.DISABLE;
+        return this;
+    }
+
+    public UserFakeBuilder withEnabledStatus(){
+        this.userStatus = UserStatus.ENABLE;
+        return this;
+    }
+
     public User build() {
+        final UserId id = UserId.fromInt(userId);
         final FullName fullName = FullName.of(firstName, lastName);
         final Email mail = Email.of(this.email);
         final PhoneNumber phone = PhoneNumber.of(phoneNumber);
         final Password password = Password.of(plainPassword);
         final Credential credential = Credential.of(mail,password);
 
-        return User.of(fullName, phone,credential);
+        return User.of(id,fullName, phone,credential,userStatus);
     }
 
     public UserRegistrationRequest buildDTO() {
         return new UserRegistrationRequest(firstName, lastName,email,plainPassword,phoneNumber);
     }
-
 
 }
