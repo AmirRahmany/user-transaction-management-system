@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.domain.user;
 
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.Precondition;
 
@@ -101,15 +102,6 @@ public class User {
         return Objects.hash(fullName, phoneNumber, credential, createdAt, status);
     }
 
-    public UserEntity toEntity() {
-        return new UserEntity(fullName.firstName(),
-                fullName.lastName(),
-                phoneNumber.value(),
-                email(),
-                password(),
-                createdAt, status);
-    }
-
     public UserStatus status() {
         return status;
     }
@@ -124,5 +116,14 @@ public class User {
 
     public String fullName() {
         return fullName.toString();
+    }
+
+    public void ensureUserIsEnabled() {
+        if (isDisable())
+            throw CouldNotOpenAnAccount.withDisableUser();
+    }
+
+    public Integer userId() {
+        return userId.toInt();
     }
 }

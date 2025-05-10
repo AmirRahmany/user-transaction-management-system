@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.account.Account;
+import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.account.AccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
@@ -28,8 +28,8 @@ public class WithdrawingMoney {
         this.accountMapper = new AccountMapper();
     }
 
-    public Transaction withdraw(WithdrawalRequest withdrawalRequest) {
-        final Account account = finAccountBy(withdrawalRequest.accountNumber());
+    public ReferenceNumber withdraw(WithdrawalRequest withdrawalRequest) {
+        final BankAccount account = finAccountBy(withdrawalRequest.accountNumber());
 
         final Amount amount = Amount.of(withdrawalRequest.funds());
         account.ensureSufficientBalanceFor(amount);
@@ -40,10 +40,10 @@ public class WithdrawingMoney {
 
         accountRepository.save(account.toEntity());
         transactionRepository.save(transaction.toEntity());
-        return transaction;
+        return ReferenceNumber.fromString(referenceNumber);
     }
 
-    private Account finAccountBy(String reqAccountNumber) {
+    private BankAccount finAccountBy(String reqAccountNumber) {
         final AccountNumber accountNumber = AccountNumber.of(reqAccountNumber);
 
         final AccountEntity accountEntity = accountRepository.findByAccountNumber(accountNumber)
@@ -53,11 +53,11 @@ public class WithdrawingMoney {
     }
 
     private static Transaction
-    initTransaction(WithdrawalRequest withdrawalRequest, Account account, Amount amount, String referenceNumber) {
+    initTransaction(WithdrawalRequest withdrawalRequest, BankAccount bankAccount, Amount amount, String referenceNumber) {
 
         return Withdrawal.of(
                 TransactionId.autoGenerateByDb(),
-                account.accountNumber(),
+                bankAccount.accountNumber(),
                 TransactionDetail.of(amount, TransactionType.WITHDRAWAL, withdrawalRequest.description()),
                 ReferenceNumber.fromString(referenceNumber),
                 LocalDateTime.now());

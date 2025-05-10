@@ -1,9 +1,9 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
+import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -31,16 +31,16 @@ class UserRegistrationTests {
 
     @Test
     void register_user_successfully() {
-        var user = aUser().build();
+        var user = aUser().buildDTO();
 
 
         when(passwordEncoder.encode(user.password())).thenReturn("hashedPassword");
-        doNothing().when(userRepository).enroll(any(UserEntity.class));
+        doNothing().when(userRepository).save(any(UserEntity.class));
 
 
         assertThatNoException().isThrownBy(() -> userRegistration.register(user));
         verify(passwordEncoder).encode(user.password());
-        verify(userRepository).enroll(argThat(entity -> {
+        verify(userRepository).save(argThat(entity -> {
             assertThat(entity.getPassword()).isEqualTo("hashedPassword");
             return true;
         }));
@@ -49,25 +49,25 @@ class UserRegistrationTests {
     @Test
     void can_not_register_user_without_any_name() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withFirstName(null).build()));
+                .isThrownBy(() -> userRegistration.register(aUser().withFirstName(null).buildDTO()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withLastName(null).build()));
+                .isThrownBy(() -> userRegistration.register(aUser().withLastName(null).buildDTO()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withFirstName(" ").build()));
+                .isThrownBy(() -> userRegistration.register(aUser().withFirstName(" ").buildDTO()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withLastName(" ").build()));
+                .isThrownBy(() -> userRegistration.register(aUser().withLastName(" ").buildDTO()));
     }
 
     @Test
     void can_not_register_user_without_any_phone_number() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withNullPhoneNumber().build()));
+                .isThrownBy(() -> userRegistration.register(aUser().withNullPhoneNumber()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withBlankPhoneNumber().build()));
+                .isThrownBy(() -> userRegistration.register(aUser().withBlankPhoneNumber()));
     }
 
     @Test
@@ -88,12 +88,12 @@ class UserRegistrationTests {
 
         when(userRepository.isUserAlreadyExists(mail)).thenReturn(true);
 
-        final User newUser = aUser().withEmail("amirrahmani@gmail.com").build();
+        final UserRegistrationRequest newUser = aUser().withEmail("amirrahmani@gmail.com").buildDTO();
 
         assertThatExceptionOfType(CouldNotRegisterUserAlreadyExists.class)
                 .isThrownBy(() -> userRegistration.register(newUser));
 
-        verify(userRepository, never()).enroll(any());
+        verify(userRepository, never()).save(any());
     }
 
     @Test
@@ -108,10 +108,10 @@ class UserRegistrationTests {
     @Test
     void can_not_register_user_with_invalid_password() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withPassword("12345").build()));
+                .isThrownBy(() -> userRegistration.register(aUser().withPassword("12345").buildDTO()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withPassword("12345678").build()));
+                .isThrownBy(() -> userRegistration.register(aUser().withPassword("12345678").buildDTO()));
     }
 
 }

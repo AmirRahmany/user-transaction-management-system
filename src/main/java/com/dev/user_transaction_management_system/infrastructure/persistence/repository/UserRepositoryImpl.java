@@ -18,8 +18,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void enroll(UserEntity user) {
-        entityManager.merge(user);
+    public void save(UserEntity user) {
+       entityManager.merge(user);
     }
 
     @Override

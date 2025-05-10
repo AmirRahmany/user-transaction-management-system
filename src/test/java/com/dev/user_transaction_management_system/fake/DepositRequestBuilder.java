@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.domain.account.Account;
+import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 
 import java.time.LocalDateTime;
@@ -21,12 +21,12 @@ public class DepositRequestBuilder {
         return this;
     }
 
-    public DepositRequestBuilder withFromAccount(Account fromAccount) {
+    public DepositRequestBuilder withFromAccount(BankAccount fromAccount) {
         this.fromAccountNumber = fromAccount.accountNumberAsString();
         return this;
     }
 
-    public DepositRequestBuilder withToAccount(Account toAccount) {
+    public DepositRequestBuilder withToAccount(BankAccount toAccount) {
         this.toAccountNumber = toAccount.accountNumberAsString();
         return this;
     }

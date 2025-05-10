@@ -12,7 +12,7 @@ public class AccountNumber {
 
     private AccountNumber(String accountNumber) {
         if (accountNumber == null || accountNumber.isBlank())
-            throw new IllegalArgumentException("Account number can't be null or empty!");
+            throw new IllegalArgumentException("BankAccount number can't be null or empty!");
 
         if (!hasMinimumLength(accountNumber)) {
             throw new IllegalArgumentException("account number length should be equal with: " + ACCOUNT_NUMBER_LENGTH);

@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.domain.account.Account;
+import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountRepository;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
@@ -47,10 +47,10 @@ class DepositingMoneyControllerTest {
     @Test
     void deposit_transaction_successfully() throws Exception {
 
-        final Account from = anAccount().withAccountNumber("0300654789123")
+        final BankAccount from = anAccount().withAccountNumber("0300654789123")
                 .withBalance(500).open();
 
-        final Account to = anAccount().withAccountNumber("0300456574853")
+        final BankAccount to = anAccount().withAccountNumber("0300456574853")
                 .withAccountId(321)
                 .withBalance(140)
                 .withUserId(31).open();

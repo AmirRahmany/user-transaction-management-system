@@ -43,7 +43,7 @@ public class UserFakeBuilder {
                 "09907994339");
     }
 
-    public UserFakeBuilder withUSerId(Integer userId){
+    public UserFakeBuilder withUSerId(Integer userId) {
         this.userId = userId;
         return this;
     }
@@ -78,43 +78,41 @@ public class UserFakeBuilder {
     }
 
 
-    public UserFakeBuilder withNullPhoneNumber() {
-        this.phoneNumber = null;
-        return this;
+    public UserRegistrationRequest withNullPhoneNumber() {
+        return getUser().withPhoneNumber(null).buildDTO();
     }
 
-    public UserFakeBuilder withBlankPhoneNumber() {
-        this.phoneNumber = BLANK;
-        return this;
+    public UserRegistrationRequest withBlankPhoneNumber() {
+        return getUser().withPhoneNumber(BLANK).buildDTO();
     }
 
-    public User withNullEmail() {
-        return getUser().withEmail(null).build();
+    public UserRegistrationRequest withNullEmail() {
+        return getUser().withEmail(null).buildDTO();
     }
 
-    public User withBlankEmail() {
-        return getUser().withEmail(BLANK).build();
+    public UserRegistrationRequest withBlankEmail() {
+        return getUser().withEmail(BLANK).buildDTO();
     }
 
-    public User withInvalidEmail() {
-        return getUser().withEmail("jjsgjiojtjijtij.com").build();
+    public UserRegistrationRequest withInvalidEmail() {
+        return getUser().withEmail("jjsgjiojtjijtij.com").buildDTO();
     }
 
 
-    public User withNullPassword() {
-        return aUser().withPassword(null).build();
+    public UserRegistrationRequest withNullPassword() {
+        return aUser().withPassword(null).buildDTO();
     }
 
-    public User withEmptyPassword() {
-        return aUser().withPassword(BLANK).build();
+    public UserRegistrationRequest withEmptyPassword() {
+        return aUser().withPassword(BLANK).buildDTO();
     }
 
-    public UserFakeBuilder withDisabledStatus(){
+    public UserFakeBuilder withDisabledStatus() {
         this.userStatus = UserStatus.DISABLE;
         return this;
     }
 
-    public UserFakeBuilder withEnabledStatus(){
+    public UserFakeBuilder withEnabledStatus() {
         this.userStatus = UserStatus.ENABLE;
         return this;
     }
@@ -125,13 +123,13 @@ public class UserFakeBuilder {
         final Email mail = Email.of(this.email);
         final PhoneNumber phone = PhoneNumber.of(phoneNumber);
         final Password password = Password.of(plainPassword);
-        final Credential credential = Credential.of(mail,password);
+        final Credential credential = Credential.of(mail, password);
 
-        return User.of(id,fullName, phone,credential,userStatus);
+        return User.of(id, fullName, phone, credential, userStatus);
     }
 
     public UserRegistrationRequest buildDTO() {
-        return new UserRegistrationRequest(firstName, lastName,email,plainPassword,phoneNumber);
+        return new UserRegistrationRequest(firstName, lastName, email, plainPassword, phoneNumber);
     }
 
 }

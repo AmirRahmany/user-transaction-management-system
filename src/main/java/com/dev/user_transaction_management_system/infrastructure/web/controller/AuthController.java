@@ -16,18 +16,16 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final UserRegistration userRegistration;
-    private final UserMapper userMapper;
 
     public AuthController(UserRegistration userRegistration) {
         this.userRegistration = userRegistration;
-        this.userMapper = new UserMapper();
     }
 
     @PostMapping("/register")
     public ResponseEntity<UserRegistrationRequest> register(
             @RequestBody UserRegistrationRequest userRegistrationRequest) {
         try {
-            userRegistration.register(userMapper.toDomain(userRegistrationRequest));
+            userRegistration.register(userRegistrationRequest);
             return ResponseEntity.ok(userRegistrationRequest);
         } catch (RuntimeException exception) {
             return ResponseEntity.badRequest().build();

@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.account.Account;
+import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
@@ -11,7 +11,6 @@ import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.DepositRequestBuilder.aDepositRequest;
@@ -36,8 +35,8 @@ class DepositingMoneyTests {
 
     @Test
     void initiate_deposit_transaction_successfully() {
-        final Account from = havingOpened(anAccount().withAccountNumber("0300145874512"));
-        final Account to = havingOpened(anAccount().withAccountNumber("0300100234111"));
+        final BankAccount from = havingOpened(anAccount().withAccountNumber("0300145874512"));
+        final BankAccount to = havingOpened(anAccount().withAccountNumber("0300100234111"));
 
         final DepositRequest depositRequest = aDepositRequest()
                 .withAmount(500)
@@ -51,8 +50,8 @@ class DepositingMoneyTests {
 
     @Test
     void can_not_initiate_a_deposit_transaction_with_unknown_account() {
-        final Account from = havingUnOpened(anAccount().withAccountNumber("0300145687654"));
-        final Account to = havingUnOpened(anAccount().withAccountNumber("0300874137630"));
+        final BankAccount from = havingUnOpened(anAccount().withAccountNumber("0300145687654"));
+        final BankAccount to = havingUnOpened(anAccount().withAccountNumber("0300874137630"));
 
         final DepositRequest depositRequest = aDepositRequest().withAmount(300)
                 .withFromAccount(from)
@@ -64,14 +63,14 @@ class DepositingMoneyTests {
                 .isThrownBy(() -> transactionService.deposit(depositRequest));
     }
 
-    private Account havingUnOpened(AccountFakeBuilder accountBuilder) {
+    private BankAccount havingUnOpened(AccountFakeBuilder accountBuilder) {
         return accountBuilder.open();
     }
 
     @Test
     void can_not_initiate_a_deposit_transaction_with_negative_amount() {
-        Account from = havingOpened(anAccount().withAccountNumber("0300145241563"));
-        Account to = havingOpened(anAccount().withAccountNumber("0300874021436"));
+        BankAccount from = havingOpened(anAccount().withAccountNumber("0300145241563"));
+        BankAccount to = havingOpened(anAccount().withAccountNumber("0300874021436"));
 
         final DepositRequest depositRequest = aDepositRequest()
                 .withAmount(-100)
@@ -85,8 +84,8 @@ class DepositingMoneyTests {
 
     @Test
     void cannot_deposit_from_account_with_insufficient_funds() {
-        Account insufficientAccount = havingOpened(anAccount().withAccountNumber("0300467800143").withBalance(200));
-        Account to = havingOpened(anAccount().withAccountNumber("0300465214701"));
+        BankAccount insufficientAccount = havingOpened(anAccount().withAccountNumber("0300467800143").withBalance(200));
+        BankAccount to = havingOpened(anAccount().withAccountNumber("0300465214701"));
 
         final DepositRequest depositRequest = aDepositRequest()
                 .withAmount(400)
@@ -100,7 +99,7 @@ class DepositingMoneyTests {
 
     @Test
     void cannot_deposit_to_same_account() {
-        Account from = havingOpened(anAccount().withAccountNumber("0300450012365"));
+        BankAccount from = havingOpened(anAccount().withAccountNumber("0300450012365"));
 
         final DepositRequest depositRequest = aDepositRequest()
                 .withFromAccount(from)
@@ -112,8 +111,8 @@ class DepositingMoneyTests {
     }
 
 
-    private Account havingOpened(AccountFakeBuilder accountFakeBuilder) {
-        final Account account = accountFakeBuilder.open();
+    private BankAccount havingOpened(AccountFakeBuilder accountFakeBuilder) {
+        final BankAccount account = accountFakeBuilder.open();
         accountRepository.save(account.toEntity());
         return account;
     }

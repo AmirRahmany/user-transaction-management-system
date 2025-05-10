@@ -3,13 +3,13 @@ package com.dev.user_transaction_management_system.domain.account;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.UserId;
-import com.dev.user_transaction_management_system.use_case.dto.AccountResponse;
+import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-public class Account {
+public class BankAccount {
     public static final int MINIMUM_BALANCE = 100;
 
     private final AccountId accountId;
@@ -19,7 +19,7 @@ public class Account {
     private final LocalDateTime createdAt;
     private final AccountStatus status;
 
-    private Account(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
+    private BankAccount(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
         if (!hasMinimumBalance(balance))
             throw new IllegalArgumentException("an account can't be opened unless the user deposits at least $100");
 
@@ -35,8 +35,8 @@ public class Account {
         this.status = AccountStatus.DISABLE;
     }
 
-    public static Account open(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
-        return new Account(accountId, accountNumber, userId, balance, createdAt);
+    public static BankAccount open(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
+        return new BankAccount(accountId, accountNumber, userId, balance, createdAt);
     }
 
     public void ensureSufficientBalanceFor(Amount amount) {
@@ -80,8 +80,8 @@ public class Account {
         return userId != null;
     }
 
-    public AccountResponse toResponse(String fullName) {
-        return new AccountResponse(accountNumber.toString(),fullName,balance.toValue(),createdAt,status);
+    public OpeningAccountResponse toResponse(String fullName) {
+        return new OpeningAccountResponse(accountNumber.toString(),fullName,balance.toValue(),createdAt,status);
     }
 
     public AccountNumber accountNumber() {
@@ -97,7 +97,7 @@ public class Account {
 
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Account account = (Account) o;
+        BankAccount account = (BankAccount) o;
         return Objects.equals(accountId, account.accountId) &&
                 Objects.equals(accountNumber, account.accountNumber) &&
                 Objects.equals(userId, account.userId) && Objects.equals(balance, account.balance) &&
@@ -111,7 +111,7 @@ public class Account {
 
     @Override
     public String toString() {
-        return "Account{" +
+        return "BankAccount{" +
                 "accountId='" + accountId + '\'' +
                 ", accountNumber='" + accountNumber + '\'' +
                 ", userId='" + userId + '\'' +

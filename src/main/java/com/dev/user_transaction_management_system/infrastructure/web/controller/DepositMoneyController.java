@@ -3,6 +3,7 @@ package com.dev.user_transaction_management_system.infrastructure.web.controller
 import com.dev.user_transaction_management_system.domain.transaction.Transaction;
 import com.dev.user_transaction_management_system.use_case.DepositingMoney;
 import com.dev.user_transaction_management_system.use_case.WithdrawingMoney;
+import com.dev.user_transaction_management_system.use_case.dto.DepositReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +24,8 @@ public class DepositMoneyController {
     @PostMapping("/deposit")
     public ResponseEntity<?> deposit(@RequestBody DepositRequest depositRequest) {
         try {
-            final Transaction receipt = depositingMoney.deposit(depositRequest);
-
-            return ResponseEntity.ok(depositRequest);
+            final DepositReceipt receipt = depositingMoney.deposit(depositRequest);
+            return ResponseEntity.ok(receipt);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

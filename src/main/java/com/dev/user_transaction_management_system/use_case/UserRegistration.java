@@ -1,16 +1,17 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.user.User;
+import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
 import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
-import com.dev.user_transaction_management_system.domain.user.UserRepository;
+import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class UserRegistration{
+@Transactional
+public class UserRegistration {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -23,16 +24,21 @@ public class UserRegistration{
         this.userMapper = new UserMapper();
     }
 
-    @Transactional
-    public void register(User user) {
-        ensureUserDoesNotExists(user);
 
-        final String hashedPassword = passwordEncoder.encode(user.password());
-        userRepository.enroll(userMapper.toEntity(user, hashedPassword));
+    public void register(UserRegistrationRequest request) {
+        ensureUserDoesNotExists(request.email());
+        final String hashedPassword = passwordEncoder.encode(request.password());
+
+        final User user = User.of(UserId.autoGenerateByDb(),
+                FullName.of(request.firstName(), request.lastName()),
+                PhoneNumber.of(request.phoneNumber()),
+                Credential.of(Email.of(request.email()), Password.of(request.password())));
+
+        userRepository.save(userMapper.toEntity(user,hashedPassword));
     }
 
-    private void ensureUserDoesNotExists(User user) {
-        if (userRepository.isUserAlreadyExists(user.email())) {
+    private void ensureUserDoesNotExists(String userEmail) {
+        if (userRepository.isUserAlreadyExists(userEmail)) {
             throw new CouldNotRegisterUserAlreadyExists();
         }
     }

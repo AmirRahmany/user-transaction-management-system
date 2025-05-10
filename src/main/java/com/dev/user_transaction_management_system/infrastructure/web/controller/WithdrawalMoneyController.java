@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.web.controller;
 
+import com.dev.user_transaction_management_system.domain.transaction.ReferenceNumber;
 import com.dev.user_transaction_management_system.domain.transaction.Transaction;
 import com.dev.user_transaction_management_system.use_case.WithdrawingMoney;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
@@ -22,9 +23,9 @@ public class WithdrawalMoneyController {
     @PostMapping("/withdraw")
     public ResponseEntity<?> withdraw(@RequestBody WithdrawalRequest withdrawalRequest) {
         try {
-            final Transaction receipt = withdrawingMoney.withdraw(withdrawalRequest);
+            final ReferenceNumber referenceNumber = withdrawingMoney.withdraw(withdrawalRequest);
 
-            return ResponseEntity.ok(withdrawalRequest);
+            return ResponseEntity.ok(referenceNumber.toString());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

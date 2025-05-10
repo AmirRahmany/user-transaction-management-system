@@ -4,7 +4,7 @@ import com.dev.user_transaction_management_system.domain.account.AccountStatus;
 
 import java.time.LocalDateTime;
 
-public record AccountResponse(
+public record OpeningAccountResponse(
          String accountNumber,
          String fullName,
          Double balance,

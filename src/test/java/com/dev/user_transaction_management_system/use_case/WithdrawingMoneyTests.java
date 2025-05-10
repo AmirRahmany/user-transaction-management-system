@@ -1,13 +1,11 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.account.Account;
+import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.AccountRepositoryFake;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -17,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class WithdrawingMoneyTests {
@@ -60,7 +57,7 @@ class WithdrawingMoneyTests {
     }
 
     private WithdrawalRequest withdrawalRequestOf(double amount, double balance) {
-        final Account account = anAccount().withBalance(balance).open();
+        final BankAccount account = anAccount().withBalance(balance).open();
         final String description = "buy something!";
 
         accountRepository.save(account.toEntity());

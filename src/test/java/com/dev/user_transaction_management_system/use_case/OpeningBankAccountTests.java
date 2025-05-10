@@ -9,6 +9,7 @@ import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
 import com.dev.user_transaction_management_system.fake.UserRepositoryFake;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
+import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,14 +20,16 @@ import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aU
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class OpeningAccountTests {
+class OpeningBankAccountTests {
 
-    private final OpeningAccount openingAccount;
+    private final OpeningBankAccount openingBankAccount;
     private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
-    public OpeningAccountTests() {
+    public OpeningBankAccountTests() {
+        this.userMapper = new UserMapper();
         userRepository = new UserRepositoryFake();
-        openingAccount = new OpeningAccount(new AccountRepositoryFake(),
+        openingBankAccount = new OpeningBankAccount(new AccountRepositoryFake(),
                 new AccountNumberGeneratorStubs(),
                 userRepository);
     }
@@ -35,7 +38,7 @@ class OpeningAccountTests {
     void open_an_account_successfully() {
         final UserEntity entity = havingRegistered(aUser().withEnabledStatus());
         assertThatNoException().isThrownBy(() ->
-                openingAccount.open(accountRequest().withUserId(entity.getId()).open()));
+                openingBankAccount.open(accountRequest().withUserId(entity.getId()).open()));
     }
 
     @Test
@@ -44,7 +47,7 @@ class OpeningAccountTests {
         final AccountRequest accountRequest = accountRequest().withUserId(entity.getId()).withBalance(80).open();
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> openingAccount.open(accountRequest));
+                .isThrownBy(() -> openingBankAccount.open(accountRequest));
 
     }
 
@@ -53,7 +56,7 @@ class OpeningAccountTests {
         final AccountRequest accountRequest = accountRequest().withNoUser().open();
 
         assertThatExceptionOfType(CouldNotFoundUser.class)
-                .isThrownBy(() -> openingAccount.open(accountRequest));
+                .isThrownBy(() -> openingBankAccount.open(accountRequest));
     }
 
     @Test
@@ -61,10 +64,10 @@ class OpeningAccountTests {
         final UserEntity user = havingRegistered(aUser().withEnabledStatus());
 
         final AccountRequest accountRequest = accountRequest().withUserId(user.getId()).open();
-        openingAccount.open(accountRequest);
+        openingBankAccount.open(accountRequest);
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> openingAccount.open(accountRequest));
+                .isThrownBy(() -> openingBankAccount.open(accountRequest));
     }
 
     @Test
@@ -73,13 +76,13 @@ class OpeningAccountTests {
 
         final AccountRequest accountRequest = accountRequest().withUserId(disableUser.getId()).open();
 
-        assertThatExceptionOfType(CouldNotOpenAnAccount.class).isThrownBy(() -> openingAccount.open(accountRequest));
+        assertThatExceptionOfType(CouldNotOpenAnAccount.class).isThrownBy(() -> openingBankAccount.open(accountRequest));
     }
 
     private UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
         final User user = userFakeBuilder.build();
-        final UserEntity entity = user.toEntity();
-        userRepository.enroll(entity);
+        final UserEntity entity = userMapper.toEntity(user);
+        userRepository.save(entity);
         return entity;
     }
 }

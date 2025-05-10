@@ -1,15 +1,17 @@
 package com.dev.user_transaction_management_system.integration;
 
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
+import com.dev.user_transaction_management_system.infrastructure.web.controller.EnablingUserAccount;
 import com.dev.user_transaction_management_system.use_case.UserRegistration;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
-import com.dev.user_transaction_management_system.use_case.dto.AccountResponse;
+import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.account.AccountRepository;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
+import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -27,11 +29,12 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @SpringBootTest
 @AutoConfigureMockMvc
-@Transactional
 @ActiveProfiles("test")
-class AccountControllerTests {
+@Transactional
+class BankAccountControllerTests {
     @Autowired
     private MockMvc mockMvc;
 
@@ -47,33 +50,36 @@ class AccountControllerTests {
     @Autowired
     private AccountRepository accountRepository;
 
+    @Autowired
+    private EnablingUserAccount enablingUserAccount;
+
     @Test
     void open_an_account_successfully() throws Exception {
-        final User user = havingRegistered(aUser().withEnabledStatus().withFirstName("Amir").withLastName("Rahmani"));
+        final UserEntity user = havingRegistered(aUser().withEnabledStatus().withFirstName("Amir").withLastName("Rahmani"));
 
-        final Optional<UserEntity> savedUser = userRepository.findByEmail(user.email());
-
-        assertThat(savedUser).isPresent();
-        final AccountRequest accountRequest = new AccountRequest(savedUser.get().getId(), 5000);
+        final AccountRequest accountRequest = new AccountRequest(user.getId(), 5000);
 
         final String response = mockMvc.perform(post("/api/account")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(accountRequest)))
-                .andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
 
-        final AccountResponse accountResponse = objectMapper.readValue(response, AccountResponse.class);
-        final AccountNumber accountNumber = AccountNumber.of(accountResponse.accountNumber());
+        final OpeningAccountResponse openingAccountResponse = objectMapper.readValue(response, OpeningAccountResponse.class);
+        final AccountNumber accountNumber = AccountNumber.of(openingAccountResponse.accountNumber());
 
         final Optional<AccountEntity> accountEntity = accountRepository.findByAccountNumber(accountNumber);
 
-        assertThat(accountResponse).isNotNull();
+        assertThat(openingAccountResponse).isNotNull();
         assertThat(accountEntity).isPresent();
-        System.out.println(accountResponse);
+        System.out.println(openingAccountResponse);
     }
 
-    private User havingRegistered(UserFakeBuilder userFakeBuilder) {
-        final User user = userFakeBuilder.build();
+    private UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
+        final UserRegistrationRequest user = userFakeBuilder.buildDTO();
         userRegistration.register(user);
-        return user;
+        final UserEntity entity = userRepository.findByEmail(user.email()).orElseThrow(CouldNotFindAccount::new);
+        enablingUserAccount.enable(entity.getId());
+        return entity;
     }
 }

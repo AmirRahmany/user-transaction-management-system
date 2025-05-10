@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public interface UserRepository{
 
-    void enroll(UserEntity user);
+    void save(UserEntity user);
 
     Optional<UserEntity> findByEmail(String email);
 

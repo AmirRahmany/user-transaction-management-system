@@ -36,4 +36,17 @@ public class UserMapper {
 
         return User.of(userId, fullName, phoneNumber, credential, userEntity.getUserStatus());
     }
+
+    public UserEntity toEntity(User user) {
+        final UserEntity entity = new UserEntity();
+        entity.setId(user.userId());
+        entity.setFirstName(user.firstName());
+        entity.setLastName(user.lastName());
+        entity.setEmail(user.email());
+        entity.setPhoneNumber(user.phoneNumber());
+        entity.setPassword(user.password());
+        entity.setUserStatus(user.status());
+        entity.setCreatedAt(user.createdAt());
+        return entity;
+    }
 }

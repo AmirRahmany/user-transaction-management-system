@@ -3,24 +3,20 @@ package com.dev.user_transaction_management_system.fake;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class UserRepositoryFake implements UserRepository {
 
-    private Integer userId = 20;
-    private final List<UserEntity> recordUsers = new LinkedList<>();
+    private final Map<Integer,UserEntity> recordUsers = new LinkedHashMap<>();
 
     @Override
-    public void enroll(UserEntity user) {
-        user.setId(userId);
-        recordUsers.add(user);
+    public void save(UserEntity user) {
+        recordUsers.put(user.getId(),user);
     }
 
     @Override
     public Optional<UserEntity> findByEmail(String email) {
-        return recordUsers.stream().filter(user -> user.getEmail().equals(email)).findFirst();
+        return recordUsers.values().stream().filter(user -> user.getEmail().equals(email)).findFirst();
     }
 
     @Override
@@ -30,6 +26,6 @@ public class UserRepositoryFake implements UserRepository {
 
     @Override
     public Optional<UserEntity> findById(Integer userId) {
-        return recordUsers.stream().filter(user->user.getId().equals(userId)).findFirst();
+        return recordUsers.values().stream().filter(user->user.getId().equals(userId)).findFirst();
     }
 }

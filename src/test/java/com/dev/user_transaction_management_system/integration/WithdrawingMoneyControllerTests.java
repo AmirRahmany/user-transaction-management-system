@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.domain.account.Account;
+import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountRepository;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import com.dev.user_transaction_management_system.fake.AccountFakeBuilder;
@@ -45,7 +45,7 @@ class WithdrawingMoneyControllerTests {
     @Test
     void withdraw_money_transaction_successfully() throws Exception {
 
-        final Account account = havingOpened(anAccount().withAccountNumber("0300654789123").withBalance(500));
+        final BankAccount account = havingOpened(anAccount().withAccountNumber("0300654789123").withBalance(500));
 
         final WithdrawalRequest withdrawalRequest = new WithdrawalRequest(300, account.accountNumberAsString(), "description");
 
@@ -61,8 +61,8 @@ class WithdrawingMoneyControllerTests {
         assertThat(savedToAccount.get().getBalance()).isEqualTo(200);
     }
 
-    private Account havingOpened(AccountFakeBuilder accountFakeBuilder) {
-        final Account account = accountFakeBuilder.open();
+    private BankAccount havingOpened(AccountFakeBuilder accountFakeBuilder) {
+        final BankAccount account = accountFakeBuilder.open();
         accountRepository.save(account.toEntity());
         return account;
     }

@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.domain.account.Account;
+import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountId;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
@@ -43,10 +43,10 @@ public class AccountFakeBuilder {
         return this;
     }
 
-    public Account open() {
+    public BankAccount open() {
         LocalDateTime createdAt = LocalDateTime.of(2025, 6, 14, 8, 16, 15);
         final AccountId id = AccountId.fromInt(accountId);
-        return Account.open(id, AccountNumber.of(accountNumber), UserId.fromInt(userId), balance, createdAt);
+        return BankAccount.open(id, AccountNumber.of(accountNumber), UserId.fromInt(userId), balance, createdAt);
     }
 
     public AccountFakeBuilder withNoUser() {
