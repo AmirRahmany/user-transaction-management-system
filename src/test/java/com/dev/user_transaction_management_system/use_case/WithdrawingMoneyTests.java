@@ -2,35 +2,28 @@ package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
-import com.dev.user_transaction_management_system.fake.AccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
-import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
+import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
-class WithdrawingMoneyTests {
-
-
-    private final AccountRepositoryFake accountRepository;
-    @Mock
-    private TransactionRepository transactionRepository;
+class WithdrawingMoneyTests extends BankAccountTestHelper {
 
     @InjectMocks
     private WithdrawingMoney withdrawingMoney;
 
 
     public WithdrawingMoneyTests() {
-        accountRepository = new AccountRepositoryFake();
-        withdrawingMoney = new WithdrawingMoney(new TransactionRepositoryFake(), accountRepository);
+        super.accountRepository = new BankAccountRepositoryFake();
+        withdrawingMoney = new WithdrawingMoney(new TransactionRepositoryFake(), super.accountRepository);
     }
 
     @Test
@@ -57,11 +50,9 @@ class WithdrawingMoneyTests {
     }
 
     private WithdrawalRequest withdrawalRequestOf(double amount, double balance) {
-        final BankAccount account = anAccount().withBalance(balance).open();
         final String description = "buy something!";
+        final BankAccount bankAccount = havingOpened(anAccount().withBalance(balance));
 
-        accountRepository.save(account.toEntity());
-
-        return new WithdrawalRequest(amount, account.accountNumberAsString(), description);
+        return new WithdrawalRequest(amount, bankAccount.accountNumberAsString(), description);
     }
 }

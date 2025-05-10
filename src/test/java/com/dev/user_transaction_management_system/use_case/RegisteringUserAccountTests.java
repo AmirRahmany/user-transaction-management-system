@@ -40,6 +40,7 @@ class RegisteringUserAccountTests {
 
         assertThatNoException().isThrownBy(() -> registeringUserAccount.register(user));
         verify(passwordEncoder).encode(user.password());
+
         verify(userRepository).save(argThat(entity -> {
             assertThat(entity.getPassword()).isEqualTo("hashedPassword");
             return true;

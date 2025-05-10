@@ -4,7 +4,7 @@ import com.dev.user_transaction_management_system.infrastructure.persistence.mod
 
 import java.util.Optional;
 
-public interface AccountRepository {
+public interface BankAccountRepository {
 
     void save(AccountEntity accountEntity);
 

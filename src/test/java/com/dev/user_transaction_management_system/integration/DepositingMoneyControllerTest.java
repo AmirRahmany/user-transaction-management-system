@@ -1,8 +1,7 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.domain.account.BankAccount;
-import com.dev.user_transaction_management_system.domain.account.AccountRepository;
-import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
+import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,36 +27,23 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Transactional
 @AutoConfigureMockMvc
-class DepositingMoneyControllerTest {
-
+class DepositingMoneyControllerTest extends BankAccountTestHelper {
 
     @Autowired
     private MockMvc mockMvc;
-
-    @Autowired
-    private TransactionRepository transactionRepository;
-
-    @Autowired
-    private AccountRepository accountRepository;
-
 
     @Autowired
     private ObjectMapper objectMapper;
 
     @Test
     void deposit_transaction_successfully() throws Exception {
-
-        final BankAccount from = anAccount().withAccountNumber("0300654789123")
-                .withBalance(500).open();
-
-        final BankAccount to = anAccount().withAccountNumber("0300456574853")
+        final BankAccount from =havingOpened(anAccount().withAccountNumber("0300654789123").withBalance(500));
+        final BankAccount to = havingOpened(anAccount().withAccountNumber("0300456574853")
                 .withAccountId(321)
                 .withBalance(140)
-                .withUserId(31).open();
+                .withUserId(31));
 
         final LocalDateTime createdAt = LocalDateTime.of(2025, 5, 4, 14, 30, 0);
-        accountRepository.save(from.toEntity());
-        accountRepository.save(to.toEntity());
 
         final DepositRequest depositRequest = aDepositRequest()
                 .withAmount(300)

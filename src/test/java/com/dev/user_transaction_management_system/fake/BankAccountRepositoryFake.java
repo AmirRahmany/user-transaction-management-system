@@ -2,13 +2,13 @@ package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
-import com.dev.user_transaction_management_system.domain.account.AccountRepository;
+import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-public class AccountRepositoryFake implements AccountRepository {
+public class BankAccountRepositoryFake implements BankAccountRepository {
 
     private final List<AccountEntity> records = new LinkedList<>();
 

@@ -2,7 +2,7 @@ package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.account.AccountRepository;
+import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
 import com.dev.user_transaction_management_system.domain.transaction.*;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
@@ -17,14 +17,14 @@ import java.util.UUID;
 public class WithdrawingMoney {
 
     private final TransactionRepository transactionRepository;
-    private final AccountRepository accountRepository;
+    private final BankAccountRepository accountRepository;
     private final AccountMapper accountMapper;
 
     public WithdrawingMoney(TransactionRepository transactionRepository,
-                            AccountRepository accountRepository) {
+                            BankAccountRepository bankAccountRepository) {
 
         this.transactionRepository = transactionRepository;
-        this.accountRepository = accountRepository;
+        this.accountRepository = bankAccountRepository;
         this.accountMapper = new AccountMapper();
     }
 

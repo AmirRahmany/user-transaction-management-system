@@ -4,7 +4,7 @@ import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
 import com.dev.user_transaction_management_system.domain.transaction.*;
-import com.dev.user_transaction_management_system.domain.account.AccountRepository;
+import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.AccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.DepositReceipt;
@@ -17,12 +17,12 @@ import org.springframework.stereotype.Service;
 public class DepositingMoney {
 
     private final TransactionRepository transactionRepository;
-    private final AccountRepository accountRepository;
+    private final BankAccountRepository accountRepository;
     private final WithdrawingMoney withdrawingMoney;
     private final AccountMapper accountMapper;
 
     public DepositingMoney(TransactionRepository transactionRepository,
-                           AccountRepository accountRepository, WithdrawingMoney withdrawingMoney) {
+                           BankAccountRepository accountRepository, WithdrawingMoney withdrawingMoney) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
         this.withdrawingMoney = withdrawingMoney;

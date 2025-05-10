@@ -1,12 +1,12 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.account.BankAccount;
-import com.dev.user_transaction_management_system.domain.account.AccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.AccountFakeBuilder;
-import com.dev.user_transaction_management_system.fake.AccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
+import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,14 +19,13 @@ import static java.time.LocalDateTime.of;
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class DepositingMoneyTests {
-
-    private final AccountRepository accountRepository;
+class DepositingMoneyTests extends BankAccountTestHelper {
 
     private final DepositingMoney transactionService;
 
     public DepositingMoneyTests() {
-        this.accountRepository = new AccountRepositoryFake();
+        super.accountRepository = new BankAccountRepositoryFake();
+
         final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
         WithdrawingMoney withdrawingMoney = new WithdrawingMoney(transactionRepository, accountRepository);
         this.transactionService = new DepositingMoney(transactionRepository, accountRepository,withdrawingMoney);
@@ -108,12 +107,5 @@ class DepositingMoneyTests {
 
         assertThatExceptionOfType(CouldNotProcessTransaction.class)
                 .isThrownBy(() -> transactionService.deposit(depositRequest));
-    }
-
-
-    private BankAccount havingOpened(AccountFakeBuilder accountFakeBuilder) {
-        final BankAccount account = accountFakeBuilder.open();
-        accountRepository.save(account.toEntity());
-        return account;
     }
 }

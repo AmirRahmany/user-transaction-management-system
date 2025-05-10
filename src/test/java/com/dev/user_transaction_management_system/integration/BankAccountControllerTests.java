@@ -1,17 +1,12 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
-import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
-import com.dev.user_transaction_management_system.use_case.ActivatingUserAccount;
-import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
+import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.domain.account.AccountRepository;
-import com.dev.user_transaction_management_system.domain.user.UserRepository;
-import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
+import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -34,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
-class BankAccountControllerTests {
+class BankAccountControllerTests extends UserAccountTestUtil {
     @Autowired
     private MockMvc mockMvc;
 
@@ -42,20 +37,14 @@ class BankAccountControllerTests {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private RegisteringUserAccount registeringUserAccount;
+    private BankAccountRepository accountRepository;
 
-    @Autowired
-    private UserRepository userRepository;
 
-    @Autowired
-    private AccountRepository accountRepository;
-
-    @Autowired
-    private ActivatingUserAccount activatingUserAccount;
 
     @Test
     void open_an_account_successfully() throws Exception {
         final UserEntity user = havingRegistered(aUser().withEnabledStatus().withFirstName("Amir").withLastName("Rahmani"));
+        activateUserAccount(user.getId());
 
         final AccountRequest accountRequest = new AccountRequest(user.getId(), 5000);
 
@@ -72,14 +61,5 @@ class BankAccountControllerTests {
 
         assertThat(openingAccountResponse).isNotNull();
         assertThat(accountEntity).isPresent();
-        System.out.println(openingAccountResponse);
-    }
-
-    private UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
-        final UserRegistrationRequest user = userFakeBuilder.buildDTO();
-        registeringUserAccount.register(user);
-        final UserEntity entity = userRepository.findByEmail(user.email()).orElseThrow(CouldNotFindAccount::new);
-        activatingUserAccount.activate(entity.getId());
-        return entity;
     }
 }

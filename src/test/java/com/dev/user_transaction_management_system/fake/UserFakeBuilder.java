@@ -7,7 +7,7 @@ public class UserFakeBuilder {
 
     public static final String BLANK = " ";
 
-    private Integer userId = 0;
+    private Integer userId = 5;
     private String firstName;
     private String lastName;
     private String email;

@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.repository;
 
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.account.AccountRepository;
+import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 import jakarta.persistence.EntityManager;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public class AccountRepositoryImpl implements AccountRepository {
+public class BankAccountRepositoryImpl implements BankAccountRepository {
 
     private final EntityManager entityManager;
 
-    public AccountRepositoryImpl(EntityManager entityManager) {
+    public BankAccountRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
     }
 
