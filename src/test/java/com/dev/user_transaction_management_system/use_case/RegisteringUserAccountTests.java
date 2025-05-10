@@ -18,13 +18,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserRegistrationTests {
+class RegisteringUserAccountTests {
 
     @Mock
     private UserRepository userRepository;
 
     @InjectMocks
-    private UserRegistration userRegistration;
+    private RegisteringUserAccount registeringUserAccount;
 
     @Mock
     private PasswordEncoder passwordEncoder;
@@ -38,7 +38,7 @@ class UserRegistrationTests {
         doNothing().when(userRepository).save(any(UserEntity.class));
 
 
-        assertThatNoException().isThrownBy(() -> userRegistration.register(user));
+        assertThatNoException().isThrownBy(() -> registeringUserAccount.register(user));
         verify(passwordEncoder).encode(user.password());
         verify(userRepository).save(argThat(entity -> {
             assertThat(entity.getPassword()).isEqualTo("hashedPassword");
@@ -49,37 +49,37 @@ class UserRegistrationTests {
     @Test
     void can_not_register_user_without_any_name() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withFirstName(null).buildDTO()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withFirstName(null).buildDTO()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withLastName(null).buildDTO()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withLastName(null).buildDTO()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withFirstName(" ").buildDTO()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withFirstName(" ").buildDTO()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withLastName(" ").buildDTO()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withLastName(" ").buildDTO()));
     }
 
     @Test
     void can_not_register_user_without_any_phone_number() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withNullPhoneNumber()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withNullPhoneNumber()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withBlankPhoneNumber()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withBlankPhoneNumber()));
     }
 
     @Test
     void can_not_register_user_without_valid_email() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withNullEmail()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withNullEmail()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withBlankEmail()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withBlankEmail()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withInvalidEmail()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withInvalidEmail()));
     }
 
     @Test
@@ -91,7 +91,7 @@ class UserRegistrationTests {
         final UserRegistrationRequest newUser = aUser().withEmail("amirrahmani@gmail.com").buildDTO();
 
         assertThatExceptionOfType(CouldNotRegisterUserAlreadyExists.class)
-                .isThrownBy(() -> userRegistration.register(newUser));
+                .isThrownBy(() -> registeringUserAccount.register(newUser));
 
         verify(userRepository, never()).save(any());
     }
@@ -99,19 +99,19 @@ class UserRegistrationTests {
     @Test
     void can_not_register_user_without_any_password() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withNullPassword()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withNullPassword()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withEmptyPassword()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withEmptyPassword()));
     }
 
     @Test
     void can_not_register_user_with_invalid_password() {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withPassword("12345").buildDTO()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withPassword("12345").buildDTO()));
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> userRegistration.register(aUser().withPassword("12345678").buildDTO()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withPassword("12345678").buildDTO()));
     }
 
 }

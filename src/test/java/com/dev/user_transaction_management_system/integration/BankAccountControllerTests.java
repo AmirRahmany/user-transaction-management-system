@@ -2,8 +2,8 @@ package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
-import com.dev.user_transaction_management_system.infrastructure.web.controller.EnablingUserAccount;
-import com.dev.user_transaction_management_system.use_case.UserRegistration;
+import com.dev.user_transaction_management_system.use_case.ActivatingUserAccount;
+import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
@@ -42,7 +42,7 @@ class BankAccountControllerTests {
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserRegistration userRegistration;
+    private RegisteringUserAccount registeringUserAccount;
 
     @Autowired
     private UserRepository userRepository;
@@ -51,7 +51,7 @@ class BankAccountControllerTests {
     private AccountRepository accountRepository;
 
     @Autowired
-    private EnablingUserAccount enablingUserAccount;
+    private ActivatingUserAccount activatingUserAccount;
 
     @Test
     void open_an_account_successfully() throws Exception {
@@ -77,9 +77,9 @@ class BankAccountControllerTests {
 
     private UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
         final UserRegistrationRequest user = userFakeBuilder.buildDTO();
-        userRegistration.register(user);
+        registeringUserAccount.register(user);
         final UserEntity entity = userRepository.findByEmail(user.email()).orElseThrow(CouldNotFindAccount::new);
-        enablingUserAccount.enable(entity.getId());
+        activatingUserAccount.activate(entity.getId());
         return entity;
     }
 }

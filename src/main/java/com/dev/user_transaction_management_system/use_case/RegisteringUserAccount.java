@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Transactional
-public class UserRegistration {
+public class RegisteringUserAccount {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserRegistration(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public RegisteringUserAccount(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.userMapper = new UserMapper();
