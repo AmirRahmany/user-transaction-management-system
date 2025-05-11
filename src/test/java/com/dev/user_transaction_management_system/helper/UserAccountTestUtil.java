@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.helper;
 
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
@@ -27,10 +27,11 @@ public abstract class UserAccountTestUtil {
     }
 
     private UserEntity findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(CouldNotFindAccount::new);
+        return userRepository.findByEmail(email).orElseThrow(CouldNotFindBankAccount::new);
     }
 
     protected void activateUserAccount(int userId) {
         activatingUserAccount.activate(userId);
     }
+
 }

@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.model;
 
 import com.dev.user_transaction_management_system.domain.account.AccountStatus;
+import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Table(name = "account")
 @NoArgsConstructor
 @Data
-public class AccountEntity {
+public class BankAccountEntity {
 
     @Id
     @Column(name = "account_id")
@@ -33,17 +34,17 @@ public class AccountEntity {
     @Enumerated(value = EnumType.STRING)
     private AccountStatus status;
 
-    public AccountEntity(Integer accountId, String accountNumber, Integer userId, Amount balance) {
+    public BankAccountEntity(Integer accountId, String accountNumber, Integer userId, Amount balance,AccountStatus accountStatus) {
         this.accountId = accountId;
         this.accountNumber = accountNumber;
         this.userId = userId;
         this.balance = balance.toValue();
         this.createdAt = LocalDateTime.now();
-        this.status = AccountStatus.DISABLE;
+        this.status = accountStatus;
     }
 
-    public static AccountEntity openWith(Integer accountId, String accountNumber, Integer userId, Amount balance) {
-        return new AccountEntity(accountId, accountNumber, userId, balance);
+    public static BankAccountEntity openWith(Integer accountId, String accountNumber, Integer userId, Amount balance, AccountStatus accountStatus) {
+        return new BankAccountEntity(accountId, accountNumber, userId, balance,accountStatus);
     }
 
     public boolean hasSameAccountId(Integer accountId) {

@@ -4,7 +4,7 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProc
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -17,13 +17,13 @@ public class BankAccount {
     private final UserId userId;
     private Amount balance;
     private final LocalDateTime createdAt;
-    private final AccountStatus status;
+    private AccountStatus status;
 
     private BankAccount(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
         if (!hasMinimumBalance(balance))
             throw new IllegalArgumentException("an account can't be opened unless the user deposits at least $100");
 
-        if (!isAssociateToAnyUser(userId)){
+        if (!isAssociateToAnyUser(userId)) {
             throw new IllegalArgumentException("each account should be associate to a user");
         }
 
@@ -63,12 +63,13 @@ public class BankAccount {
         return balance.toValue();
     }
 
-    public AccountEntity toEntity() {
-        return AccountEntity.openWith(
+    public BankAccountEntity toEntity() {
+        return BankAccountEntity.openWith(
                 accountId.toInt(),
                 accountNumber.toString(),
                 userId.toInt(),
-                balance
+                balance,
+                status
         );
     }
 
@@ -81,7 +82,7 @@ public class BankAccount {
     }
 
     public OpeningAccountResponse toResponse(String fullName) {
-        return new OpeningAccountResponse(accountNumber.toString(),fullName,balance.toValue(),createdAt,status);
+        return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.toValue(), createdAt, status);
     }
 
     public AccountNumber accountNumber() {
@@ -119,5 +120,9 @@ public class BankAccount {
                 ", createdAt=" + createdAt +
                 ", status=" + status +
                 '}';
+    }
+
+    public void enable() {
+        this.status = AccountStatus.ENABLE;
     }
 }

@@ -49,17 +49,16 @@ class ActivatingUserAccountTests {
     }
 
     @Test
-    void should_not_call_save_if_user_is_already_enabled() {
+    void should_not_persist_when_user_account_is_already_enabled() {
         final UserEntity entity = helper.havingRegistered(aUser());
         entity.setUserStatus(UserStatus.ENABLE);
-
         final UserRepository repository = mock(UserRepository.class);
-
-        when(repository.findById(entity.getId())).thenReturn(Optional.of(entity));
-
         ActivatingUserAccount userAccount = new ActivatingUserAccount(repository);
 
-        assertThatNoException().isThrownBy(() -> userAccount.activate(entity.getId()));
+        final Integer userId = entity.getId();
+        when(repository.findById(userId)).thenReturn(Optional.of(entity));
+
+        assertThatNoException().isThrownBy(() -> userAccount.activate(userId));
         verify(repository, times(0)).save(any(UserEntity.class));
     }
 }

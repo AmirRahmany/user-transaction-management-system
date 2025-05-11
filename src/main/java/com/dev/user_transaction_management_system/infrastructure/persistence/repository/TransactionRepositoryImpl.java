@@ -1,7 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.repository;
 
 import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;

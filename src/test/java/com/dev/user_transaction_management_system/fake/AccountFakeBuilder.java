@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 
 public class AccountFakeBuilder {
     private Integer accountId = 32;
-    private String accountNumber = "6210457165432";
+    private String accountNumber = "0300123002145";
     private Integer userId = 45;
     private Amount balance = Amount.of(5000.50);
 

@@ -2,8 +2,8 @@ package com.dev.user_transaction_management_system.infrastructure.persistence.re
 
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
@@ -19,19 +19,19 @@ public class BankAccountRepositoryImpl implements BankAccountRepository {
     }
 
     @Override
-    public void save(AccountEntity accountEntity) {
-        entityManager.merge(accountEntity);
+    public void save(BankAccountEntity bankAccountEntity) {
+        entityManager.merge(bankAccountEntity);
     }
 
     @Override
-    public Optional<AccountEntity> findByAccountNumber(AccountNumber accountNumber) {
-        final String sql = "FROM AccountEntity WHERE accountNumber=:accountNumber";
+    public Optional<BankAccountEntity> findByAccountNumber(AccountNumber accountNumber) {
+        final String sql = "FROM BankAccountEntity WHERE accountNumber=:accountNumber";
 
-        final AccountEntity accountEntity = entityManager.createQuery(sql,AccountEntity.class)
+        final BankAccountEntity bankAccountEntity = entityManager.createQuery(sql, BankAccountEntity.class)
                 .setParameter("accountNumber",accountNumber.toString())
                 .getSingleResult();
 
-        return Optional.ofNullable(accountEntity);
+        return Optional.ofNullable(bankAccountEntity);
     }
 
     @Override
@@ -43,9 +43,9 @@ public class BankAccountRepositoryImpl implements BankAccountRepository {
 
     }
 
-    private AccountEntity getAccountBy(AccountNumber accountNumber) {
-        final Optional<AccountEntity> account = findByAccountNumber(accountNumber);
+    private BankAccountEntity getAccountBy(AccountNumber accountNumber) {
+        final Optional<BankAccountEntity> account = findByAccountNumber(accountNumber);
 
-        return account.orElseThrow(() -> CouldNotFindAccount.withAccountNumber(accountNumber.toString()));
+        return account.orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(accountNumber.toString()));
     }
 }

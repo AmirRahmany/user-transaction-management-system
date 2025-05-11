@@ -4,7 +4,7 @@ import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -57,7 +57,7 @@ class BankAccountControllerTests extends UserAccountTestUtil {
         final OpeningAccountResponse openingAccountResponse = objectMapper.readValue(response, OpeningAccountResponse.class);
         final AccountNumber accountNumber = AccountNumber.of(openingAccountResponse.accountNumber());
 
-        final Optional<AccountEntity> accountEntity = accountRepository.findByAccountNumber(accountNumber);
+        final Optional<BankAccountEntity> accountEntity = accountRepository.findByAccountNumber(accountNumber);
 
         assertThat(openingAccountResponse).isNotNull();
         assertThat(accountEntity).isPresent();

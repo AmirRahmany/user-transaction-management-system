@@ -2,7 +2,7 @@ package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -58,8 +58,8 @@ class DepositingMoneyControllerTest extends BankAccountTestHelper {
                 .andExpect(status().isOk());
 
 
-        Optional<AccountEntity> savedToAccount = accountRepository.findByAccountNumber(to.accountNumber());
-        Optional<AccountEntity> savedFromAccount = accountRepository.findByAccountNumber(from.accountNumber());
+        Optional<BankAccountEntity> savedToAccount = accountRepository.findByAccountNumber(to.accountNumber());
+        Optional<BankAccountEntity> savedFromAccount = accountRepository.findByAccountNumber(from.accountNumber());
 
         assertThat(savedToAccount).isPresent();
         assertThat(savedFromAccount).isPresent();

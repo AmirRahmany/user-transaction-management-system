@@ -26,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Transactional
 @AutoConfigureMockMvc
-class ActivatingUserAccountControllerTests extends UserAccountTestUtil {
+class ActivatingUserBankAccountControllerTests extends UserAccountTestUtil {
 
     @Autowired
     private MockMvc mockMvc;

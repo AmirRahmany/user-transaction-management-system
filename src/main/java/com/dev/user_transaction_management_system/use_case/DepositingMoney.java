@@ -2,11 +2,11 @@ package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.transaction.*;
 import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.AccountMapper;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.DepositReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
@@ -19,14 +19,14 @@ public class DepositingMoney {
     private final TransactionRepository transactionRepository;
     private final BankAccountRepository accountRepository;
     private final WithdrawingMoney withdrawingMoney;
-    private final AccountMapper accountMapper;
+    private final BankAccountMapper bankAccountMapper;
 
     public DepositingMoney(TransactionRepository transactionRepository,
                            BankAccountRepository accountRepository, WithdrawingMoney withdrawingMoney) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
         this.withdrawingMoney = withdrawingMoney;
-        this.accountMapper = new AccountMapper();
+        this.bankAccountMapper = new BankAccountMapper();
     }
 
     @Transactional
@@ -59,9 +59,9 @@ public class DepositingMoney {
     }
 
     private BankAccount finAccountBy(AccountNumber fromAccountNumber) {
-        final AccountEntity fromEntity = accountRepository.findByAccountNumber(fromAccountNumber)
-                .orElseThrow(() -> CouldNotFindAccount.withAccountNumber(fromAccountNumber.toString()));
-        return accountMapper.toDomain(fromEntity);
+        final BankAccountEntity fromEntity = accountRepository.findByAccountNumber(fromAccountNumber)
+                .orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(fromAccountNumber.toString()));
+        return bankAccountMapper.toDomain(fromEntity);
     }
 
     private Transaction initiateTransaction(DepositRequest depositRequest, ReferenceNumber referenceNumber) {

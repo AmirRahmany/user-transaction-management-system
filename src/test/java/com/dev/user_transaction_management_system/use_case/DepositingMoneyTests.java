@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.account.BankAccount;
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.AccountFakeBuilder;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
@@ -58,7 +58,7 @@ class DepositingMoneyTests extends BankAccountTestHelper {
                 .withCreatedAt(now())
                 .initiate();
 
-        assertThatExceptionOfType(CouldNotFindAccount.class)
+        assertThatExceptionOfType(CouldNotFindBankAccount.class)
                 .isThrownBy(() -> transactionService.deposit(depositRequest));
     }
 
