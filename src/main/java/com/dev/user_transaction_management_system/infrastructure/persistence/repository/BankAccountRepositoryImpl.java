@@ -1,0 +1,51 @@
+package com.dev.user_transaction_management_system.infrastructure.persistence.repository;
+
+import com.dev.user_transaction_management_system.domain.account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import jakarta.persistence.EntityManager;
+import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
+
+@Repository
+public class BankAccountRepositoryImpl implements BankAccountRepository {
+
+    private final EntityManager entityManager;
+
+    public BankAccountRepositoryImpl(EntityManager entityManager) {
+        this.entityManager = entityManager;
+    }
+
+    @Override
+    public void save(AccountEntity accountEntity) {
+        entityManager.merge(accountEntity);
+    }
+
+    @Override
+    public Optional<AccountEntity> findByAccountNumber(AccountNumber accountNumber) {
+        final String sql = "FROM AccountEntity WHERE accountNumber=:accountNumber";
+
+        final AccountEntity accountEntity = entityManager.createQuery(sql,AccountEntity.class)
+                .setParameter("accountNumber",accountNumber.toString())
+                .getSingleResult();
+
+        return Optional.ofNullable(accountEntity);
+    }
+
+    @Override
+    public boolean accountExists(AccountNumber accountNumber) {
+        final int isExist = entityManager.createNativeQuery("SELECT EXISTS(SELECT 1 FROM account where accountNumber=:accountNumber)")
+                .setParameter("accountNumber", accountNumber)
+                .getFirstResult();
+        return isExist == 1;
+
+    }
+
+    private AccountEntity getAccountBy(AccountNumber accountNumber) {
+        final Optional<AccountEntity> account = findByAccountNumber(accountNumber);
+
+        return account.orElseThrow(() -> CouldNotFindAccount.withAccountNumber(accountNumber.toString()));
+    }
+}

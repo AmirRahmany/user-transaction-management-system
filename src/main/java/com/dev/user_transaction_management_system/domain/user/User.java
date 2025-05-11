@@ -1,35 +1,55 @@
 package com.dev.user_transaction_management_system.domain.user;
 
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.infrastructure.util.Precondition;
+
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class User {
 
+    private final UserId userId;
     private final FullName fullName;
     private final PhoneNumber phoneNumber;
     private final Credential credential;
     private final LocalDateTime createdAt;
-    private final boolean isActive;
+    private UserStatus status;
 
-    private User(FullName fullName,
+    private User(UserId userId,
+                 FullName fullName,
                  PhoneNumber phoneNumber,
                  Credential credential,
                  LocalDateTime createdAt,
-                 boolean isActive) {
+                 UserStatus status) {
 
+        Precondition.require(userId != null);
+        Precondition.require(fullName != null);
+        Precondition.require(phoneNumber != null);
+        Precondition.require(createdAt != null);
+        Precondition.require(status != null);
+
+        this.userId = userId;
         this.fullName = fullName;
         this.phoneNumber = phoneNumber;
         this.credential = credential;
         this.createdAt = createdAt;
-        this.isActive = isActive;
+        this.status = status;
 
     }
 
-    public static User of(FullName fullName,
-                          PhoneNumber phoneNumber,
-                          Credential credential) {
+    public static User of(
+            UserId userId,
+            FullName fullName,
+            PhoneNumber phoneNumber,
+            Credential credential,
+            UserStatus status) {
 
-        return new User(fullName, phoneNumber, credential, LocalDateTime.now(), false);
+        return new User(userId, fullName, phoneNumber, credential, LocalDateTime.now(), status);
+    }
+
+    public static User of(UserId userId,FullName fullName, PhoneNumber phoneNumber, Credential credential) {
+        return new User(userId, fullName, phoneNumber, credential, LocalDateTime.now(), UserStatus.DISABLE);
     }
 
 
@@ -45,7 +65,7 @@ public class User {
         return fullName.lastName();
     }
 
-    public String phoneNumber(){
+    public String phoneNumber() {
         return phoneNumber.value();
     }
 
@@ -57,8 +77,13 @@ public class User {
         return createdAt;
     }
 
-    public boolean isActive() {
-        return isActive;
+
+    public void enabled() {
+        this.status = UserStatus.ENABLE;
+    }
+
+    public void disable() {
+        this.status = UserStatus.DISABLE;
     }
 
     @Override
@@ -66,7 +91,7 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return isActive == user.isActive && Objects.equals(fullName, user.fullName) &&
+        return status == user.status && Objects.equals(fullName, user.fullName) &&
                 Objects.equals(phoneNumber, user.phoneNumber) &&
                 Objects.equals(credential, user.credential) &&
                 Objects.equals(createdAt, user.createdAt);
@@ -74,6 +99,31 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(fullName, phoneNumber, credential, createdAt, isActive);
+        return Objects.hash(fullName, phoneNumber, credential, createdAt, status);
+    }
+
+    public UserStatus status() {
+        return status;
+    }
+
+    public boolean isEnabled() {
+        return status.equals(UserStatus.ENABLE);
+    }
+
+    public boolean isDisable() {
+        return !isEnabled();
+    }
+
+    public String fullName() {
+        return fullName.toString();
+    }
+
+    public void ensureUserIsEnabled() {
+        if (isDisable())
+            throw CouldNotOpenAnAccount.withDisableUser();
+    }
+
+    public Integer userId() {
+        return userId.toInt();
     }
 }
