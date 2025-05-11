@@ -3,10 +3,10 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.account.BankAccount;
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindAccount;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.transaction.*;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.AccountMapper;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import org.springframework.stereotype.Service;
 
@@ -18,14 +18,14 @@ public class WithdrawingMoney {
 
     private final TransactionRepository transactionRepository;
     private final BankAccountRepository accountRepository;
-    private final AccountMapper accountMapper;
+    private final BankAccountMapper bankAccountMapper;
 
     public WithdrawingMoney(TransactionRepository transactionRepository,
                             BankAccountRepository bankAccountRepository) {
 
         this.transactionRepository = transactionRepository;
         this.accountRepository = bankAccountRepository;
-        this.accountMapper = new AccountMapper();
+        this.bankAccountMapper = new BankAccountMapper();
     }
 
     public ReferenceNumber withdraw(WithdrawalRequest withdrawalRequest) {
@@ -46,10 +46,10 @@ public class WithdrawingMoney {
     private BankAccount finAccountBy(String reqAccountNumber) {
         final AccountNumber accountNumber = AccountNumber.of(reqAccountNumber);
 
-        final AccountEntity accountEntity = accountRepository.findByAccountNumber(accountNumber)
-                .orElseThrow(() -> CouldNotFindAccount.withAccountNumber(accountNumber.toString()));
+        final BankAccountEntity bankAccountEntity = accountRepository.findByAccountNumber(accountNumber)
+                .orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(accountNumber.toString()));
 
-        return accountMapper.toDomain(accountEntity);
+        return bankAccountMapper.toDomain(bankAccountEntity);
     }
 
     private static Transaction

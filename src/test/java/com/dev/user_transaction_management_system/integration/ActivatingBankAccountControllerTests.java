@@ -1,9 +1,11 @@
 package com.dev.user_transaction_management_system.integration;
 
+import com.dev.user_transaction_management_system.domain.account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.account.AccountStatus;
 import com.dev.user_transaction_management_system.domain.account.BankAccount;
+import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Test;
@@ -25,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
 @Transactional
-class WithdrawingMoneyControllerTests extends BankAccountTestHelper {
+class ActivatingBankAccountControllerTests extends BankAccountTestHelper {
 
     @Autowired
     private MockMvc mockMvc;
@@ -33,23 +35,22 @@ class WithdrawingMoneyControllerTests extends BankAccountTestHelper {
     @Autowired
     private ObjectMapper objectMapper;
 
+    @Autowired
+    private BankAccountRepository accountRepository;
+
     @Test
-    void withdraw_money_transaction_successfully() throws Exception {
+    void activate_user_bank_account_successfully() throws Exception {
+        final BankAccount bankAccount = havingOpened(anAccount());
+        final AccountNumber accountNumber = bankAccount.accountNumber();
 
-        final BankAccount account = havingOpened(anAccount().withAccountNumber("0300654789123").withBalance(500));
-
-        final WithdrawalRequest withdrawalRequest =
-                new WithdrawalRequest(300, account.accountNumberAsString(), "description");
-
-        mockMvc.perform(post("/api/transaction/withdraw")
-                        .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .content(objectMapper.writeValueAsString(withdrawalRequest)))
+        mockMvc.perform(post("/api/account/activate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(accountNumber.toString())))
                 .andExpect(status().isOk());
 
+        final Optional<BankAccountEntity> savedBankAccount = accountRepository.findByAccountNumber(accountNumber);
 
-        Optional<BankAccountEntity> savedToAccount = accountRepository.findByAccountNumber(account.accountNumber());
-
-        assertThat(savedToAccount).isPresent();
-        assertThat(savedToAccount.get().getBalance()).isEqualTo(200);
+        assertThat(savedBankAccount).isPresent();
+        assertThat(savedBankAccount.get().getStatus()).isEqualTo(AccountStatus.ENABLE);
     }
 }

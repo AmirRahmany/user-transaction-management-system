@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
 
 import java.util.LinkedList;
@@ -10,17 +10,17 @@ import java.util.Optional;
 
 public class BankAccountRepositoryFake implements BankAccountRepository {
 
-    private final List<AccountEntity> records = new LinkedList<>();
+    private final List<BankAccountEntity> records = new LinkedList<>();
 
     @Override
-    public void save(AccountEntity accountEntity) {
-        if (accountEntity == null)
+    public void save(BankAccountEntity bankAccountEntity) {
+        if (bankAccountEntity == null)
             throw new IllegalArgumentException("anAccount must not be empty");
-        records.add(accountEntity);
+        records.add(bankAccountEntity);
     }
 
     @Override
-    public Optional<AccountEntity> findByAccountNumber(AccountNumber accountNumber) {
+    public Optional<BankAccountEntity> findByAccountNumber(AccountNumber accountNumber) {
         return records.stream()
                 .filter(account -> account.hasSameAccountNumber(accountNumber.toString())).findFirst();
     }

@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api")
-public class AccountController {
+public class BankAccountController {
 
     private final OpeningBankAccount openingBankAccount;
 
     @Autowired
-    public AccountController(OpeningBankAccount openingBankAccount) {
+    public BankAccountController(OpeningBankAccount openingBankAccount) {
         this.openingBankAccount = openingBankAccount;
     }
 

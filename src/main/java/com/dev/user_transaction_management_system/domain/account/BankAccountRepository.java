@@ -1,14 +1,14 @@
 package com.dev.user_transaction_management_system.domain.account;
 
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.AccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 
 import java.util.Optional;
 
 public interface BankAccountRepository {
 
-    void save(AccountEntity accountEntity);
+    void save(BankAccountEntity bankAccountEntity);
 
-    Optional<AccountEntity> findByAccountNumber(AccountNumber accountNumber);
+    Optional<BankAccountEntity> findByAccountNumber(AccountNumber accountNumber);
 
     boolean accountExists(AccountNumber accountNumber);
 }
