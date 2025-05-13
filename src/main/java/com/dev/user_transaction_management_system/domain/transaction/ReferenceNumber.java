@@ -1,12 +1,12 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
-import com.dev.user_transaction_management_system.infrastructure.util.Precondition;
+import org.springframework.util.Assert;
 
 public final class ReferenceNumber {
     private final String referenceNumber;
 
     private ReferenceNumber(String referenceNumber) {
-        Precondition.require(referenceNumber != null);
+        Assert.hasText(referenceNumber, "reference number cannot be null or empty");
 
         this.referenceNumber = referenceNumber;
     }

@@ -15,6 +15,8 @@ public class RegisteringUserAccount {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+
+
     private final PasswordEncoder passwordEncoder;
 
     @Autowired

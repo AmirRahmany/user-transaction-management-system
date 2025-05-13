@@ -1,8 +1,8 @@
 package com.dev.user_transaction_management_system.helper;
 
-import com.dev.user_transaction_management_system.domain.account.AccountStatus;
-import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
-import com.dev.user_transaction_management_system.domain.account.BankAccount;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.fake.AccountFakeBuilder;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import org.springframework.beans.factory.annotation.Autowired;

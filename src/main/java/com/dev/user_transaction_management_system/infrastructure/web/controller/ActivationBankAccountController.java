@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.web.controller;
 
-import com.dev.user_transaction_management_system.domain.account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.use_case.ActivatingBankAccount;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

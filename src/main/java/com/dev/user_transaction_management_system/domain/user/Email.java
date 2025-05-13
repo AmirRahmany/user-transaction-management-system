@@ -2,6 +2,7 @@ package com.dev.user_transaction_management_system.domain.user;
 
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.springframework.util.Assert;
 
 @EqualsAndHashCode
 @ToString
@@ -10,13 +11,11 @@ public class Email {
     private final String value;
 
     private Email(String email) {
-        if (isNull(email) || email.isBlank() || isValid(email)) throw new IllegalArgumentException();
+        Assert.hasText(email,"email cannot be null or empty");
+
+        if (isValid(email)) throw new IllegalArgumentException();
 
         this.value = email;
-    }
-
-    private static boolean isNull(String field) {
-        return field == null;
     }
 
     public static Email of(String email){

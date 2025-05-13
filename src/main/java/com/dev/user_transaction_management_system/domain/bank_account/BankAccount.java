@@ -1,10 +1,11 @@
-package com.dev.user_transaction_management_system.domain.account;
+package com.dev.user_transaction_management_system.domain.bank_account;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.UserId;
-import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
+import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -19,13 +20,19 @@ public class BankAccount {
     private final LocalDateTime createdAt;
     private AccountStatus status;
 
-    private BankAccount(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
-        if (!hasMinimumBalance(balance))
-            throw new IllegalArgumentException("an account can't be opened unless the user deposits at least $100");
+    private BankAccount(AccountId accountId,
+                        AccountNumber accountNumber,
+                        UserId userId, Amount balance,
+                        LocalDateTime createdAt) {
 
-        if (!isAssociateToAnyUser(userId)) {
-            throw new IllegalArgumentException("each account should be associate to a user");
-        }
+        Assert.notNull(accountId,"account id cannot be null");
+        Assert.notNull(accountNumber,"account number cannot be null");
+        Assert.notNull(userId,"user id cannot be null");
+        Assert.notNull(balance,"balance cannot be null");
+        Assert.notNull(createdAt,"created at cannot be null");
+
+        if (!hasMinimumBalance(balance))
+            throw new IllegalArgumentException("a bank account can't be opened unless the user deposits at least $100");
 
         this.accountId = accountId;
         this.accountNumber = accountNumber;
@@ -77,10 +84,6 @@ public class BankAccount {
         return balance.toValue() >= MINIMUM_BALANCE;
     }
 
-    private boolean isAssociateToAnyUser(UserId userId) {
-        return userId != null;
-    }
-
     public OpeningAccountResponse toResponse(String fullName) {
         return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.toValue(), createdAt, status);
     }
@@ -91,6 +94,10 @@ public class BankAccount {
 
     public String accountNumberAsString() {
         return accountNumber.toString();
+    }
+
+    public void enable() {
+        this.status = AccountStatus.ENABLE;
     }
 
     @Override
@@ -120,9 +127,5 @@ public class BankAccount {
                 ", createdAt=" + createdAt +
                 ", status=" + status +
                 '}';
-    }
-
-    public void enable() {
-        this.status = AccountStatus.ENABLE;
     }
 }

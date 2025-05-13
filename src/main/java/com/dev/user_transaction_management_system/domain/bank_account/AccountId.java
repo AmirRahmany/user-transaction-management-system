@@ -1,4 +1,4 @@
-package com.dev.user_transaction_management_system.domain.account;
+package com.dev.user_transaction_management_system.domain.bank_account;
 
 public final class AccountId {
     public static final int NEW_ACCOUNT = 0;

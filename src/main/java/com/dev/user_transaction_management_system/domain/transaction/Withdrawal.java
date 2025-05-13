@@ -1,13 +1,13 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
-import com.dev.user_transaction_management_system.domain.account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 
 public class Withdrawal extends Transaction{
     private final AccountNumber accountNumber;
-
 
     Withdrawal(TransactionId transactionId,
                AccountNumber accountNumber,
@@ -16,6 +16,8 @@ public class Withdrawal extends Transaction{
                LocalDateTime createdAt) {
 
         super(transactionId, transactionDetail, referenceNumber, createdAt);
+
+        Assert.notNull(accountNumber,"account number cannot be null");
         this.accountNumber = accountNumber;
     }
 

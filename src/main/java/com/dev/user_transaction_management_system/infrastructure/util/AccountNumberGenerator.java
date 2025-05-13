@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.infrastructure.util;
 
-import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.account.IAccountNumberGenerator;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.bank_account.IAccountNumberGenerator;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;

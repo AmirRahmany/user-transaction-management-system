@@ -1,8 +1,7 @@
 package com.dev.user_transaction_management_system.domain.user;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.Precondition;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -23,11 +22,11 @@ public class User {
                  LocalDateTime createdAt,
                  UserStatus status) {
 
-        Precondition.require(userId != null);
-        Precondition.require(fullName != null);
-        Precondition.require(phoneNumber != null);
-        Precondition.require(createdAt != null);
-        Precondition.require(status != null);
+        Assert.notNull(userId, "userId cannot be null");
+        Assert.notNull(fullName,"fullName cannot be null");
+        Assert.notNull(phoneNumber,"phoneNumber cannot be null");
+        Assert.notNull(createdAt,"createdAt cannot be null");
+        Assert.notNull(status,"user status cannot be null");
 
         this.userId = userId;
         this.fullName = fullName;

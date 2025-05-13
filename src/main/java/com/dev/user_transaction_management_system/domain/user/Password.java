@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.domain.user;
 
 import lombok.EqualsAndHashCode;
+import org.springframework.util.Assert;
 
 @EqualsAndHashCode
 public class Password {
@@ -10,7 +11,9 @@ public class Password {
 
 
     private Password(String password) {
-        if (password == null || password.isBlank() || isValid(password))
+        Assert.hasText(password,"password cannot be null or empty");
+
+        if (isValid(password))
             throw new IllegalArgumentException();
 
         this.plainPassword = password;

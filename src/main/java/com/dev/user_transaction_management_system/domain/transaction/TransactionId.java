@@ -1,12 +1,12 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
-import com.dev.user_transaction_management_system.infrastructure.util.Precondition;
+import org.springframework.util.Assert;
 
 public class TransactionId {
     private final Integer transactionId;
 
     private TransactionId(Integer transactionId) {
-        Precondition.require(transactionId != null);
+        Assert.notNull(transactionId,"transaction id cannot be null");
 
         this.transactionId = transactionId;
     }
