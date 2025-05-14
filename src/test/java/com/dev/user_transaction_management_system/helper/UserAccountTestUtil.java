@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserAccountTestUtil {
-
+    
     @Autowired
     protected UserRepository userRepository;
 

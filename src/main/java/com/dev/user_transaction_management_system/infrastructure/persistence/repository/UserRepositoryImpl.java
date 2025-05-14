@@ -9,14 +9,17 @@ import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
     private final EntityManager entityManager;
+    private final UUIDIdentifierGenerator identifierGenerator;
 
     public UserRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
+        this.identifierGenerator = new UUIDIdentifierGenerator();
     }
 
     @Override
@@ -50,5 +53,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean isUserAlreadyExists(String email) {
         return findByEmail(email).isPresent();
+    }
+
+    @Override
+    public UUID nextIdentify() {
+        return identifierGenerator.generate();
     }
 }

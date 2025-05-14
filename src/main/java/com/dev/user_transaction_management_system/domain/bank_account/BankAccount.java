@@ -11,7 +11,8 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class BankAccount {
-    public static final int MINIMUM_BALANCE = 100;
+
+    private static final int MINIMUM_BALANCE = 100;
 
     private final AccountId accountId;
     private final AccountNumber accountNumber;
@@ -42,18 +43,12 @@ public class BankAccount {
         this.status = AccountStatus.DISABLE;
     }
 
-    public static BankAccount open(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
+    public static BankAccount open(AccountId accountId,
+                                   AccountNumber accountNumber,
+                                   UserId userId,
+                                   Amount balance,
+                                   LocalDateTime createdAt) {
         return new BankAccount(accountId, accountNumber, userId, balance, createdAt);
-    }
-
-    public void ensureSufficientBalanceFor(Amount amount) {
-        if (!isBalanceSufficient(amount)) {
-            throw CouldNotProcessTransaction.becauseInsufficientBalance();
-        }
-    }
-
-    private boolean isBalanceSufficient(Amount amount) {
-        return balance.toValue() >= amount.toValue();
     }
 
     public void increaseAmount(Amount amount) {
@@ -62,8 +57,21 @@ public class BankAccount {
     }
 
     public void decreaseBalance(Amount amount) {
+        Assert.notNull(amount,"amount cannot be null");
+        ensureSufficientBalanceFor(amount);
+
         final double decreasedValue = this.balance.toValue() - amount.toValue();
         this.balance = Amount.of(decreasedValue);
+    }
+
+    private void ensureSufficientBalanceFor(Amount amount) {
+        if (!isBalanceSufficient(amount)) {
+            throw CouldNotProcessTransaction.becauseInsufficientBalance();
+        }
+    }
+
+    private boolean isBalanceSufficient(Amount amount) {
+        return balance.toValue() >= amount.toValue();
     }
 
     public void enable() {

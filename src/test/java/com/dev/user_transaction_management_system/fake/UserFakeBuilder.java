@@ -9,7 +9,7 @@ public class UserFakeBuilder {
 
     public static final String BLANK = " ";
 
-    private String userId = UUID.randomUUID().toString();
+    private String userId = "8c5148ea-857b-4996-a09c-5a5131a33564";
     private String firstName;
     private String lastName;
     private String email;

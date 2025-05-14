@@ -6,7 +6,7 @@ import java.util.UUID;
 
 public class AccountRequestFakeBuilder {
     public static final String NO_USER = UUID.randomUUID().toString();
-    private String userId = UUID.randomUUID().toString();
+    private String userId = "8c5148ea-857b-4996-a09c-5a5131a33564";
     private double balance = 500;
 
     private AccountRequestFakeBuilder() {

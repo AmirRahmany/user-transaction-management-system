@@ -23,12 +23,16 @@ public class ActivatingBankAccount {
 
     public void activate(String accountNumber) {
         final AccountNumber bankAccountNumber = AccountNumber.of(accountNumber);
-        final BankAccountEntity entity = repository.findByAccountNumber(bankAccountNumber)
-                .orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(accountNumber));
-        BankAccount bankAccount = bankAccountMapper.toDomain(entity);
-
+        final BankAccount bankAccount = findBankAccountBy(bankAccountNumber);
 
         bankAccount.enable();
+
         repository.save(bankAccount.toEntity());
+    }
+
+    private BankAccount findBankAccountBy(AccountNumber bankAccountNumber) {
+        final BankAccountEntity entity = repository.findByAccountNumber(bankAccountNumber)
+                .orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(bankAccountNumber.toString()));
+        return bankAccountMapper.toDomain(entity);
     }
 }

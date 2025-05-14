@@ -11,14 +11,10 @@ public class BankAccountRepositoryFake implements BankAccountRepository {
 
     private final Map<String, BankAccountEntity> records = new LinkedHashMap<>();
 
-    private final String accountId = UUID.randomUUID().toString();
-
     @Override
     public void save(BankAccountEntity bankAccountEntity) {
-        Assert.notNull(bankAccountEntity, "anAccount must not be empty");
-        if (bankAccountEntity.getAccountId() == null) {
-            bankAccountEntity.setAccountId(accountId);
-        }
+        Assert.notNull(bankAccountEntity, "bank Account must not be empty");
+
         records.put(bankAccountEntity.getAccountId(), bankAccountEntity);
     }
 
@@ -31,5 +27,10 @@ public class BankAccountRepositoryFake implements BankAccountRepository {
     @Override
     public boolean accountExists(AccountNumber accountNumber) {
         return records.values().stream().anyMatch(accountEntity -> accountEntity.getAccountNumber().equals(accountNumber.toString()));
+    }
+
+    @Override
+    public UUID nextIdentify() {
+        return UUID.fromString("edca4145-0748-4a3b-9c63-e658bc85d12a");
     }
 }

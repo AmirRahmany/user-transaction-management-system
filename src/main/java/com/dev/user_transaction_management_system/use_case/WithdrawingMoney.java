@@ -30,12 +30,11 @@ public class WithdrawingMoney {
 
     public ReferenceNumber withdraw(WithdrawalRequest withdrawalRequest) {
         final BankAccount account = finAccountBy(withdrawalRequest.accountNumber());
+        String referenceNumber = transactionRepository.generateReferenceNumber();
+
 
         final Amount amount = Amount.of(withdrawalRequest.funds());
-        account.ensureSufficientBalanceFor(amount);
-
         account.decreaseBalance(amount);
-        String referenceNumber = UUID.randomUUID().toString();
         final Transaction transaction = initTransaction(withdrawalRequest, account, amount, referenceNumber);
 
         accountRepository.save(account.toEntity());

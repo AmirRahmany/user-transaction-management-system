@@ -11,6 +11,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.UUID;
+
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.*;
@@ -32,7 +34,8 @@ class RegisteringUserAccountTests {
     @Test
     void register_user_successfully() {
         var user = aUser().buildDTO();
-
+        String userId= "8c5148ea-857b-4996-a09c-5a5131a33564";
+        when(userRepository.nextIdentify()).thenReturn(UUID.fromString(userId));
         when(passwordEncoder.encode(user.password())).thenReturn("hashedPassword");
         doNothing().when(userRepository).save(any(UserEntity.class));
 
@@ -42,6 +45,7 @@ class RegisteringUserAccountTests {
 
         verify(userRepository).save(argThat(entity -> {
             assertThat(entity.getPassword()).isEqualTo("hashedPassword");
+            assertThat(entity.getId()).isEqualTo(userId);
             return true;
         }));
     }
@@ -63,6 +67,7 @@ class RegisteringUserAccountTests {
 
     @Test
     void can_not_register_user_without_any_phone_number() {
+        System.out.println(UUID.randomUUID());
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> registeringUserAccount.register(aUser().withNullPhoneNumber()));
 

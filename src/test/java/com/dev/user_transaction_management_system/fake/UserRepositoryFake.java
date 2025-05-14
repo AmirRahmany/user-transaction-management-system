@@ -10,10 +10,9 @@ public class UserRepositoryFake implements UserRepository {
 
     private final Map<String, UserEntity> recordUsers = new LinkedHashMap<>();
 
+
     @Override
     public void save(UserEntity user) {
-        if (user.getId() == null)
-            user.setId(UUID.randomUUID().toString());
         recordUsers.put(user.getId(), user);
     }
 
@@ -30,5 +29,10 @@ public class UserRepositoryFake implements UserRepository {
     @Override
     public Optional<UserEntity> findById(UserId userId) {
         return recordUsers.values().stream().filter(user -> user.getId().equals(userId.asString())).findFirst();
+    }
+
+    @Override
+    public UUID nextIdentify() {
+        return UUID.randomUUID();
     }
 }

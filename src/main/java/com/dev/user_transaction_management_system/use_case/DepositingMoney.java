@@ -37,6 +37,7 @@ public class DepositingMoney {
 
         final WithdrawalRequest withdrawalRequest = makeWithdrawalRequestOf(depositRequest);
         ReferenceNumber referenceNumber = withdrawingMoney.withdraw(withdrawalRequest);
+
         final BankAccount to = finAccountBy(toAccountNumber);
         to.increaseAmount(Amount.of(depositRequest.amount()));
         final Transaction transaction = initiateTransaction(depositRequest, referenceNumber);

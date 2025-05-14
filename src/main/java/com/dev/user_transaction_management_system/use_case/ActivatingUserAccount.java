@@ -6,6 +6,7 @@ import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -22,13 +23,18 @@ public class ActivatingUserAccount {
     }
 
     public void activate(String userId) {
-        final UserEntity userEntity = userRepository.findById(UserId.fromString(userId))
-                .orElseThrow(() -> CouldNotFoundUser.withId(userId));
-        final User user = userMapper.toDomain(userEntity);
+        Assert.hasText(userId,"user id cannot be null or empty");
 
+        final User user = finUserBy(userId);
         if (user.isDisable()){
             user.enabled();
             userRepository.save(user.toEntity());
         }
+    }
+
+    private User finUserBy(String userId) {
+        final UserEntity userEntity = userRepository.findById(UserId.fromString(userId))
+                .orElseThrow(() -> CouldNotFoundUser.withId(userId));
+        return userMapper.toDomain(userEntity);
     }
 }

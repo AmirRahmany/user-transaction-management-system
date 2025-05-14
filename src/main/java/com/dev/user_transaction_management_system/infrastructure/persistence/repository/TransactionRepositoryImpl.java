@@ -6,14 +6,17 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.Random;
 
 @Repository
 public class TransactionRepositoryImpl implements TransactionRepository {
 
     private final EntityManager entityManager;
+    private final Random random;
 
     public TransactionRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
+        this.random = new Random();
     }
 
     @Override
@@ -29,5 +32,14 @@ public class TransactionRepositoryImpl implements TransactionRepository {
                 .getSingleResult();
 
         return Optional.ofNullable(transaction);
+    }
+
+    @Override
+    public String generateReferenceNumber() {
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            stringBuilder.append(random.nextInt(0,10));
+        }
+        return stringBuilder.toString();
     }
 }

@@ -2,20 +2,22 @@ package com.dev.user_transaction_management_system.infrastructure.persistence.re
 
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class BankAccountRepositoryImpl implements BankAccountRepository {
 
     private final EntityManager entityManager;
+    private final UUIDIdentifierGenerator identifierGenerator;
 
     public BankAccountRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
+        this.identifierGenerator = new UUIDIdentifierGenerator();
     }
 
     @Override
@@ -43,9 +45,9 @@ public class BankAccountRepositoryImpl implements BankAccountRepository {
 
     }
 
-    private BankAccountEntity getAccountBy(AccountNumber accountNumber) {
-        final Optional<BankAccountEntity> account = findByAccountNumber(accountNumber);
-
-        return account.orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(accountNumber.toString()));
+    @Override
+    public UUID nextIdentify() {
+        return identifierGenerator.generate();
     }
+
 }

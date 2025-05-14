@@ -8,4 +8,6 @@ public interface TransactionRepository {
     void save(TransactionEntity transactionEntity);
 
     Optional<TransactionEntity> findById(Integer transactionId);
+
+    String generateReferenceNumber();
 }
