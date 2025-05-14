@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Service
 @Transactional
 public class RegisteringUserAccount {
@@ -31,12 +33,13 @@ public class RegisteringUserAccount {
         ensureUserDoesNotExists(request.email());
         final String hashedPassword = passwordEncoder.encode(request.password());
 
-        final User user = User.of(UserId.autoGenerateByDb(),
+        final UserId userId = UserId.fromUUID(UUID.randomUUID());
+        final User user = User.of(userId,
                 FullName.of(request.firstName(), request.lastName()),
                 PhoneNumber.of(request.phoneNumber()),
-                Credential.of(Email.of(request.email()), Password.of(request.password())));
+                Credential.of(Email.of(request.email()), Password.fromHashedPassword(hashedPassword)));
 
-        userRepository.save(userMapper.toEntity(user,hashedPassword));
+        userRepository.save(user.toEntity());
     }
 
     private void ensureUserDoesNotExists(String userEmail) {

@@ -19,8 +19,7 @@ import java.util.List;
 public class UserEntity implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -44,40 +43,18 @@ public class UserEntity implements UserDetails {
     @Enumerated(value = EnumType.STRING)
     private UserStatus userStatus;
 
-
-    public UserEntity(
-            String firstName,
-            String lastName,
-            String phoneNumber,
-            String email,
-            String password,
-            LocalDateTime createdAt,
-            UserStatus userStatus) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.password = password;
-        this.createdAt = createdAt;
-        this.userStatus = userStatus;
-    }
-
-    public String fullName() {
-        return firstName + " " + lastName;
-    }
-
     @Override
     public String getUsername() {
         return email;
     }
 
     @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.emptyList() ;
+    public String getPassword() {
+        return password;
     }
 
     @Override
-    public String getPassword() {
-        return password;
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList() ;
     }
 }

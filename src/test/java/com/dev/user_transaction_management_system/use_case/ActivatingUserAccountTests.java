@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
 import com.dev.user_transaction_management_system.fake.AccountNumberGeneratorStubs;
@@ -14,6 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.*;
@@ -43,7 +45,7 @@ class ActivatingUserAccountTests {
     @Test
     void cant_enabling_an_unknown_user_account() {
         assertThatExceptionOfType(CouldNotFoundUser.class).isThrownBy(() -> {
-            final int unknownUser = 74;
+            final String unknownUser = UUID.randomUUID().toString();
             activatingUserAccount.activate(unknownUser);
         });
     }
@@ -55,10 +57,11 @@ class ActivatingUserAccountTests {
         final UserRepository repository = mock(UserRepository.class);
         ActivatingUserAccount userAccount = new ActivatingUserAccount(repository);
 
-        final Integer userId = entity.getId();
-        when(repository.findById(userId)).thenReturn(Optional.of(entity));
+        final UserId userId = UserId.fromString(entity.getId());
 
-        assertThatNoException().isThrownBy(() -> userAccount.activate(userId));
-        verify(repository, times(0)).save(any(UserEntity.class));
+        when(repository.findById(any(UserId.class))).thenReturn(Optional.of(entity));
+
+        assertThatNoException().isThrownBy(() -> userAccount.activate(userId.asString()));
+        verify(repository, never()).save(any(UserEntity.class));
     }
 }

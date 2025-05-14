@@ -3,11 +3,13 @@ package com.dev.user_transaction_management_system.fake;
 import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 
+import java.util.UUID;
+
 public class UserFakeBuilder {
 
     public static final String BLANK = " ";
 
-    private Integer userId = 5;
+    private String userId = UUID.randomUUID().toString();
     private String firstName;
     private String lastName;
     private String email;
@@ -39,11 +41,11 @@ public class UserFakeBuilder {
         return new UserFakeBuilder("amir",
                 "rahmani",
                 "amir@gmail.com",
-                "abcD1234#",
+                "@abcD1234#",
                 "09907994339");
     }
 
-    public UserFakeBuilder withUSerId(Integer userId) {
+    public UserFakeBuilder withUSerId(String userId) {
         this.userId = userId;
         return this;
     }
@@ -118,11 +120,11 @@ public class UserFakeBuilder {
     }
 
     public User build() {
-        final UserId id = UserId.fromInt(userId);
+        final UserId id = UserId.fromString(userId);
         final FullName fullName = FullName.of(firstName, lastName);
         final Email mail = Email.of(this.email);
         final PhoneNumber phone = PhoneNumber.of(phoneNumber);
-        final Password password = Password.of(plainPassword);
+        final Password password = Password.fromPlainPassword(plainPassword);
         final Credential credential = Credential.of(mail, password);
 
         return User.of(id, fullName, phone, credential, userStatus);

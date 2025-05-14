@@ -15,6 +15,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
 
@@ -48,8 +49,8 @@ public class OpeningBankAccount {
         return account.toResponse(user.fullName());
     }
 
-    private User findUserBy(Integer userId) {
-        UserEntity userEntity = userRepository.findById(userId)
+    private User findUserBy(String userId) {
+        UserEntity userEntity = userRepository.findById(UserId.fromString(userId))
                 .orElseThrow(() -> CouldNotFoundUser.withId(userId));
 
         return userMapper.toDomain(userEntity);
@@ -66,7 +67,7 @@ public class OpeningBankAccount {
     private static BankAccount openAccount(AccountRequest accountRequest, AccountNumber accountNumber) {
         final double balance = accountRequest.balance();
         final LocalDateTime createdAt = now();
-        final UserId userId = UserId.fromInt(accountRequest.userId());
+        final UserId userId = UserId.fromUUID(UUID.fromString(accountRequest.userId()));
         return BankAccount.open(AccountId.newAccount(), accountNumber, userId, Amount.of(balance), createdAt);
     }
 

@@ -2,9 +2,11 @@ package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 
+import java.util.UUID;
+
 public class AccountRequestFakeBuilder {
-    public static final Integer NO_USER = null;
-    private Integer userId = 45;
+    public static final String NO_USER = UUID.randomUUID().toString();
+    private String userId = UUID.randomUUID().toString();
     private double balance = 500;
 
     private AccountRequestFakeBuilder() {
@@ -15,7 +17,7 @@ public class AccountRequestFakeBuilder {
         return new AccountRequestFakeBuilder();
     }
 
-    public AccountRequestFakeBuilder withUserId(Integer userId) {
+    public AccountRequestFakeBuilder withUserId(String userId) {
         this.userId = userId;
         return this;
     }

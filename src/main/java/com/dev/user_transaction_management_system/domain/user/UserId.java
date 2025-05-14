@@ -1,21 +1,31 @@
 package com.dev.user_transaction_management_system.domain.user;
 
-public final class UserId {
-    private final int id;
+import java.util.UUID;
 
-    private UserId(int id) {
+public final class UserId {
+    private final UUID id;
+
+    private UserId(UUID id) {
         this.id = id;
     }
 
-    public static UserId fromInt(int userId){
+    public static UserId fromUUID(UUID userId){
         return new UserId(userId);
     }
 
-    public static UserId autoGenerateByDb() {
-        return fromInt(0);
+    public static UserId fromString(String id) {
+        return new UserId(UUID.fromString(id));
     }
 
-    public int toInt(){
-        return id;
+
+    public String asString(){
+        return id.toString();
+    }
+
+    @Override
+    public String toString() {
+        return "UserId{" +
+                "id=" + id +
+                '}';
     }
 }

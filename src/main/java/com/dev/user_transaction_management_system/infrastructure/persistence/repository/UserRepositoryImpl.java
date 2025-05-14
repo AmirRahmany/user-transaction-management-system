@@ -1,7 +1,9 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.repository;
 
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Repository;
@@ -23,8 +25,10 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findById(Integer userId) {
-        final UserEntity userEntity = entityManager.find(UserEntity.class, userId);
+    public Optional<UserEntity> findById(UserId userId) {
+        Assert.notNull(userId);
+
+        final UserEntity userEntity = entityManager.find(UserEntity.class, userId.asString());
         return Optional.ofNullable(userEntity);
     }
 

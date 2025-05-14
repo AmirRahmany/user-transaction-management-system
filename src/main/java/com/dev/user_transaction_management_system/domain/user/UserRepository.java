@@ -12,5 +12,5 @@ public interface UserRepository{
 
     boolean isUserAlreadyExists(String email);
 
-    Optional<UserEntity> findById(Integer userId);
+    Optional<UserEntity> findById(UserId userId);
 }

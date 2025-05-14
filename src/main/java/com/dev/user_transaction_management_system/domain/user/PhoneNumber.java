@@ -15,7 +15,7 @@ public class PhoneNumber {
         return new PhoneNumber(phoneNumber);
     }
 
-    public String value() {
+    public String asString() {
         return value;
     }
 }

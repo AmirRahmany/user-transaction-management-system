@@ -24,7 +24,7 @@ public class BankAccountEntity {
     private String accountNumber;
 
     @Column(name = "user_id")
-    private Integer userId;
+    private String userId;
 
     @Column(name = "balance")
     private Double balance;
@@ -35,7 +35,7 @@ public class BankAccountEntity {
     @Enumerated(value = EnumType.STRING)
     private AccountStatus status;
 
-    public BankAccountEntity(String accountNumber, Integer userId, Double balance,AccountStatus accountStatus) {
+    public BankAccountEntity(String accountNumber, String userId, Double balance,AccountStatus accountStatus) {
         this.accountNumber = accountNumber;
         this.userId = userId;
         this.balance = balance;
@@ -43,7 +43,7 @@ public class BankAccountEntity {
         this.status = accountStatus;
     }
 
-    public static BankAccountEntity openWith(String accountNumber, Integer userId, Double balance, AccountStatus accountStatus) {
+    public static BankAccountEntity openWith(String accountNumber, String userId, Double balance, AccountStatus accountStatus) {
         return new BankAccountEntity(accountNumber, userId, balance,accountStatus);
     }
 

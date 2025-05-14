@@ -24,6 +24,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;

@@ -74,7 +74,7 @@ public class BankAccount {
         final BankAccountEntity bankAccountEntity = new BankAccountEntity();
         bankAccountEntity.setAccountId(accountId.toInt());
         bankAccountEntity.setAccountNumber(accountNumberAsString());
-        bankAccountEntity.setUserId(userId.toInt());
+        bankAccountEntity.setUserId(userId.asString());
         bankAccountEntity.setBalance(balance.toValue());
         bankAccountEntity.setStatus(status);
         bankAccountEntity.setCreatedAt(createdAt);
@@ -130,8 +130,8 @@ public class BankAccount {
                 '}';
     }
 
-    public Integer getUserId() {
-        return userId.toInt();
+    public String getUserId() {
+        return userId.asString();
     }
 
     public Double balance() {

@@ -33,7 +33,6 @@ class RegisteringUserAccountTests {
     void register_user_successfully() {
         var user = aUser().buildDTO();
 
-
         when(passwordEncoder.encode(user.password())).thenReturn("hashedPassword");
         doNothing().when(userRepository).save(any(UserEntity.class));
 

@@ -16,8 +16,7 @@ public class UserAccountTestHelper {
 
 
     public UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
-        final UserMapper userMapper = new UserMapper();
-        final UserEntity entity = userMapper.toEntity(userFakeBuilder.build());
+        final UserEntity entity = userFakeBuilder.build().toEntity();
         this.userRepository.save(entity);
         return entity;
     }

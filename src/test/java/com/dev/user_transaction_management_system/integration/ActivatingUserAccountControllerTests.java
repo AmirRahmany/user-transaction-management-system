@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.integration;
 
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
@@ -21,6 +22,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,14 +73,15 @@ class ActivatingUserAccountControllerTests {
 
     @Test
     void activate_user_account_successfully() throws Exception {
-        final UserActivationRequest userActivationRequest = new UserActivationRequest(entity.getId());
+        final String userId = entity.getId();
+        final UserActivationRequest userActivationRequest = new UserActivationRequest(userId);
         mockMvc.perform(post("/api/user/activation")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .content(objectMapper.writeValueAsString(userActivationRequest)))
                 .andExpect(status().isOk());
 
-        final Optional<UserEntity> userEntity = userRepository.findById(entity.getId());
+        final Optional<UserEntity> userEntity = userRepository.findById(UserId.fromUUID(UUID.fromString(userId)));
         assertThat(userEntity).isPresent();
 
         assertThat(userEntity.get().getUserStatus()).isEqualTo(UserStatus.ENABLE);

@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.helper;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
@@ -28,7 +29,7 @@ public class UserAccountTestUtil {
         return findUserByEmail(user.email());
     }
 
-    public void activateUserAccount(int userId) {
+    public void activateUserAccount(String userId) {
         activatingUserAccount.activate(userId);
     }
 

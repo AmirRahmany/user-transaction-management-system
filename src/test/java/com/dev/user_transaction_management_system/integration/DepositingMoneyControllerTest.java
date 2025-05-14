@@ -23,6 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.DepositRequestBuilder.aDepositRequest;
@@ -78,7 +79,7 @@ class DepositingMoneyControllerTest extends BankAccountTestHelper {
         final BankAccount to = havingOpened(anAccount().withAccountNumber("0300456574853")
                 .withAccountId(321)
                 .withBalance(140)
-                .withUserId(31));
+                .withUserId(UUID.randomUUID().toString()));
 
         final LocalDateTime createdAt = of(2025, 5, 4, 14, 30, 0);
 
