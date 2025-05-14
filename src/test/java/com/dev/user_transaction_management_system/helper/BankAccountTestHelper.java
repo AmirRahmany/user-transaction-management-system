@@ -5,6 +5,9 @@ import com.dev.user_transaction_management_system.domain.bank_account.BankAccoun
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.fake.AccountFakeBuilder;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
+import com.dev.user_transaction_management_system.use_case.OpeningBankAccount;
+import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
+import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
@@ -14,10 +17,18 @@ public class BankAccountTestHelper {
     @Autowired
     protected BankAccountRepository accountRepository;
 
+    @Autowired
+    protected OpeningBankAccount openingBankAccount;
+
     protected BankAccount havingOpened(AccountFakeBuilder accountFakeBuilder) {
-        final BankAccount to = accountFakeBuilder.open();
-        accountRepository.save(to.toEntity());
-        return to;
+        final BankAccount account = accountFakeBuilder.open();
+        final BankAccountEntity entity = BankAccountEntity.openWith(account.accountNumberAsString(),
+                account.getUserId(),
+                account.balance(),
+                account.status());
+
+        accountRepository.save(entity);
+        return account;
     }
 
     protected BankAccount havingEnabledAccount() {

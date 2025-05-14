@@ -4,6 +4,7 @@ import com.dev.user_transaction_management_system.domain.bank_account.*;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserId;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
@@ -42,7 +43,8 @@ public class OpeningBankAccount {
         final AccountNumber accountNumber = generateAccountNumber();
         final BankAccount account = openAccount(accountRequest, accountNumber);
 
-        bankAccountRepository.save(account.toEntity());
+        final BankAccountEntity entity = BankAccountEntity.openWith(accountNumber.toString(), user.userId(), accountRequest.balance(), AccountStatus.DISABLE);
+        bankAccountRepository.save(entity);
         return account.toResponse(user.fullName());
     }
 

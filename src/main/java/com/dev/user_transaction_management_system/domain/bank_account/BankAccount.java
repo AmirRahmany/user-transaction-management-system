@@ -71,13 +71,14 @@ public class BankAccount {
     }
 
     public BankAccountEntity toEntity() {
-        return BankAccountEntity.openWith(
-                accountId.toInt(),
-                accountNumber.toString(),
-                userId.toInt(),
-                balance,
-                status
-        );
+        final BankAccountEntity bankAccountEntity = new BankAccountEntity();
+        bankAccountEntity.setAccountId(accountId.toInt());
+        bankAccountEntity.setAccountNumber(accountNumberAsString());
+        bankAccountEntity.setUserId(userId.toInt());
+        bankAccountEntity.setBalance(balance.toValue());
+        bankAccountEntity.setStatus(status);
+        bankAccountEntity.setCreatedAt(createdAt);
+        return bankAccountEntity;
     }
 
     private boolean hasMinimumBalance(Amount balance) {
@@ -127,5 +128,17 @@ public class BankAccount {
                 ", createdAt=" + createdAt +
                 ", status=" + status +
                 '}';
+    }
+
+    public Integer getUserId() {
+        return userId.toInt();
+    }
+
+    public Double balance() {
+        return balance.toValue();
+    }
+
+    public AccountStatus status() {
+        return status;
     }
 }

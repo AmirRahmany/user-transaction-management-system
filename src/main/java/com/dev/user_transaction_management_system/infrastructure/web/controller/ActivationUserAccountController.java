@@ -2,6 +2,7 @@ package com.dev.user_transaction_management_system.infrastructure.web.controller
 
 
 import com.dev.user_transaction_management_system.use_case.ActivatingUserAccount;
+import com.dev.user_transaction_management_system.use_case.dto.UserActivationRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -18,10 +19,10 @@ public class ActivationUserAccountController {
         this.activatingUserAccount = activatingUserAccount;
     }
 
-    @PostMapping("/activation")
-    public ResponseEntity<?> activate(@RequestBody int userId){
+    @PostMapping("activation")
+    public ResponseEntity<?> activate(@RequestBody UserActivationRequest request){
         try {
-            activatingUserAccount.activate(userId);
+            activatingUserAccount.activate(request.userId());
             return ResponseEntity.ok().build();
         }catch (Exception e){
             return ResponseEntity.badRequest().body(e.getMessage());

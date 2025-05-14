@@ -8,8 +8,10 @@ import com.dev.user_transaction_management_system.use_case.ActivatingUserAccount
 import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-public abstract class UserAccountTestUtil {
+@Component
+public class UserAccountTestUtil {
 
     @Autowired
     protected UserRepository userRepository;
@@ -20,18 +22,18 @@ public abstract class UserAccountTestUtil {
     @Autowired
     private ActivatingUserAccount activatingUserAccount;
 
-    protected UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
+    public UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
         final UserRegistrationRequest user = userFakeBuilder.buildDTO();
         registeringUserAccount.register(user);
         return findUserByEmail(user.email());
     }
 
-    private UserEntity findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(CouldNotFindBankAccount::new);
+    public void activateUserAccount(int userId) {
+        activatingUserAccount.activate(userId);
     }
 
-    protected void activateUserAccount(int userId) {
-        activatingUserAccount.activate(userId);
+    private UserEntity findUserByEmail(String email) {
+        return userRepository.findByEmail(email).orElseThrow(CouldNotFindBankAccount::new);
     }
 
 }
