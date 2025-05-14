@@ -22,12 +22,8 @@ public class BankAccountTestHelper {
 
     protected BankAccount havingOpened(AccountFakeBuilder accountFakeBuilder) {
         final BankAccount account = accountFakeBuilder.open();
-        final BankAccountEntity entity = BankAccountEntity.openWith(account.accountNumberAsString(),
-                account.getUserId(),
-                account.balance(),
-                account.status());
 
-        accountRepository.save(entity);
+        accountRepository.save(account.toEntity());
         return account;
     }
 

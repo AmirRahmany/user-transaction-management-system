@@ -4,7 +4,6 @@ import com.dev.user_transaction_management_system.domain.bank_account.*;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserId;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
@@ -24,12 +23,12 @@ import static java.time.LocalDateTime.now;
 public class OpeningBankAccount {
 
     private final BankAccountRepository bankAccountRepository;
-    private final IAccountNumberGenerator accountNumberGenerator;
+    private final AccountNumberGenerator accountNumberGenerator;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     public OpeningBankAccount(BankAccountRepository accountRepository,
-                              IAccountNumberGenerator accountNumberGenerator,
+                              AccountNumberGenerator accountNumberGenerator,
                               UserRepository userRepository) {
         this.bankAccountRepository = accountRepository;
         this.accountNumberGenerator = accountNumberGenerator;
@@ -44,8 +43,7 @@ public class OpeningBankAccount {
         final AccountNumber accountNumber = generateAccountNumber();
         final BankAccount account = openAccount(accountRequest, accountNumber);
 
-        final BankAccountEntity entity = BankAccountEntity.openWith(accountNumber.toString(), user.userId(), accountRequest.balance(), AccountStatus.DISABLE);
-        bankAccountRepository.save(entity);
+        bankAccountRepository.save(account.toEntity());
         return account.toResponse(user.fullName());
     }
 
@@ -68,7 +66,8 @@ public class OpeningBankAccount {
         final double balance = accountRequest.balance();
         final LocalDateTime createdAt = now();
         final UserId userId = UserId.fromUUID(UUID.fromString(accountRequest.userId()));
-        return BankAccount.open(AccountId.newAccount(), accountNumber, userId, Amount.of(balance), createdAt);
+        final AccountId accountId = AccountId.fromUUID(UUID.randomUUID());
+        return BankAccount.open(accountId,accountNumber, userId, Amount.of(balance), createdAt);
     }
 
 }

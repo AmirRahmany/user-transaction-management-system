@@ -13,15 +13,11 @@ public class BankAccountMapper {
 
     public BankAccount toDomain(BankAccountEntity account) {
         return BankAccount.open(
-                AccountId.fromInt(account.getAccountId()),
+                AccountId.fromUUID(UUID.fromString(account.getAccountId())),
                 AccountNumber.of(account.getAccountNumber()),
                 UserId.fromUUID(UUID.fromString(account.getUserId())),
                 Amount.of(account.getBalance()),
                 account.getCreatedAt()
         );
-    }
-
-    public BankAccountEntity toEntity(BankAccount bankAccount) {
-        return bankAccount.toEntity();
     }
 }

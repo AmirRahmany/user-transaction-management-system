@@ -39,7 +39,6 @@ public class AuthJwtTokenFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String token = parseJwtToken(request);
-        //Assert.hasText(token, "jwt token can not be null or empty");
 
         try {
             if (token!=null && jwtUtils.isValidJwtToken(token)) {

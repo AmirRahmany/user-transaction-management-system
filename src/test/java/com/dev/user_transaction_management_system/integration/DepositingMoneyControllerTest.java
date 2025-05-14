@@ -77,7 +77,6 @@ class DepositingMoneyControllerTest extends BankAccountTestHelper {
                 .withAccountNumber("0300654789123").withBalance(500));
 
         final BankAccount to = havingOpened(anAccount().withAccountNumber("0300456574853")
-                .withAccountId(321)
                 .withBalance(140)
                 .withUserId(UUID.randomUUID().toString()));
 

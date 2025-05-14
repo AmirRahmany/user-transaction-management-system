@@ -17,8 +17,7 @@ public class BankAccountEntity {
 
     @Id
     @Column(name = "account_id")
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer accountId;
+    private String accountId;
 
     @Column(name = "account_number")
     private String accountNumber;
@@ -34,22 +33,6 @@ public class BankAccountEntity {
 
     @Enumerated(value = EnumType.STRING)
     private AccountStatus status;
-
-    public BankAccountEntity(String accountNumber, String userId, Double balance,AccountStatus accountStatus) {
-        this.accountNumber = accountNumber;
-        this.userId = userId;
-        this.balance = balance;
-        this.createdAt = LocalDateTime.now();
-        this.status = accountStatus;
-    }
-
-    public static BankAccountEntity openWith(String accountNumber, String userId, Double balance, AccountStatus accountStatus) {
-        return new BankAccountEntity(accountNumber, userId, balance,accountStatus);
-    }
-
-    public boolean hasSameAccountId(Integer accountId) {
-        return this.accountId.equals(accountId);
-    }
 
     public boolean hasSameAccountNumber(String accountNumber) {
         return this.accountNumber.equals(accountNumber);

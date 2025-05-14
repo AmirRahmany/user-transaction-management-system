@@ -9,13 +9,15 @@ import java.util.*;
 
 public class BankAccountRepositoryFake implements BankAccountRepository {
 
-    private final Map<Integer, BankAccountEntity> records = new LinkedHashMap<>();
+    private final Map<String, BankAccountEntity> records = new LinkedHashMap<>();
+
+    private final String accountId = UUID.randomUUID().toString();
 
     @Override
     public void save(BankAccountEntity bankAccountEntity) {
         Assert.notNull(bankAccountEntity, "anAccount must not be empty");
         if (bankAccountEntity.getAccountId() == null) {
-            bankAccountEntity.setAccountId(records.size() + 1);
+            bankAccountEntity.setAccountId(accountId);
         }
         records.put(bankAccountEntity.getAccountId(), bankAccountEntity);
     }

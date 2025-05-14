@@ -1,22 +1,23 @@
 package com.dev.user_transaction_management_system.domain.bank_account;
 
-public final class AccountId {
-    public static final int NEW_ACCOUNT = 0;
-    private final int id;
+import io.jsonwebtoken.lang.Assert;
 
-    public AccountId(int id) {
+import java.util.UUID;
+
+public final class AccountId {
+    private final UUID id;
+
+    public AccountId(UUID id) {
+        Assert.notNull(id,"user id cannot be null");
         this.id = id;
     }
 
-    public static AccountId fromInt(int accountId){
+    public static AccountId fromUUID(UUID accountId){
         return new AccountId(accountId);
     }
 
-    public static AccountId newAccount() {
-        return fromInt(NEW_ACCOUNT);
-    }
 
-    public Integer toInt() {
-        return id;
+    public String asString() {
+        return id.toString();
     }
 }

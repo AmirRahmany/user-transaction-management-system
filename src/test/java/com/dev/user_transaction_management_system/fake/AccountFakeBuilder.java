@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class AccountFakeBuilder {
-    private Integer accountId = 32;
+    private UUID accountId = UUID.randomUUID();
     private String accountNumber = "0300123002145";
     private UUID userId = UUID.randomUUID();
     private Amount balance = Amount.of(5000.50);
@@ -19,8 +19,8 @@ public class AccountFakeBuilder {
         return new AccountFakeBuilder();
     }
 
-    public AccountFakeBuilder withAccountId(Integer accountId) {
-        this.accountId = accountId;
+    public AccountFakeBuilder withAccountId(String accountId) {
+        this.accountId = UUID.fromString(accountId);
         return this;
     }
 
@@ -46,7 +46,7 @@ public class AccountFakeBuilder {
 
     public BankAccount open() {
         LocalDateTime createdAt = LocalDateTime.of(2025, 6, 14, 8, 16, 15);
-        final AccountId id = AccountId.fromInt(accountId);
+        final AccountId id = AccountId.fromUUID(UUID.fromString(accountId.toString()));
         final UUID uuid = UUID.randomUUID();
         return BankAccount.open(id, AccountNumber.of(accountNumber), UserId.fromUUID(uuid), balance, createdAt);
     }

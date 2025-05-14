@@ -52,6 +52,10 @@ public class BankAccount {
         }
     }
 
+    private boolean isBalanceSufficient(Amount amount) {
+        return balance.toValue() >= amount.toValue();
+    }
+
     public void increaseAmount(Amount amount) {
         final double decreasedValue = this.balance.toValue() + amount.toValue();
         this.balance = Amount.of(decreasedValue);
@@ -62,31 +66,12 @@ public class BankAccount {
         this.balance = Amount.of(decreasedValue);
     }
 
-    private boolean isBalanceSufficient(Amount amount) {
-        return balance.toValue() >= amount.toValue();
-    }
-
-    public double amount() {
-        return balance.toValue();
-    }
-
-    public BankAccountEntity toEntity() {
-        final BankAccountEntity bankAccountEntity = new BankAccountEntity();
-        bankAccountEntity.setAccountId(accountId.toInt());
-        bankAccountEntity.setAccountNumber(accountNumberAsString());
-        bankAccountEntity.setUserId(userId.asString());
-        bankAccountEntity.setBalance(balance.toValue());
-        bankAccountEntity.setStatus(status);
-        bankAccountEntity.setCreatedAt(createdAt);
-        return bankAccountEntity;
+    public void enable() {
+        this.status = AccountStatus.ENABLE;
     }
 
     private boolean hasMinimumBalance(Amount balance) {
         return balance.toValue() >= MINIMUM_BALANCE;
-    }
-
-    public OpeningAccountResponse toResponse(String fullName) {
-        return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.toValue(), createdAt, status);
     }
 
     public AccountNumber accountNumber() {
@@ -97,8 +82,19 @@ public class BankAccount {
         return accountNumber.toString();
     }
 
-    public void enable() {
-        this.status = AccountStatus.ENABLE;
+    public BankAccountEntity toEntity() {
+        final BankAccountEntity bankAccountEntity = new BankAccountEntity();
+        bankAccountEntity.setAccountId(accountId.asString());
+        bankAccountEntity.setAccountNumber(accountNumberAsString());
+        bankAccountEntity.setUserId(userId.asString());
+        bankAccountEntity.setBalance(balance.toValue());
+        bankAccountEntity.setStatus(status);
+        bankAccountEntity.setCreatedAt(createdAt);
+        return bankAccountEntity;
+    }
+
+    public OpeningAccountResponse toResponse(String fullName) {
+        return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.toValue(), createdAt, status);
     }
 
     @Override
@@ -128,17 +124,5 @@ public class BankAccount {
                 ", createdAt=" + createdAt +
                 ", status=" + status +
                 '}';
-    }
-
-    public String getUserId() {
-        return userId.asString();
-    }
-
-    public Double balance() {
-        return balance.toValue();
-    }
-
-    public AccountStatus status() {
-        return status;
     }
 }
