@@ -5,12 +5,11 @@ import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,8 +17,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -38,6 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Transactional
 @AutoConfigureMockMvc
+@Tag("INTEGRATION")
 class DepositingMoneyControllerTest extends BankAccountTestHelper {
 
     @Autowired
@@ -59,16 +57,7 @@ class DepositingMoneyControllerTest extends BankAccountTestHelper {
 
         entity = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
 
-        LoginRequest loginRequest = new LoginRequest(username,password);
-        final ResultActions resultActions = mockMvc.perform(post("/api/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)));
-
-        final MvcResult mvcResult = resultActions.andDo(print()).andReturn();
-        final String contentAsString = mvcResult.getResponse().getContentAsString();
-
-        final JSONObject json = new JSONObject(contentAsString);
-        token = "Bearer " + json.get("token");
+        token = userAccountUtil.signIn(username, password);
     }
 
     @Test

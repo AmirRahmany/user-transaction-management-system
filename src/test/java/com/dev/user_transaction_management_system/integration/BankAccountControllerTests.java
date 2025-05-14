@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -35,6 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Transactional
+@Tag("INTEGRATION")
 class BankAccountControllerTests {
     @Autowired
     private MockMvc mockMvc;
@@ -58,14 +60,7 @@ class BankAccountControllerTests {
         String password = "@Abcd13785";
         user = userAccountUtil.havingRegistered(aUser().withEnabledStatus().withEmail(username).withPassword(password));
 
-        final LoginRequest loginRequest = new LoginRequest(username, password);
-        final ResultActions resultActions = mockMvc.perform(post("/api/auth/signin")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(loginRequest)));
-        final MvcResult mvcResult = resultActions.andDo(print()).andReturn();
-        final String contentAsString = mvcResult.getResponse().getContentAsString();
-        final JSONObject json = new JSONObject(contentAsString);
-        token = "Bearer " + json.get("token");
+        token = userAccountUtil.signIn(username, password);
     }
 
     @Test
