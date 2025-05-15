@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.infrastructure.web.controller;
 
 import com.dev.user_transaction_management_system.infrastructure.util.jwt.JwtTokenUtils;
+import com.dev.user_transaction_management_system.use_case.AuthenticateUser;
 import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
@@ -20,15 +21,16 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/auth")
 public class AuthController {
 
+    private final AuthenticateUser authenticateUser;
+
     private final AuthenticationManager authenticationManager;
 
     private final JwtTokenUtils jwtUtils;
 
     private final RegisteringUserAccount registeringUserAccount;
 
-    public AuthController(AuthenticationManager authenticationManager,
-                          JwtTokenUtils jwtUtils,
-                          RegisteringUserAccount registeringUserAccount) {
+    public AuthController(AuthenticateUser authenticateUser, AuthenticationManager authenticationManager, JwtTokenUtils jwtUtils, RegisteringUserAccount registeringUserAccount) {
+        this.authenticateUser = authenticateUser;
         this.authenticationManager = authenticationManager;
         this.jwtUtils = jwtUtils;
         this.registeringUserAccount = registeringUserAccount;
@@ -45,21 +47,12 @@ public class AuthController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> signIn(@RequestBody LoginRequest request){
-        Authentication authentication;
+    public ResponseEntity<?> signIn(@RequestBody LoginRequest request) {
         try {
-            var authenticationToken =
-                    new UsernamePasswordAuthenticationToken(request.username(), request.password());
-            authentication = authenticationManager.authenticate(authenticationToken);
+            final UserAuthenticationResponse response = authenticateUser.authenticate(request);
+            return ResponseEntity.ok(response);
         } catch (RuntimeException exception) {
             return ResponseEntity.badRequest().build();
         }
-
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        final String token = jwtUtils.generateJwtTokenFromUserName(userDetails);
-        final UserAuthenticationResponse response = new UserAuthenticationResponse(token, userDetails.getUsername());
-
-        return ResponseEntity.ok(response);
     }
 }

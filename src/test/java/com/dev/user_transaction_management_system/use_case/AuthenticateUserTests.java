@@ -37,7 +37,7 @@ class AuthenticateUserTests {
 
 
     @Test
-    void sign_in_successfully() {
+    void authenticate_user_successfully() {
         final String username = "amir@gmail.com";
         final String password = "@Abcd1234";
         final LoginRequest loginRequest = new LoginRequest(username, password);
