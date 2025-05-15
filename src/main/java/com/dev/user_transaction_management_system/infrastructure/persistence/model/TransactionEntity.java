@@ -2,9 +2,7 @@ package com.dev.user_transaction_management_system.infrastructure.persistence.mo
 
 import com.dev.user_transaction_management_system.domain.transaction.TransactionStatus;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -17,18 +15,32 @@ import java.time.LocalDateTime;
 public class TransactionEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer transactionId;
+
+    @Column(name = "from_account_number")
     private String fromAccountNumber;
+
+    @Column(name = "to_account_number")
     private String toAccountNumber;
+
+    @Column(name = "amount")
     private Double amount;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "transaction_status")
     private TransactionStatus transactionStatus;
+
+    @Column(name = "created_at")
     private LocalDateTime createdAt;
+
+    @Column(name = "transaction_type")
+    @Enumerated(EnumType.STRING)
     private TransactionType transactionType;
     private String description;
     private String referenceNumber;
 
-    private TransactionEntity(int transactionId,
-                              String fromAccountNumber,
+    private TransactionEntity(String fromAccountNumber,
                               String toAccountNumber,
                               Double amount,
                               TransactionStatus transactionStatus,
@@ -36,7 +48,6 @@ public class TransactionEntity {
                               TransactionType transactionType,
                               String description,
                               String referenceNumber) {
-        this.transactionId = transactionId;
         this.fromAccountNumber = fromAccountNumber;
         this.toAccountNumber = toAccountNumber;
         this.amount = amount;
@@ -47,17 +58,16 @@ public class TransactionEntity {
         this.referenceNumber = referenceNumber;
     }
 
-    public static TransactionEntity
-    initOf(String fromAccountNumber,
-           String toAccountNumber,
-           double amount,
-           TransactionStatus transactionStatus,
-           TransactionType transactionType,
-           String description,
-           String referenceNumber,
-           LocalDateTime createdAt
+    public static TransactionEntity initOf(String fromAccountNumber,
+                                           String toAccountNumber,
+                                           double amount,
+                                           TransactionStatus transactionStatus,
+                                           TransactionType transactionType,
+                                           String description,
+                                           String referenceNumber,
+                                           LocalDateTime createdAt
     ) {
-        return new TransactionEntity(0,
+        return new TransactionEntity(
                 fromAccountNumber,
                 toAccountNumber,
                 amount,

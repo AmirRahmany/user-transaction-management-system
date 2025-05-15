@@ -15,6 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import java.util.UUID;
+
 import static com.dev.user_transaction_management_system.fake.AccountRequestFakeBuilder.accountRequest;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.*;
@@ -46,7 +48,6 @@ class OpeningBankAccountTests  {
 
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> openingBankAccount.open(accountRequest));
-
     }
 
     @Test

@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.fake;
 
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 
@@ -7,12 +8,11 @@ import java.util.*;
 
 public class UserRepositoryFake implements UserRepository {
 
-    private final Map<Integer, UserEntity> recordUsers = new LinkedHashMap<>();
+    private final Map<String, UserEntity> recordUsers = new LinkedHashMap<>();
+
 
     @Override
     public void save(UserEntity user) {
-        if (user.getId() == null)
-            user.setId(5);
         recordUsers.put(user.getId(), user);
     }
 
@@ -27,7 +27,12 @@ public class UserRepositoryFake implements UserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findById(Integer userId) {
-        return recordUsers.values().stream().filter(user -> user.getId().equals(userId)).findFirst();
+    public Optional<UserEntity> findById(UserId userId) {
+        return recordUsers.values().stream().filter(user -> user.getId().equals(userId.asString())).findFirst();
+    }
+
+    @Override
+    public UUID nextIdentify() {
+        return UUID.randomUUID();
     }
 }

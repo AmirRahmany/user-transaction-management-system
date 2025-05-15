@@ -1,14 +1,16 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.account.BankAccount;
-import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
+@Transactional
 public class ActivatingBankAccount {
 
     private final BankAccountRepository repository;
@@ -21,12 +23,16 @@ public class ActivatingBankAccount {
 
     public void activate(String accountNumber) {
         final AccountNumber bankAccountNumber = AccountNumber.of(accountNumber);
-        final BankAccountEntity entity = repository.findByAccountNumber(bankAccountNumber)
-                .orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(accountNumber));
-        BankAccount bankAccount = bankAccountMapper.toDomain(entity);
-
+        final BankAccount bankAccount = findBankAccountBy(bankAccountNumber);
 
         bankAccount.enable();
+
         repository.save(bankAccount.toEntity());
+    }
+
+    private BankAccount findBankAccountBy(AccountNumber bankAccountNumber) {
+        final BankAccountEntity entity = repository.findByAccountNumber(bankAccountNumber)
+                .orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(bankAccountNumber.toString()));
+        return bankAccountMapper.toDomain(entity);
     }
 }

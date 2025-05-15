@@ -3,18 +3,23 @@ package com.dev.user_transaction_management_system.infrastructure.persistence.mo
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
-@Table(name = "transaction_user")
+@Table(name = "user_account")
 @Entity
 @NoArgsConstructor
 @Data
-public class UserEntity {
+public class UserEntity implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private String id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -38,25 +43,18 @@ public class UserEntity {
     @Enumerated(value = EnumType.STRING)
     private UserStatus userStatus;
 
-
-    public UserEntity(
-            String firstName,
-            String lastName,
-            String phoneNumber,
-            String email,
-            String password,
-            LocalDateTime createdAt,
-            UserStatus userStatus) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
-        this.email = email;
-        this.password = password;
-        this.createdAt = createdAt;
-        this.userStatus = userStatus;
+    @Override
+    public String getUsername() {
+        return email;
     }
 
-    public String fullName() {
-        return firstName + " " + lastName;
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.emptyList() ;
     }
 }

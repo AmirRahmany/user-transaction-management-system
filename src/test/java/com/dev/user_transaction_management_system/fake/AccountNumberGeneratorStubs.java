@@ -1,9 +1,9 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.account.IAccountNumberGenerator;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumberGenerator;
 
-public class AccountNumberGeneratorStubs implements IAccountNumberGenerator {
+public class AccountNumberGeneratorStubs implements AccountNumberGenerator {
 
     @Override
     public AccountNumber generate() {

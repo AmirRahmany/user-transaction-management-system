@@ -2,7 +2,7 @@ package com.dev.user_transaction_management_system.domain.user;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.Precondition;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -23,11 +23,11 @@ public class User {
                  LocalDateTime createdAt,
                  UserStatus status) {
 
-        Precondition.require(userId != null);
-        Precondition.require(fullName != null);
-        Precondition.require(phoneNumber != null);
-        Precondition.require(createdAt != null);
-        Precondition.require(status != null);
+        Assert.notNull(userId, "userId cannot be null");
+        Assert.notNull(fullName,"fullName cannot be null");
+        Assert.notNull(phoneNumber,"phoneNumber cannot be null");
+        Assert.notNull(createdAt,"createdAt cannot be null");
+        Assert.notNull(status,"user status cannot be null");
 
         this.userId = userId;
         this.fullName = fullName;
@@ -52,58 +52,12 @@ public class User {
         return new User(userId, fullName, phoneNumber, credential, LocalDateTime.now(), UserStatus.DISABLE);
     }
 
-
-    public String email() {
-        return credential.email();
-    }
-
-    public String firstName() {
-        return fullName.firstName();
-    }
-
-    public String lastName() {
-        return fullName.lastName();
-    }
-
-    public String phoneNumber() {
-        return phoneNumber.value();
-    }
-
-    public String password() {
-        return credential.password();
-    }
-
-    public LocalDateTime createdAt() {
-        return createdAt;
-    }
-
-
     public void enabled() {
         this.status = UserStatus.ENABLE;
     }
 
     public void disable() {
         this.status = UserStatus.DISABLE;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return status == user.status && Objects.equals(fullName, user.fullName) &&
-                Objects.equals(phoneNumber, user.phoneNumber) &&
-                Objects.equals(credential, user.credential) &&
-                Objects.equals(createdAt, user.createdAt);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(fullName, phoneNumber, credential, createdAt, status);
-    }
-
-    public UserStatus status() {
-        return status;
     }
 
     public boolean isEnabled() {
@@ -118,12 +72,40 @@ public class User {
         return fullName.toString();
     }
 
+    public String userId() {
+        return userId.asString();
+    }
+
     public void ensureUserIsEnabled() {
         if (isDisable())
             throw CouldNotOpenAnAccount.withDisableUser();
     }
 
-    public Integer userId() {
-        return userId.toInt();
+    public UserEntity toEntity() {
+        final UserEntity entity = new UserEntity();
+        entity.setId(userId.asString());
+        entity.setFirstName(fullName.firstName());
+        entity.setLastName(fullName.lastName());
+        entity.setEmail(credential.email());
+        entity.setPassword(credential.password());
+        entity.setPhoneNumber(phoneNumber.asString());
+        entity.setUserStatus(status);
+        entity.setCreatedAt(createdAt);
+        return entity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(userId, user.userId) && Objects.equals(fullName, user.fullName)
+                && Objects.equals(phoneNumber, user.phoneNumber) && Objects.equals(credential, user.credential)
+                && Objects.equals(createdAt, user.createdAt) && status == user.status;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userId, fullName, phoneNumber, credential, createdAt, status);
     }
 }

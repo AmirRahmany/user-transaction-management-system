@@ -1,8 +1,8 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.account.BankAccount;
-import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.account.BankAccountRepository;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.transaction.*;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
@@ -30,12 +30,11 @@ public class WithdrawingMoney {
 
     public ReferenceNumber withdraw(WithdrawalRequest withdrawalRequest) {
         final BankAccount account = finAccountBy(withdrawalRequest.accountNumber());
+        String referenceNumber = transactionRepository.generateReferenceNumber();
+
 
         final Amount amount = Amount.of(withdrawalRequest.funds());
-        account.ensureSufficientBalanceFor(amount);
-
         account.decreaseBalance(amount);
-        String referenceNumber = UUID.randomUUID().toString();
         final Transaction transaction = initTransaction(withdrawalRequest, account, amount, referenceNumber);
 
         accountRepository.save(account.toEntity());

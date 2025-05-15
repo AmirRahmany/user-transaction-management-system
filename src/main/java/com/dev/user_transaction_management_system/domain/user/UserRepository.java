@@ -3,6 +3,7 @@ package com.dev.user_transaction_management_system.domain.user;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 
 import java.util.Optional;
+import java.util.UUID;
 
 public interface UserRepository{
 
@@ -12,5 +13,7 @@ public interface UserRepository{
 
     boolean isUserAlreadyExists(String email);
 
-    Optional<UserEntity> findById(Integer userId);
+    Optional<UserEntity> findById(UserId userId);
+
+    UUID nextIdentify();
 }

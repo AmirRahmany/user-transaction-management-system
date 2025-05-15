@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.account.*;
+import com.dev.user_transaction_management_system.domain.bank_account.*;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserId;
@@ -14,6 +14,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 import static java.time.LocalDateTime.now;
 
@@ -22,12 +23,12 @@ import static java.time.LocalDateTime.now;
 public class OpeningBankAccount {
 
     private final BankAccountRepository bankAccountRepository;
-    private final IAccountNumberGenerator accountNumberGenerator;
+    private final AccountNumberGenerator accountNumberGenerator;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
     public OpeningBankAccount(BankAccountRepository accountRepository,
-                              IAccountNumberGenerator accountNumberGenerator,
+                              AccountNumberGenerator accountNumberGenerator,
                               UserRepository userRepository) {
         this.bankAccountRepository = accountRepository;
         this.accountNumberGenerator = accountNumberGenerator;
@@ -38,16 +39,17 @@ public class OpeningBankAccount {
     public OpeningAccountResponse open(AccountRequest accountRequest) {
         final User user = findUserBy(accountRequest.userId());
         user.ensureUserIsEnabled();
-
+        final UUID accountId = bankAccountRepository.nextIdentify();
         final AccountNumber accountNumber = generateAccountNumber();
-        final BankAccount account = openAccount(accountRequest, accountNumber);
+
+        final BankAccount account = openBankAccount(accountRequest, accountNumber,accountId);
 
         bankAccountRepository.save(account.toEntity());
         return account.toResponse(user.fullName());
     }
 
-    private User findUserBy(Integer userId) {
-        UserEntity userEntity = userRepository.findById(userId)
+    private User findUserBy(String userId) {
+        UserEntity userEntity = userRepository.findById(UserId.fromString(userId))
                 .orElseThrow(() -> CouldNotFoundUser.withId(userId));
 
         return userMapper.toDomain(userEntity);
@@ -61,11 +63,12 @@ public class OpeningBankAccount {
         return accountNumber;
     }
 
-    private static BankAccount openAccount(AccountRequest accountRequest, AccountNumber accountNumber) {
+    private static BankAccount openBankAccount(AccountRequest accountRequest, AccountNumber accountNumber, UUID accountUUID) {
         final double balance = accountRequest.balance();
         final LocalDateTime createdAt = now();
-        final UserId userId = UserId.fromInt(accountRequest.userId());
-        return BankAccount.open(AccountId.newAccount(), accountNumber, userId, Amount.of(balance), createdAt);
+        final UserId userId = UserId.fromUUID(UUID.fromString(accountRequest.userId()));
+        final AccountId accountId = AccountId.fromUUID(accountUUID);
+        return BankAccount.open(accountId,accountNumber, userId, Amount.of(balance), createdAt);
     }
 
 }

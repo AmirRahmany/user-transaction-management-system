@@ -6,6 +6,7 @@ import com.dev.user_transaction_management_system.infrastructure.persistence.mod
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 
 public class TransactionRepositoryFake implements TransactionRepository {
 
@@ -19,5 +20,15 @@ public class TransactionRepositoryFake implements TransactionRepository {
     @Override
     public Optional<TransactionEntity> findById(Integer transactionId) {
         return transactions.stream().filter(transactionEntity -> transactionEntity.getTransactionId().equals(transactionId)).findFirst();
+    }
+
+    @Override
+    public String generateReferenceNumber() {
+        final Random random = new Random();
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0; i < 16; i++) {
+            stringBuilder.append(random.nextInt(0,10));
+        }
+        return stringBuilder.toString();
     }
 }

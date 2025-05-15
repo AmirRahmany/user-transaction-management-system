@@ -1,22 +1,21 @@
 package com.dev.user_transaction_management_system.domain.user;
 
+import org.springframework.util.Assert;
+
 public class PhoneNumber {
     private final String value;
 
     private PhoneNumber(String phoneNumber) {
-        if (isNull(phoneNumber) || phoneNumber.isBlank()) throw new IllegalArgumentException();
-        this.value = phoneNumber;
-    }
+        Assert.hasText(phoneNumber,"phone number cannot be null or empty");
 
-    private static boolean isNull(String field) {
-        return field == null;
+        this.value = phoneNumber;
     }
 
     public static PhoneNumber of(String phoneNumber) {
         return new PhoneNumber(phoneNumber);
     }
 
-    public String value() {
+    public String asString() {
         return value;
     }
 }

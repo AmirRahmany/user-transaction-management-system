@@ -1,8 +1,11 @@
-package com.dev.user_transaction_management_system.domain.account;
+package com.dev.user_transaction_management_system.domain.bank_account;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
+import org.springframework.util.Assert;
 
 import java.util.Objects;
+
+import static java.lang.String.format;
 
 public class AccountNumber {
 
@@ -11,11 +14,11 @@ public class AccountNumber {
     private final String accountNumber;
 
     private AccountNumber(String accountNumber) {
-        if (accountNumber == null || accountNumber.isBlank())
-            throw new IllegalArgumentException("BankAccount number can't be null or empty!");
+        Assert.hasText(accountNumber,"bank account number cannot be null or empty");
 
         if (!hasMinimumLength(accountNumber)) {
-            throw new IllegalArgumentException("account number length should be equal with: " + ACCOUNT_NUMBER_LENGTH);
+            String message = format("bank account number length should be equal with: %s" ,ACCOUNT_NUMBER_LENGTH);
+            throw new IllegalArgumentException(message);
         }
 
         this.accountNumber = accountNumber;
@@ -33,9 +36,10 @@ public class AccountNumber {
         return accountNumber.equals(toAccountNumber.toString());
     }
 
-    @Override
-    public String toString() {
-        return accountNumber;
+    public void ensureDistinctAccounts(AccountNumber target) {
+        if (isSameAs(target)) {
+            throw CouldNotProcessTransaction.becauseSourceAndTargetAccountsAreTheSame();
+        }
     }
 
     @Override
@@ -51,9 +55,8 @@ public class AccountNumber {
         return Objects.hash(ACCOUNT_NUMBER_LENGTH, accountNumber);
     }
 
-    public void ensureDistinctAccounts(AccountNumber target) {
-        if (isSameAs(target)) {
-            throw CouldNotProcessTransaction.becauseSourceAndTargetAccountsAreTheSame();
-        }
+    @Override
+    public String toString() {
+        return accountNumber;
     }
 }

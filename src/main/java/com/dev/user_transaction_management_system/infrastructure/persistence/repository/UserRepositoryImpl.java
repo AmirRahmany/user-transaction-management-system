@@ -1,20 +1,25 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.repository;
 
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class UserRepositoryImpl implements UserRepository {
 
     private final EntityManager entityManager;
+    private final UUIDIdentifierGenerator identifierGenerator;
 
     public UserRepositoryImpl(EntityManager entityManager) {
         this.entityManager = entityManager;
+        this.identifierGenerator = new UUIDIdentifierGenerator();
     }
 
     @Override
@@ -23,8 +28,10 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findById(Integer userId) {
-        final UserEntity userEntity = entityManager.find(UserEntity.class, userId);
+    public Optional<UserEntity> findById(UserId userId) {
+        Assert.notNull(userId);
+
+        final UserEntity userEntity = entityManager.find(UserEntity.class, userId.asString());
         return Optional.ofNullable(userEntity);
     }
 
@@ -46,5 +53,10 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public boolean isUserAlreadyExists(String email) {
         return findByEmail(email).isPresent();
+    }
+
+    @Override
+    public UUID nextIdentify() {
+        return identifierGenerator.generate();
     }
 }

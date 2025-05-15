@@ -1,18 +1,18 @@
 package com.dev.user_transaction_management_system.infrastructure.util;
 
-import com.dev.user_transaction_management_system.domain.account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.account.IAccountNumberGenerator;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumberGenerator;
 import org.springframework.stereotype.Component;
 
 import java.util.Random;
 
 @Component
-public class AccountNumberGenerator implements IAccountNumberGenerator {
+public class AccountNumberGeneratorImpl implements AccountNumberGenerator {
     private static final  int ACCOUNT_NUMBER_LENGTH = 13;
     private static final  String PREFIX = "0300";
     private final Random random;
 
-    public AccountNumberGenerator() {
+    public AccountNumberGeneratorImpl() {
         this.random = new Random();
     }
 

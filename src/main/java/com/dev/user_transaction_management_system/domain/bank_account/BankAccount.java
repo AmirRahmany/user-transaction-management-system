@@ -1,16 +1,18 @@
-package com.dev.user_transaction_management_system.domain.account;
+package com.dev.user_transaction_management_system.domain.bank_account;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.UserId;
-import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
+import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
+import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
 
 public class BankAccount {
-    public static final int MINIMUM_BALANCE = 100;
+
+    private static final int MINIMUM_BALANCE = 100;
 
     private final AccountId accountId;
     private final AccountNumber accountNumber;
@@ -19,13 +21,19 @@ public class BankAccount {
     private final LocalDateTime createdAt;
     private AccountStatus status;
 
-    private BankAccount(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
-        if (!hasMinimumBalance(balance))
-            throw new IllegalArgumentException("an account can't be opened unless the user deposits at least $100");
+    private BankAccount(AccountId accountId,
+                        AccountNumber accountNumber,
+                        UserId userId, Amount balance,
+                        LocalDateTime createdAt) {
 
-        if (!isAssociateToAnyUser(userId)) {
-            throw new IllegalArgumentException("each account should be associate to a user");
-        }
+        Assert.notNull(accountId,"account id cannot be null");
+        Assert.notNull(accountNumber,"account number cannot be null");
+        Assert.notNull(userId,"user id cannot be null");
+        Assert.notNull(balance,"balance cannot be null");
+        Assert.notNull(createdAt,"created at cannot be null");
+
+        if (!hasMinimumBalance(balance))
+            throw new IllegalArgumentException("a bank account can't be opened unless the user deposits at least $100");
 
         this.accountId = accountId;
         this.accountNumber = accountNumber;
@@ -35,14 +43,12 @@ public class BankAccount {
         this.status = AccountStatus.DISABLE;
     }
 
-    public static BankAccount open(AccountId accountId, AccountNumber accountNumber, UserId userId, Amount balance, LocalDateTime createdAt) {
+    public static BankAccount open(AccountId accountId,
+                                   AccountNumber accountNumber,
+                                   UserId userId,
+                                   Amount balance,
+                                   LocalDateTime createdAt) {
         return new BankAccount(accountId, accountNumber, userId, balance, createdAt);
-    }
-
-    public void ensureSufficientBalanceFor(Amount amount) {
-        if (!isBalanceSufficient(amount)) {
-            throw CouldNotProcessTransaction.becauseInsufficientBalance();
-        }
     }
 
     public void increaseAmount(Amount amount) {
@@ -51,38 +57,29 @@ public class BankAccount {
     }
 
     public void decreaseBalance(Amount amount) {
+        Assert.notNull(amount,"amount cannot be null");
+        ensureSufficientBalanceFor(amount);
+
         final double decreasedValue = this.balance.toValue() - amount.toValue();
         this.balance = Amount.of(decreasedValue);
+    }
+
+    private void ensureSufficientBalanceFor(Amount amount) {
+        if (!isBalanceSufficient(amount)) {
+            throw CouldNotProcessTransaction.becauseInsufficientBalance();
+        }
     }
 
     private boolean isBalanceSufficient(Amount amount) {
         return balance.toValue() >= amount.toValue();
     }
 
-    public double amount() {
-        return balance.toValue();
-    }
-
-    public BankAccountEntity toEntity() {
-        return BankAccountEntity.openWith(
-                accountId.toInt(),
-                accountNumber.toString(),
-                userId.toInt(),
-                balance,
-                status
-        );
+    public void enable() {
+        this.status = AccountStatus.ENABLE;
     }
 
     private boolean hasMinimumBalance(Amount balance) {
         return balance.toValue() >= MINIMUM_BALANCE;
-    }
-
-    private boolean isAssociateToAnyUser(UserId userId) {
-        return userId != null;
-    }
-
-    public OpeningAccountResponse toResponse(String fullName) {
-        return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.toValue(), createdAt, status);
     }
 
     public AccountNumber accountNumber() {
@@ -91,6 +88,21 @@ public class BankAccount {
 
     public String accountNumberAsString() {
         return accountNumber.toString();
+    }
+
+    public BankAccountEntity toEntity() {
+        final BankAccountEntity bankAccountEntity = new BankAccountEntity();
+        bankAccountEntity.setAccountId(accountId.asString());
+        bankAccountEntity.setAccountNumber(accountNumberAsString());
+        bankAccountEntity.setUserId(userId.asString());
+        bankAccountEntity.setBalance(balance.toValue());
+        bankAccountEntity.setStatus(status);
+        bankAccountEntity.setCreatedAt(createdAt);
+        return bankAccountEntity;
+    }
+
+    public OpeningAccountResponse toResponse(String fullName) {
+        return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.toValue(), createdAt, status);
     }
 
     @Override
@@ -120,9 +132,5 @@ public class BankAccount {
                 ", createdAt=" + createdAt +
                 ", status=" + status +
                 '}';
-    }
-
-    public void enable() {
-        this.status = AccountStatus.ENABLE;
     }
 }

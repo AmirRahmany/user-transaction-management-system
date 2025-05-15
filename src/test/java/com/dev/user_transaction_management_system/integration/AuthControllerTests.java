@@ -1,10 +1,14 @@
 package com.dev.user_transaction_management_system.integration;
 
+import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -18,12 +22,15 @@ import java.util.Optional;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @Transactional
 @ActiveProfiles("test")
+@Tag("INTEGRATION")
 class AuthControllerTests {
 
     @Autowired
@@ -34,6 +41,9 @@ class AuthControllerTests {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private UserAccountTestUtil accountTestUtil;
 
     @Test
     void register_user_successfully() throws Exception {
@@ -56,5 +66,21 @@ class AuthControllerTests {
         assertThat(isUserAlreadyExists).isTrue();
         assertThat(user).isPresent();
         assertThat(user.get().getFirstName()).isEqualTo(userRegistrationRequest.firstName());
+    }
+
+    @Test
+    void authenticate_user_successfully() throws Exception {
+        final String username = "amir@gmail.com";
+        final String password = "@Abcd1234";
+        accountTestUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
+        final LoginRequest loginRequest = new LoginRequest(username,password);
+
+        mockMvc.perform(post("/api/auth/signin")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+                .andDo(log())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").exists())
+                .andExpect(jsonPath("$.username").value(username));
     }
 }
