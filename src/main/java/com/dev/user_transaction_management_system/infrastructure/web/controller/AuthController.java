@@ -4,7 +4,7 @@ import com.dev.user_transaction_management_system.infrastructure.util.jwt.JwtTok
 import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
-import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationResponse;
+import com.dev.user_transaction_management_system.use_case.dto.UserAuthenticationResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -58,7 +58,7 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         final UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         final String token = jwtUtils.generateJwtTokenFromUserName(userDetails);
-        final UserRegistrationResponse response = new UserRegistrationResponse(token, userDetails.getUsername());
+        final UserAuthenticationResponse response = new UserAuthenticationResponse(token, userDetails.getUsername());
 
         return ResponseEntity.ok(response);
     }
