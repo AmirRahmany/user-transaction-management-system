@@ -17,7 +17,7 @@ public class Amount {
         return new Amount(amount);
     }
 
-    public double toValue(){
+    public double asDouble(){
         return amount;
     }
 

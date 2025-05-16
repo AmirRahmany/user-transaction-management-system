@@ -6,6 +6,7 @@ import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
+import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,12 +19,12 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.DepositRequestBuilder.aDepositRequest;
+import static com.dev.user_transaction_management_system.fake.TransferMoneyRequestBuilder.aTransferMoneyRequest;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static java.time.LocalDateTime.of;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -36,7 +37,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc
 @Tag("INTEGRATION")
-class DepositingMoneyControllerTest extends BankAccountTestHelper {
+class TransferMoneyControllerTest extends BankAccountTestHelper {
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,7 +62,7 @@ class DepositingMoneyControllerTest extends BankAccountTestHelper {
     }
 
     @Test
-    void deposit_transaction_successfully() throws Exception {
+    void init_transfer_money_transaction_successfully() throws Exception {
         final BankAccount from =havingOpened(anAccount().withUserId(entity.getId())
                 .withAccountNumber("0300654789123").withBalance(500));
 
@@ -69,19 +70,17 @@ class DepositingMoneyControllerTest extends BankAccountTestHelper {
                 .withBalance(140)
                 .withUserId(UUID.randomUUID().toString()));
 
-        final LocalDateTime createdAt = of(2025, 5, 4, 14, 30, 0);
-
-        final DepositRequest depositRequest = aDepositRequest()
+        final TransferMoneyRequest transferMoneyRequest = aTransferMoneyRequest()
                 .withAmount(300)
                 .withFromAccount(from)
                 .withToAccount(to)
                 .withDescription("transaction description")
-                .withCreatedAt(createdAt).initiate();
+                .initiate();
 
-        mockMvc.perform(post("/api/transaction/deposit")
+        mockMvc.perform(post("/api/transaction/transfer")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization",token)
-                        .content(objectMapper.writeValueAsString(depositRequest)))
+                        .content(objectMapper.writeValueAsString(transferMoneyRequest)))
                 .andExpect(status().isOk());
 
 

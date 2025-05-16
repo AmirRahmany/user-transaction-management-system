@@ -8,6 +8,7 @@ import com.dev.user_transaction_management_system.domain.transaction.*;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -28,14 +29,23 @@ public class WithdrawingMoney {
         this.bankAccountMapper = new BankAccountMapper();
     }
 
-    public ReferenceNumber withdraw(WithdrawalRequest withdrawalRequest) {
-        final BankAccount account = finAccountBy(withdrawalRequest.accountNumber());
+    @Transactional
+    public ReferenceNumber withdraw(WithdrawalRequest request) {
+        AccountNumber fromAccountNumber = AccountNumber.of(request.fromAccountNumber());
+        final BankAccount account = finAccountBy(request.fromAccountNumber());
         String referenceNumber = transactionRepository.generateReferenceNumber();
 
 
-        final Amount amount = Amount.of(withdrawalRequest.funds());
+        final Amount amount = Amount.of(request.funds());
         account.decreaseBalance(amount);
-        final Transaction transaction = initTransaction(withdrawalRequest, account, amount, referenceNumber);
+
+        final Transaction transaction = Transaction.of(
+                TransactionId.autoGenerateByDb(),
+                fromAccountNumber,
+                fromAccountNumber, //TODO refactor
+                TransactionDetail.of(amount, TransactionType.WITHDRAWAL, request.description()),
+                ReferenceNumber.fromString(referenceNumber),
+                LocalDateTime.now());
 
         accountRepository.save(account.toEntity());
         transactionRepository.save(transaction.toEntity());
@@ -49,16 +59,5 @@ public class WithdrawingMoney {
                 .orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(accountNumber.toString()));
 
         return bankAccountMapper.toDomain(bankAccountEntity);
-    }
-
-    private static Transaction
-    initTransaction(WithdrawalRequest withdrawalRequest, BankAccount bankAccount, Amount amount, String referenceNumber) {
-
-        return Withdrawal.of(
-                TransactionId.autoGenerateByDb(),
-                bankAccount.accountNumber(),
-                TransactionDetail.of(amount, TransactionType.WITHDRAWAL, withdrawalRequest.description()),
-                ReferenceNumber.fromString(referenceNumber),
-                LocalDateTime.now());
     }
 }

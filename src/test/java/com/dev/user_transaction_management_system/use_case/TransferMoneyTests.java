@@ -7,44 +7,45 @@ import com.dev.user_transaction_management_system.fake.AccountFakeBuilder;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
+import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.DepositRequestBuilder.aDepositRequest;
+import static com.dev.user_transaction_management_system.fake.TransferMoneyRequestBuilder.aTransferMoneyRequest;
 import static java.time.LocalDateTime.now;
 import static java.time.LocalDateTime.of;
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class DepositingMoneyTests extends BankAccountTestHelper {
+class TransferMoneyTests extends BankAccountTestHelper {
 
-    private final DepositingMoney transactionService;
+    private final TransferMoney transactionService;
 
-    public DepositingMoneyTests() {
+    public TransferMoneyTests() {
         super.accountRepository = new BankAccountRepositoryFake();
 
         final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
         WithdrawingMoney withdrawingMoney = new WithdrawingMoney(transactionRepository, accountRepository);
-        this.transactionService = new DepositingMoney(transactionRepository, accountRepository,withdrawingMoney);
+        this.transactionService = new TransferMoney(transactionRepository, accountRepository);
     }
 
 
     @Test
-    void initiate_deposit_transaction_successfully() {
+    void initiate_transfer_money_transaction_successfully() {
         final BankAccount from = havingOpened(anAccount().withAccountNumber("0300145874512"));
         final BankAccount to = havingOpened(anAccount().withAccountNumber("0300100234111"));
 
-        final DepositRequest depositRequest = aDepositRequest()
+        final TransferMoneyRequest transferMoneyRequest = aTransferMoneyRequest()
                 .withAmount(500)
                 .withFromAccount(from)
                 .withToAccount(to)
                 .withDescription("transaction description")
                 .initiate();
 
-        assertThatNoException().isThrownBy(() -> transactionService.deposit(depositRequest));
+        assertThatNoException().isThrownBy(() -> transactionService.transfer(transferMoneyRequest));
     }
 
     @Test
@@ -52,14 +53,13 @@ class DepositingMoneyTests extends BankAccountTestHelper {
         final BankAccount from = havingUnOpened(anAccount().withAccountNumber("0300145687654"));
         final BankAccount to = havingUnOpened(anAccount().withAccountNumber("0300874137630"));
 
-        final DepositRequest depositRequest = aDepositRequest().withAmount(300)
+        final TransferMoneyRequest transferMoneyRequest = aTransferMoneyRequest().withAmount(300)
                 .withFromAccount(from)
                 .withToAccount(to)
-                .withCreatedAt(now())
                 .initiate();
 
         assertThatExceptionOfType(CouldNotFindBankAccount.class)
-                .isThrownBy(() -> transactionService.deposit(depositRequest));
+                .isThrownBy(() -> transactionService.transfer(transferMoneyRequest));
     }
 
     private BankAccount havingUnOpened(AccountFakeBuilder accountBuilder) {
@@ -71,14 +71,14 @@ class DepositingMoneyTests extends BankAccountTestHelper {
         BankAccount from = havingOpened(anAccount().withAccountNumber("0300145241563"));
         BankAccount to = havingOpened(anAccount().withAccountNumber("0300874021436"));
 
-        final DepositRequest depositRequest = aDepositRequest()
+        final TransferMoneyRequest transferMoneyRequest = aTransferMoneyRequest()
                 .withAmount(-100)
                 .withFromAccount(from)
                 .withToAccount(to)
                 .initiate();
 
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> transactionService.deposit(depositRequest));
+                .isThrownBy(() -> transactionService.transfer(transferMoneyRequest));
     }
 
     @Test
@@ -86,26 +86,26 @@ class DepositingMoneyTests extends BankAccountTestHelper {
         BankAccount insufficientAccount = havingOpened(anAccount().withAccountNumber("0300467800143").withBalance(200));
         BankAccount to = havingOpened(anAccount().withAccountNumber("0300465214701"));
 
-        final DepositRequest depositRequest = aDepositRequest()
+        final TransferMoneyRequest transferMoneyRequest = aTransferMoneyRequest()
                 .withAmount(400)
                 .withFromAccount(insufficientAccount)
                 .withToAccount(to)
                 .initiate();
 
         assertThatExceptionOfType(CouldNotProcessTransaction.class)
-                .isThrownBy(() -> transactionService.deposit(depositRequest));
+                .isThrownBy(() -> transactionService.transfer(transferMoneyRequest));
     }
 
     @Test
     void cannot_deposit_to_same_account() {
         BankAccount from = havingOpened(anAccount().withAccountNumber("0300450012365"));
 
-        final DepositRequest depositRequest = aDepositRequest()
+        final TransferMoneyRequest transferMoneyRequest = aTransferMoneyRequest()
                 .withFromAccount(from)
                 .withToAccount(from)
                 .initiate();
 
         assertThatExceptionOfType(CouldNotProcessTransaction.class)
-                .isThrownBy(() -> transactionService.deposit(depositRequest));
+                .isThrownBy(() -> transactionService.transfer(transferMoneyRequest));
     }
 }

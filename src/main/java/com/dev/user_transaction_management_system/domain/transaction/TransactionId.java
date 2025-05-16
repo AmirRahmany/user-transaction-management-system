@@ -18,4 +18,8 @@ public class TransactionId {
     public static TransactionId autoGenerateByDb() {
         return fromInt(0);
     }
+
+    public Integer asInt() {
+        return transactionId;
+    }
 }

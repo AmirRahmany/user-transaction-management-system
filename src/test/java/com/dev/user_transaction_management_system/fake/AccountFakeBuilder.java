@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.fake;
 
+import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountId;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
@@ -9,11 +10,15 @@ import com.dev.user_transaction_management_system.domain.user.UserId;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.dev.user_transaction_management_system.domain.bank_account.AccountStatus.DISABLE;
+import static com.dev.user_transaction_management_system.domain.bank_account.AccountStatus.ENABLE;
+
 public class AccountFakeBuilder {
     private UUID accountId = UUID.randomUUID();
     private String accountNumber = "0300123002145";
     private String userId = "8c5148ea-857b-4996-a09c-5a5131a33564";
     private Amount balance = Amount.of(5000.50);
+    private AccountStatus accountStatus = DISABLE;
 
     public static AccountFakeBuilder anAccount() {
         return new AccountFakeBuilder();
@@ -44,9 +49,15 @@ public class AccountFakeBuilder {
         return this;
     }
 
+    public AccountFakeBuilder enabled(){
+        this.accountStatus = ENABLE;
+        return this;
+    }
+
     public BankAccount open() {
         LocalDateTime createdAt = LocalDateTime.of(2025, 6, 14, 8, 16, 15);
         final AccountId id = AccountId.fromUUID(UUID.fromString(accountId.toString()));
-        return BankAccount.open(id, AccountNumber.of(accountNumber), UserId.fromString(userId), balance, createdAt);
+        final AccountNumber bankAccountNumber = AccountNumber.of(accountNumber);
+        return BankAccount.open(id, bankAccountNumber, UserId.fromString(userId), balance, accountStatus, createdAt);
     }
 }

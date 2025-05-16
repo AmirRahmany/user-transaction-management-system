@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import static com.dev.user_transaction_management_system.domain.bank_account.AccountStatus.DISABLE;
 import static java.time.LocalDateTime.now;
 
 @Service
@@ -37,20 +38,20 @@ public class OpeningBankAccount {
     }
 
     public OpeningAccountResponse open(AccountRequest accountRequest) {
-        final User user = findUserBy(accountRequest.userId());
+        final User user = findUserBy(accountRequest.username());
         user.ensureUserIsEnabled();
         final UUID accountId = bankAccountRepository.nextIdentify();
         final AccountNumber accountNumber = generateAccountNumber();
 
-        final BankAccount account = openBankAccount(accountRequest, accountNumber,accountId);
+        final BankAccount account = openBankAccount(accountRequest, accountNumber, accountId,user.userId());
 
         bankAccountRepository.save(account.toEntity());
         return account.toResponse(user.fullName());
     }
 
-    private User findUserBy(String userId) {
-        UserEntity userEntity = userRepository.findById(UserId.fromString(userId))
-                .orElseThrow(() -> CouldNotFoundUser.withId(userId));
+    private User findUserBy(String email) {
+        UserEntity userEntity = userRepository.findByEmail(email)
+                .orElseThrow(() -> CouldNotFoundUser.withEmail(email));
 
         return userMapper.toDomain(userEntity);
     }
@@ -63,12 +64,15 @@ public class OpeningBankAccount {
         return accountNumber;
     }
 
-    private static BankAccount openBankAccount(AccountRequest accountRequest, AccountNumber accountNumber, UUID accountUUID) {
+    private static BankAccount openBankAccount(AccountRequest accountRequest,
+                                               AccountNumber accountNumber,
+                                               UUID accountUUID,
+                                               String plainUserId) {
         final double balance = accountRequest.balance();
         final LocalDateTime createdAt = now();
-        final UserId userId = UserId.fromUUID(UUID.fromString(accountRequest.userId()));
         final AccountId accountId = AccountId.fromUUID(accountUUID);
-        return BankAccount.open(accountId,accountNumber, userId, Amount.of(balance), createdAt);
+        final UserId userId = UserId.fromString(plainUserId);
+        return BankAccount.open(accountId, accountNumber, userId, Amount.of(balance), DISABLE, createdAt);
     }
 
 }

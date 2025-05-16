@@ -15,16 +15,17 @@ public class ActivationUserAccountController {
 
     private final ActivatingUserAccount activatingUserAccount;
 
+
     public ActivationUserAccountController(ActivatingUserAccount activatingUserAccount) {
         this.activatingUserAccount = activatingUserAccount;
     }
 
     @PostMapping("activation")
-    public ResponseEntity<?> activate(@RequestBody UserActivationRequest request){
+    public ResponseEntity<?> activate(@RequestBody UserActivationRequest request) {
         try {
-            activatingUserAccount.activate(request.userId());
+            activatingUserAccount.activate(request.username());
             return ResponseEntity.ok().build();
-        }catch (Exception e){
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

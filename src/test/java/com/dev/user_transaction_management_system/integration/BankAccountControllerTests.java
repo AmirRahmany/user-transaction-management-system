@@ -65,8 +65,8 @@ class BankAccountControllerTests {
 
     @Test
     void open_an_account_successfully() throws Exception {
-        userAccountUtil.activateUserAccount(user.getId());
-        final AccountRequest accountRequest = new AccountRequest(user.getId(), 5000);
+        userAccountUtil.activateUserAccount(user.getUsername());
+        final AccountRequest accountRequest = new AccountRequest(user.getUsername(), 5000);
 
         final String response = mockMvc.perform(post("/api/account")
                         .contentType(MediaType.APPLICATION_JSON)

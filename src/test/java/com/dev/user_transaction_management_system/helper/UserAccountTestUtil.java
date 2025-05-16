@@ -72,8 +72,8 @@ public class UserAccountTestUtil {
         return findUserByEmail(user.email());
     }
 
-    public void activateUserAccount(String userId) {
-        activatingUserAccount.activate(userId);
+    public void activateUserAccount(String username) {
+        activatingUserAccount.activate(username);
     }
 
     private UserEntity findUserByEmail(String email) {

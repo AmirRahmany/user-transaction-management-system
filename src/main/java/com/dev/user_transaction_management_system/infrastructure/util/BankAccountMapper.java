@@ -17,6 +17,7 @@ public class BankAccountMapper {
                 AccountNumber.of(account.getAccountNumber()),
                 UserId.fromUUID(UUID.fromString(account.getUserId())),
                 Amount.of(account.getBalance()),
+                account.getStatus(),
                 account.getCreatedAt()
         );
     }

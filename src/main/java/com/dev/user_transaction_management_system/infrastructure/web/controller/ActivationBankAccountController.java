@@ -17,7 +17,7 @@ public class ActivationBankAccountController {
         this.activatingBankAccount = activatingBankAccount;
     }
 
-    @PostMapping("/activate")
+    @PostMapping("/activation")
     public ResponseEntity<?> activate(@RequestBody BankAccountActivationRequest request){
         try {
             activatingBankAccount.activate(request.accountNumber());

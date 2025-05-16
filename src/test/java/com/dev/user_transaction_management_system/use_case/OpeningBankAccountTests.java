@@ -13,9 +13,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.AccountRequestFakeBuilder.accountRequest;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
@@ -26,6 +23,7 @@ class OpeningBankAccountTests  {
     private OpeningBankAccount openingBankAccount;
 
     private UserAccountTestHelper helper;
+
     @BeforeEach
     void setUp() {
         UserRepository userRepository = new UserRepositoryFake();
@@ -38,13 +36,13 @@ class OpeningBankAccountTests  {
     void open_an_account_successfully() {
         final UserEntity entity = helper.havingRegistered(aUser().withEnabledStatus());
         assertThatNoException().isThrownBy(() ->
-                openingBankAccount.open(accountRequest().withUserId(entity.getId()).open()));
+                openingBankAccount.open(accountRequest().withUsername(entity.getUsername()).open()));
     }
 
     @Test
     void cannot_open_account_with_deposit_less_than_100_dolor() {
         final UserEntity entity = helper.havingRegistered(aUser().withEnabledStatus());
-        final AccountRequest accountRequest = accountRequest().withUserId(entity.getId()).withBalance(80).open();
+        final AccountRequest accountRequest = accountRequest().withUsername(entity.getUsername()).withBalance(80).open();
 
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> openingBankAccount.open(accountRequest));
@@ -62,7 +60,7 @@ class OpeningBankAccountTests  {
     void cannot_open_account_with_duplicate_account_number() {
         final UserEntity user = helper.havingRegistered(aUser().withEnabledStatus());
 
-        final AccountRequest accountRequest = accountRequest().withUserId(user.getId()).open();
+        final AccountRequest accountRequest = accountRequest().withUsername(user.getUsername()).open();
         openingBankAccount.open(accountRequest);
 
         assertThatExceptionOfType(IllegalArgumentException.class)
@@ -73,7 +71,7 @@ class OpeningBankAccountTests  {
     void can_not_open_an_account_for_disable_user() {
         final UserEntity disableUser = helper.havingRegistered(aUser().withDisabledStatus());
 
-        final AccountRequest accountRequest = accountRequest().withUserId(disableUser.getId()).open();
+        final AccountRequest accountRequest = accountRequest().withUsername(disableUser.getUsername()).open();
 
         assertThatExceptionOfType(CouldNotOpenAnAccount.class).isThrownBy(() -> openingBankAccount.open(accountRequest));
     }

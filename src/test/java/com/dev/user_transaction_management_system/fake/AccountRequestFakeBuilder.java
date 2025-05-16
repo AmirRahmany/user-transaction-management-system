@@ -17,7 +17,7 @@ public class AccountRequestFakeBuilder {
         return new AccountRequestFakeBuilder();
     }
 
-    public AccountRequestFakeBuilder withUserId(String userId) {
+    public AccountRequestFakeBuilder withUsername(String userId) {
         this.userId = userId;
         return this;
     }

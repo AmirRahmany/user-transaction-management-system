@@ -1,6 +1,5 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.model;
 
-import com.dev.user_transaction_management_system.domain.transaction.TransactionStatus;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionType;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -27,10 +26,6 @@ public class TransactionEntity {
     @Column(name = "amount")
     private Double amount;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "transaction_status")
-    private TransactionStatus transactionStatus;
-
     @Column(name = "created_at")
     private LocalDateTime createdAt;
 
@@ -43,7 +38,6 @@ public class TransactionEntity {
     private TransactionEntity(String fromAccountNumber,
                               String toAccountNumber,
                               Double amount,
-                              TransactionStatus transactionStatus,
                               LocalDateTime createdAt,
                               TransactionType transactionType,
                               String description,
@@ -51,7 +45,6 @@ public class TransactionEntity {
         this.fromAccountNumber = fromAccountNumber;
         this.toAccountNumber = toAccountNumber;
         this.amount = amount;
-        this.transactionStatus = transactionStatus;
         this.createdAt = createdAt;
         this.transactionType = transactionType;
         this.description = description;
@@ -61,7 +54,6 @@ public class TransactionEntity {
     public static TransactionEntity initOf(String fromAccountNumber,
                                            String toAccountNumber,
                                            double amount,
-                                           TransactionStatus transactionStatus,
                                            TransactionType transactionType,
                                            String description,
                                            String referenceNumber,
@@ -71,7 +63,6 @@ public class TransactionEntity {
                 fromAccountNumber,
                 toAccountNumber,
                 amount,
-                transactionStatus,
                 createdAt,
                 transactionType,
                 description,

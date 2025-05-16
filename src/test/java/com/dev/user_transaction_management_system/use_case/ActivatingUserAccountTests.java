@@ -39,7 +39,7 @@ class ActivatingUserAccountTests {
     void enabling_user_account_successfully() {
         final UserEntity entity = helper.havingRegistered(aUser());
 
-        assertThatNoException().isThrownBy(() -> activatingUserAccount.activate(entity.getId()));
+        assertThatNoException().isThrownBy(() -> activatingUserAccount.activate(entity.getUsername()));
     }
 
     @Test
@@ -57,11 +57,11 @@ class ActivatingUserAccountTests {
         final UserRepository repository = mock(UserRepository.class);
         ActivatingUserAccount userAccount = new ActivatingUserAccount(repository);
 
-        final UserId userId = UserId.fromString(entity.getId());
 
-        when(repository.findById(any(UserId.class))).thenReturn(Optional.of(entity));
 
-        assertThatNoException().isThrownBy(() -> userAccount.activate(userId.asString()));
+        when(repository.findByEmail(any())).thenReturn(Optional.of(entity));
+
+        assertThatNoException().isThrownBy(() -> userAccount.activate(entity.getUsername()));
         verify(repository, never()).save(any(UserEntity.class));
     }
 }

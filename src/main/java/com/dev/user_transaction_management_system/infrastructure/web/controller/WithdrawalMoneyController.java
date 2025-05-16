@@ -24,7 +24,6 @@ public class WithdrawalMoneyController {
     public ResponseEntity<?> withdraw(@RequestBody WithdrawalRequest withdrawalRequest) {
         try {
             final ReferenceNumber referenceNumber = withdrawingMoney.withdraw(withdrawalRequest);
-
             return ResponseEntity.ok(referenceNumber.toString());
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
