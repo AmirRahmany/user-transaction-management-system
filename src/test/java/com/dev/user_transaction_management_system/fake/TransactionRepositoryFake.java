@@ -27,12 +27,7 @@ public class TransactionRepositoryFake implements TransactionRepository {
 
     @Override
     public String generateReferenceNumber() {
-        final Random random = new Random();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            stringBuilder.append(random.nextInt(0, 10));
-        }
-        return stringBuilder.toString();
+        return "03004565879851";
     }
 
     @Override

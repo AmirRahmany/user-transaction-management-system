@@ -1,6 +1,5 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 
 public class DepositRequestBuilder {
@@ -17,8 +16,8 @@ public class DepositRequestBuilder {
         return this;
     }
 
-    public DepositRequestBuilder withAccount(BankAccount fromAccount) {
-        this.accountNumber = fromAccount.accountNumberAsString();
+    public DepositRequestBuilder withAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
         return this;
     }
 

@@ -59,7 +59,9 @@ public class Transaction {
         entity.setDescription(transactionDetail.description());
         entity.setTransactionType(transactionDetail.transactionType());
         entity.setFromAccountNumber(fromAccountNumber.toString());
-        entity.setToAccountNumber(toAccountNumber.toString());
+        if (toAccountNumber != null)
+            entity.setToAccountNumber(toAccountNumber.toString());
+
         entity.setReferenceNumber(referenceNumber.toString());
         entity.setCreatedAt(createdAt);
         return entity;

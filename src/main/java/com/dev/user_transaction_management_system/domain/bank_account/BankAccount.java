@@ -54,8 +54,15 @@ public class BankAccount {
     }
 
     public void increaseAmount(Amount amount) {
+        if (isAccountDisable())
+            throw CouldNotProcessTransaction.withDisabledAccount();
+
         final double decreasedValue = this.balance.asDouble() + amount.asDouble();
         this.balance = Amount.of(decreasedValue);
+    }
+
+    private boolean isAccountDisable() {
+        return status == AccountStatus.DISABLE;
     }
 
     public void decreaseBalance(Amount amount) {

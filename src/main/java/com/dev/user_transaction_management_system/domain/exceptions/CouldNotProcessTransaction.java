@@ -16,4 +16,8 @@ public class CouldNotProcessTransaction extends RuntimeException {
     public static CouldNotProcessTransaction becauseSourceAndTargetAccountsAreTheSame() {
         return new CouldNotProcessTransaction("Cannot perform a deposit into the same account it originates from.");
     }
+
+    public static CouldNotProcessTransaction withDisabledAccount() {
+        return new CouldNotProcessTransaction("Cannot perform a deposit into the disable account");
+    }
 }

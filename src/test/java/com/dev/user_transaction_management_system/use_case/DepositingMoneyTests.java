@@ -1,0 +1,77 @@
+package com.dev.user_transaction_management_system.use_case;
+
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
+import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
+import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
+import com.dev.user_transaction_management_system.use_case.dto.DepositReceipt;
+import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
+import org.junit.jupiter.api.Test;
+
+import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.fake.DepositRequestBuilder.aDepositRequest;
+import static org.assertj.core.api.Assertions.*;
+
+class DepositingMoneyTests extends BankAccountTestHelper {
+
+    private final DepositingMoney depositingMoney;
+
+    public DepositingMoneyTests() {
+        super.accountRepository = new BankAccountRepositoryFake();
+
+        final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
+        this.depositingMoney = new DepositingMoney(transactionRepository, accountRepository);
+    }
+
+    @Test
+    void deposit_money_successfully() {
+        final BankAccount bankAccount = havingOpened(anAccount().enabled().withBalance(500));
+
+        final DepositRequest depositRequest = aDepositRequest()
+                .withAmount(300)
+                .withAccountNumber(bankAccount.accountNumberAsString()).initiate();
+
+
+        assertThatNoException().isThrownBy(()-> {
+            final DepositReceipt receipt = depositingMoney.deposit(depositRequest);
+            assertThat(receipt).isNotNull();
+            assertThat(receipt.accountNumber()).isEqualTo(bankAccount.accountNumberAsString());
+            assertThat(receipt.referenceNumber()).isEqualTo("03004565879851");
+        });
+    }
+
+    @Test
+    void cannot_deposit_money_with_negative_amount() {
+        final BankAccount bankAccount = havingOpened(anAccount().enabled().withBalance(500));
+
+        assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(()->{
+            final DepositRequest depositRequest = aDepositRequest().withAmount(-200)
+                    .withAccountNumber(bankAccount.accountNumberAsString()).initiate();
+
+            depositingMoney.deposit(depositRequest);
+        });
+    }
+
+    @Test
+    void can_not_deposit_money_to_non_existed_account() {
+        String nonRegisteredAccountNumber = "0300456578451";
+        final DepositRequest depositRequest = aDepositRequest()
+                .withAccountNumber(nonRegisteredAccountNumber).initiate();
+
+        assertThatExceptionOfType(CouldNotFindBankAccount.class).isThrownBy(()->depositingMoney
+                .deposit(depositRequest));
+    }
+
+    @Test
+    void cannot_deposit_money_to_disable_account() {
+        final BankAccount disableAccount = havingOpened(anAccount().disabled());
+
+        final DepositRequest depositRequest = aDepositRequest()
+                .withAccountNumber(disableAccount.accountNumberAsString()).initiate();
+
+        assertThatExceptionOfType(CouldNotProcessTransaction.class)
+                .isThrownBy(()->depositingMoney.deposit(depositRequest));
+    }
+}

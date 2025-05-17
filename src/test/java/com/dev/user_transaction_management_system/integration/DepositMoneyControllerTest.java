@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
+import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
@@ -23,13 +24,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
-import static com.dev.user_transaction_management_system.fake.DepositRequestBuilder.aDepositRequest;
 import static com.dev.user_transaction_management_system.fake.TransferMoneyRequestBuilder.aTransferMoneyRequest;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
-import static java.time.LocalDateTime.of;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -37,7 +36,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc
 @Tag("INTEGRATION")
-class TransferMoneyControllerTest extends BankAccountTestHelper {
+class DepositMoneyControllerTest extends BankAccountTestHelper {
 
     @Autowired
     private MockMvc mockMvc;
@@ -62,34 +61,29 @@ class TransferMoneyControllerTest extends BankAccountTestHelper {
     }
 
     @Test
-    void init_transfer_money_transaction_successfully() throws Exception {
-        final BankAccount from =havingOpened(anAccount().withUserId(entity.getId())
+    void init_deposit_money_request_successfully() throws Exception {
+        final BankAccount to =havingOpened(anAccount().enabled().withUserId(entity.getId())
                 .withAccountNumber("0300654789123").withBalance(500));
 
-        final BankAccount to = havingOpened(anAccount().enabled().withAccountNumber("0300456574853")
-                .withBalance(140)
-                .withUserId(UUID.randomUUID().toString()));
-
-        final TransferMoneyRequest transferMoneyRequest = aTransferMoneyRequest()
+        final DepositRequest transferMoneyRequest = DepositRequestBuilder.aDepositRequest()
                 .withAmount(300)
-                .withFromAccount(from)
-                .withToAccount(to)
+                .withAccountNumber(to.accountNumberAsString())
                 .withDescription("transaction description")
                 .initiate();
 
-        mockMvc.perform(post("/api/transaction/transfer")
+        mockMvc.perform(post("/api/transaction/deposit")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization",token)
                         .content(objectMapper.writeValueAsString(transferMoneyRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.referenceNumber").exists())
+                .andExpect(jsonPath("$.accountNumber").exists())
+                .andExpect(jsonPath("$.createdAt").exists());
 
 
         Optional<BankAccountEntity> savedToAccount = accountRepository.findByAccountNumber(to.accountNumber());
-        Optional<BankAccountEntity> savedFromAccount = accountRepository.findByAccountNumber(from.accountNumber());
 
         assertThat(savedToAccount).isPresent();
-        assertThat(savedFromAccount).isPresent();
-        assertThat(savedToAccount.get().getBalance()).isEqualTo(440);
-        assertThat(savedFromAccount.get().getBalance()).isEqualTo(200);
+        assertThat(savedToAccount.get().getBalance()).isEqualTo(800);
     }
 }

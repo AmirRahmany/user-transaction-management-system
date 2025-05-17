@@ -54,6 +54,11 @@ public class AccountFakeBuilder {
         return this;
     }
 
+    public AccountFakeBuilder disabled() {
+        this.accountStatus = DISABLE;
+        return this;
+    }
+
     public BankAccount open() {
         LocalDateTime createdAt = LocalDateTime.of(2025, 6, 14, 8, 16, 15);
         final AccountId id = AccountId.fromUUID(UUID.fromString(accountId.toString()));
