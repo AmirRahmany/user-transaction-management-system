@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system;
 
+import io.jsonwebtoken.lang.Assert;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
@@ -12,7 +13,6 @@ public class UserTransactionManagementSystemApplication {
     public static void main(String[] args) {
         SpringApplication.run(UserTransactionManagementSystemApplication.class, args);
     }
-
 
 
 }

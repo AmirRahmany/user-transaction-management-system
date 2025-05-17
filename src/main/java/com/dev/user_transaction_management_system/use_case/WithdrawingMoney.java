@@ -43,7 +43,7 @@ public class WithdrawingMoney {
         final Transaction transaction = Transaction.of(
                 TransactionId.autoGenerateByDb(),
                 fromAccountNumber,
-                fromAccountNumber, //TODO refactor
+                //TODO refactor
                 TransactionDetail.of(amount, TransactionType.WITHDRAWAL, request.description()),
                 ReferenceNumber.fromString(referenceNumber),
                 createdAt);

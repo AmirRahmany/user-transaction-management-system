@@ -10,15 +10,13 @@ public class Transaction {
 
     private final TransactionId transactionId;
     private TransactionDetail transactionDetail;
-    private final AccountNumber fromAccountNumber;
-    private final AccountNumber toAccountNumber;
+    private final AccountNumber accountNumber;
     private final LocalDateTime createdAt;
     private final ReferenceNumber referenceNumber;
 
     public Transaction(
             TransactionId transactionId,
             AccountNumber fromAccountNumber,
-            AccountNumber toAccountNumber,
             TransactionDetail transactionDetail,
             LocalDateTime createdAt,
             ReferenceNumber referenceNumber) {
@@ -28,8 +26,7 @@ public class Transaction {
         Assert.notNull(referenceNumber, "reference number cannot be null");
         Assert.notNull(createdAt, "created at cannot be null");
 
-        this.fromAccountNumber = fromAccountNumber;
-        this.toAccountNumber = toAccountNumber;
+        this.accountNumber = fromAccountNumber;
         this.createdAt = createdAt;
         this.referenceNumber = referenceNumber;
         this.transactionDetail = transactionDetail;
@@ -38,15 +35,13 @@ public class Transaction {
 
     public static Transaction of(
             TransactionId transactionId,
-            AccountNumber fromAccountNumber,
-            AccountNumber toAccountNumber,
+            AccountNumber accountNumber,
             TransactionDetail transactionDetail,
             ReferenceNumber referenceNumber,
             LocalDateTime createdAt) {
 
         return new Transaction(transactionId,
-                fromAccountNumber,
-                toAccountNumber,
+                accountNumber,
                 transactionDetail,
                 createdAt,
                 referenceNumber);
@@ -58,10 +53,7 @@ public class Transaction {
         entity.setAmount(transactionDetail.amount().asDouble());
         entity.setDescription(transactionDetail.description());
         entity.setTransactionType(transactionDetail.transactionType());
-        entity.setFromAccountNumber(fromAccountNumber.toString());
-        if (toAccountNumber != null)
-            entity.setToAccountNumber(toAccountNumber.toString());
-
+        entity.setAccountNumber(accountNumber.toString());
         entity.setReferenceNumber(referenceNumber.toString());
         entity.setCreatedAt(createdAt);
         return entity;

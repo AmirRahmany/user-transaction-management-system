@@ -47,7 +47,7 @@ public class TransactionRepositoryImpl implements TransactionRepository {
 
     @Override
     public List<TransactionEntity> findByAccountNumber(AccountNumber bankAccountNumber) {
-        final String sql = "FROM TransactionEntity WHERE fromAccountNumber=:accountNumber";
+        final String sql = "FROM TransactionEntity WHERE accountNumber=:accountNumber";
         return entityManager.createQuery(sql,TransactionEntity.class)
                 .setParameter("accountNumber", bankAccountNumber.toString())
                 .getResultList();

@@ -1,7 +1,6 @@
 package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
-import com.dev.user_transaction_management_system.domain.transaction.Transaction;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
 
@@ -34,12 +33,12 @@ public class TransactionRepositoryFake implements TransactionRepository {
     public List<TransactionEntity> findByAccountNumber(AccountNumber bankAccountNumber) {
         List<TransactionEntity> allTransactions = new LinkedList<>();
         transactions.values().stream()
-                .filter(transaction -> bankAccountNumber.isSameAs(AccountNumber.of(transaction.getFromAccountNumber())))
+                .filter(transaction -> bankAccountNumber.isSameAs(AccountNumber.of(transaction.getAccountNumber())))
                 .forEach(transactionEntity -> allTransactions.add(transactionEntity));
 
         transactions.values().stream().filter(transaction -> {
-                    if (transaction.getToAccountNumber() != null)
-                        return bankAccountNumber.isSameAs(AccountNumber.of(transaction.getToAccountNumber()));
+                    if (transaction.getAccountNumber() != null)
+                        return bankAccountNumber.isSameAs(AccountNumber.of(transaction.getAccountNumber()));
                     return false;
                 })
                 .forEach(transactionEntity -> allTransactions.add(transactionEntity));

@@ -29,23 +29,21 @@ public class TransferMoney {
     }
 
     @Transactional
-    public TransferReceipt transfer(TransferMoneyRequest transferMoneyRequest) {
-        final AccountNumber fromAccountNumber = AccountNumber.of(transferMoneyRequest.fromAccountNumber());
-        final AccountNumber toAccountNumber = AccountNumber.of(transferMoneyRequest.toAccountNumber());
+    public TransferReceipt transfer(TransferMoneyRequest request) {
+        final AccountNumber fromAccountNumber = AccountNumber.of(request.fromAccountNumber());
+        final AccountNumber toAccountNumber = AccountNumber.of(request.toAccountNumber());
         fromAccountNumber.ensureDistinctAccounts(toAccountNumber);
 
-        String referenceNumber = transactionRepository.generateReferenceNumber();
-
-        final LocalDateTime createdAt = LocalDateTime.now();
         final BankAccount from = finAccountBy(fromAccountNumber);
         final BankAccount to = finAccountBy(toAccountNumber);
-        final Amount amount = Amount.of(transferMoneyRequest.amount());
+        String referenceNumber = transactionRepository.generateReferenceNumber();
 
-
+        final Amount amount = Amount.of(request.amount());
         from.decreaseBalance(amount);
         to.increaseAmount(amount);
 
-        final Transaction transaction = initiateTransaction(transferMoneyRequest, referenceNumber,createdAt);
+        final LocalDateTime createdAt = LocalDateTime.now();
+        final Transaction transaction = initiateTransaction(request, referenceNumber,createdAt);
 
         accountRepository.save(from.toEntity());
         accountRepository.save(to.toEntity());
@@ -70,7 +68,6 @@ public class TransferMoney {
         return Transaction.of(
                 TransactionId.autoGenerateByDb(),
                 AccountNumber.of(transferMoneyRequest.fromAccountNumber()),
-                AccountNumber.of(transferMoneyRequest.toAccountNumber()),
                 transactionDetail,
                 ReferenceNumber.fromString(referenceNumber),
                 createdAt);

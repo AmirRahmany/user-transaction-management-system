@@ -17,11 +17,8 @@ public class TransactionEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer transactionId;
 
-    @Column(name = "from_account_number")
-    private String fromAccountNumber;
-
-    @Column(name = "to_account_number")
-    private String toAccountNumber;
+    @Column(name = "account_number")
+    private String accountNumber;
 
     @Column(name = "amount")
     private Double amount;
@@ -35,15 +32,13 @@ public class TransactionEntity {
     private String description;
     private String referenceNumber;
 
-    private TransactionEntity(String fromAccountNumber,
-                              String toAccountNumber,
+    private TransactionEntity(String accountNumber,
                               Double amount,
                               LocalDateTime createdAt,
                               TransactionType transactionType,
                               String description,
                               String referenceNumber) {
-        this.fromAccountNumber = fromAccountNumber;
-        this.toAccountNumber = toAccountNumber;
+        this.accountNumber = accountNumber;
         this.amount = amount;
         this.createdAt = createdAt;
         this.transactionType = transactionType;
@@ -51,8 +46,7 @@ public class TransactionEntity {
         this.referenceNumber = referenceNumber;
     }
 
-    public static TransactionEntity initOf(String fromAccountNumber,
-                                           String toAccountNumber,
+    public static TransactionEntity initOf(String accountNumber,
                                            double amount,
                                            TransactionType transactionType,
                                            String description,
@@ -60,8 +54,7 @@ public class TransactionEntity {
                                            LocalDateTime createdAt
     ) {
         return new TransactionEntity(
-                fromAccountNumber,
-                toAccountNumber,
+                accountNumber,
                 amount,
                 createdAt,
                 transactionType,

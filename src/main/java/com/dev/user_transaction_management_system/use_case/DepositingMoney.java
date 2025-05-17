@@ -67,7 +67,6 @@ public class DepositingMoney {
         return Transaction.of(
                 TransactionId.autoGenerateByDb(),
                 AccountNumber.of(request.accountNumber()),
-                null,
                 transactionDetail,
                 ReferenceNumber.fromString(referenceNumber),
                 createdAt);
