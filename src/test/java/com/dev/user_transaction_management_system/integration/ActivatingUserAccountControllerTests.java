@@ -69,7 +69,7 @@ class ActivatingUserAccountControllerTests {
     void activate_user_account_successfully() throws Exception {
         final String username = entity.getUsername();
         final UserActivationRequest userActivationRequest = new UserActivationRequest(username);
-        mockMvc.perform(post("/api/user/activation")
+        mockMvc.perform(post("/api/user/activate")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization", token)
                         .content(objectMapper.writeValueAsString(userActivationRequest)))

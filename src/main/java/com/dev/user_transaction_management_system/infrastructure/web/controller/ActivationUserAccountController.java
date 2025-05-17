@@ -20,7 +20,7 @@ public class ActivationUserAccountController {
         this.activatingUserAccount = activatingUserAccount;
     }
 
-    @PostMapping("activation")
+    @PostMapping("activate")
     public ResponseEntity<?> activate(@RequestBody UserActivationRequest request) {
         try {
             activatingUserAccount.activate(request.username());

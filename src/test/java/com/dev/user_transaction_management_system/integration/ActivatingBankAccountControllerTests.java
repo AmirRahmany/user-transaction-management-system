@@ -69,7 +69,7 @@ class ActivatingBankAccountControllerTests extends BankAccountTestHelper {
 
         final BankAccountActivationRequest activationRequest = new BankAccountActivationRequest(accountNumber);
 
-        mockMvc.perform(post("/api/account/activation")
+        mockMvc.perform(post("/api/account/activate")
                 .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization",token)
                 .content(objectMapper.writeValueAsString(activationRequest)))
