@@ -6,7 +6,7 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProc
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.use_case.dto.DepositReceipt;
+import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import org.junit.jupiter.api.Test;
 
@@ -35,10 +35,10 @@ class DepositingMoneyTests extends BankAccountTestHelper {
 
 
         assertThatNoException().isThrownBy(()-> {
-            final DepositReceipt receipt = depositingMoney.deposit(depositRequest);
-            assertThat(receipt).isNotNull();
-            assertThat(receipt.accountNumber()).isEqualTo(bankAccount.accountNumberAsString());
-            assertThat(receipt.referenceNumber()).isEqualTo("03004565879851");
+            final TransactionReceipt transactionReceipt = depositingMoney.deposit(depositRequest);
+            assertThat(transactionReceipt).isNotNull();
+            assertThat(transactionReceipt.accountNumber()).isEqualTo(bankAccount.accountNumberAsString());
+            assertThat(transactionReceipt.referenceNumber()).isEqualTo("03004565879851");
         });
     }
 

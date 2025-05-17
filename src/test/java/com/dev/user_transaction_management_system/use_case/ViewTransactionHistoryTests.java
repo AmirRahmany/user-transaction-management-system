@@ -33,7 +33,6 @@ class ViewTransactionHistoryTests extends BankAccountTestHelper {
     void show_user_transactions_successfully() {
         final BankAccount from = havingEnabledAccount();
         final BankAccount to = havingOpened(anAccount().enabled().withAccountNumber("0300450012325"));
-        final TransactionHistoryRequest request = new TransactionHistoryRequest(from.accountNumberAsString());
 
 
         final TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest(100,
@@ -41,7 +40,7 @@ class ViewTransactionHistoryTests extends BankAccountTestHelper {
 
         final TransferReceipt receipt = transactionService.transfer(transferMoneyRequest);
 
-        final List<TransactionHistory> histories = viewTransactionHistory.viewHistoryByAccountNumber(request);
+        final List<TransactionHistory> histories = viewTransactionHistory.getHistoryByAccountNumber(from.accountNumberAsString());
 
         TransactionHistory expectedHistory = new TransactionHistory("DEPOSIT", receipt.createdAt(),
                 100,receipt.referenceNumber());

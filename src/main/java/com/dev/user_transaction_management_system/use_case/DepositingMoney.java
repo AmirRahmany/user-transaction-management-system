@@ -7,9 +7,8 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFind
 import com.dev.user_transaction_management_system.domain.transaction.*;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
-import com.dev.user_transaction_management_system.use_case.dto.DepositReceipt;
+import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
-import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +29,7 @@ public class DepositingMoney {
     }
 
     @Transactional
-    public DepositReceipt deposit(DepositRequest depositRequest) {
+    public TransactionReceipt deposit(DepositRequest depositRequest) {
         final AccountNumber fromAccountNumber = AccountNumber.of(depositRequest.accountNumber());
 
         String referenceNumber = transactionRepository.generateReferenceNumber();
@@ -47,7 +46,8 @@ public class DepositingMoney {
         accountRepository.save(bankAccount.toEntity());
         transactionRepository.save(transaction.toEntity());
 
-        return DepositReceipt.makeOf(referenceNumber,
+        return TransactionReceipt.makeOf(amount.asDouble(),
+                referenceNumber,
                 fromAccountNumber.toString(),
                 createdAt);
     }

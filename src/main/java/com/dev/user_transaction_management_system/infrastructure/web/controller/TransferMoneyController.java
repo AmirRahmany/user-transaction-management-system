@@ -1,8 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.web.controller;
 
-import com.dev.user_transaction_management_system.use_case.DepositingMoney;
 import com.dev.user_transaction_management_system.use_case.TransferMoney;
-import com.dev.user_transaction_management_system.use_case.dto.DepositReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
 import com.dev.user_transaction_management_system.use_case.dto.TransferReceipt;
 import org.springframework.http.ResponseEntity;
