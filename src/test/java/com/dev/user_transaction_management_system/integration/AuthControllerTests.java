@@ -8,12 +8,14 @@ import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -43,7 +45,15 @@ class AuthControllerTests {
     private UserRepository userRepository;
 
     @Autowired
+    private PasswordEncoder passwordEncoder;
+
+
     private UserAccountTestUtil accountTestUtil;
+
+    @BeforeEach
+    void setUp() {
+        this.accountTestUtil = new UserAccountTestUtil(userRepository,passwordEncoder);
+    }
 
     @Test
     void register_user_successfully() throws Exception {
@@ -69,7 +79,7 @@ class AuthControllerTests {
     }
 
     @Test
-    void authenticate_user_successfully() throws Exception {
+    void sign_in_user_successfully() throws Exception {
         final String username = "amir@gmail.com";
         final String password = "@Abcd1234";
         accountTestUtil.havingRegistered(aUser().withEmail(username).withPassword(password));

@@ -1,34 +1,48 @@
 package com.dev.user_transaction_management_system.fake;
 
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 public class TransactionRepositoryFake implements TransactionRepository {
 
-    private final List<TransactionEntity> transactions = new LinkedList<>();
+    private final Map<Integer, TransactionEntity> transactions = new LinkedHashMap<>();
 
     @Override
     public void save(TransactionEntity transactionEntity) {
-        transactions.add(transactionEntity);
+        if (transactionEntity.getTransactionId() == null) {
+            transactionEntity.setTransactionId(transactions.size() + 1);
+        }
+        transactions.put(transactionEntity.getTransactionId(), transactionEntity);
     }
 
     @Override
     public Optional<TransactionEntity> findById(Integer transactionId) {
-        return transactions.stream().filter(transactionEntity -> transactionEntity.getTransactionId().equals(transactionId)).findFirst();
+        return transactions.values().stream().filter(transactionEntity -> transactionEntity.getTransactionId()
+                .equals(transactionId)).findFirst();
     }
 
     @Override
     public String generateReferenceNumber() {
-        final Random random = new Random();
-        StringBuilder stringBuilder = new StringBuilder();
-        for (int i = 0; i < 16; i++) {
-            stringBuilder.append(random.nextInt(0,10));
-        }
-        return stringBuilder.toString();
+        return "03004565879851";
     }
+
+    @Override
+    public List<TransactionEntity> findByAccountNumber(AccountNumber bankAccountNumber) {
+        List<TransactionEntity> allTransactions = new LinkedList<>();
+        transactions.values().stream()
+                .filter(transaction -> bankAccountNumber.isSameAs(AccountNumber.of(transaction.getAccountNumber())))
+                .forEach(transactionEntity -> allTransactions.add(transactionEntity));
+
+        transactions.values().stream().filter(transaction -> {
+                    if (transaction.getAccountNumber() != null)
+                        return bankAccountNumber.isSameAs(AccountNumber.of(transaction.getAccountNumber()));
+                    return false;
+                })
+                .forEach(transactionEntity -> allTransactions.add(transactionEntity));
+        return allTransactions;
+    }
+
 }

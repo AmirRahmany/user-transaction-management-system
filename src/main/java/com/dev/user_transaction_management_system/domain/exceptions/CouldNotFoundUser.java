@@ -12,4 +12,8 @@ public class CouldNotFoundUser extends RuntimeException {
     public static CouldNotFoundUser withId(String userId) {
         return new CouldNotFoundUser("Couldn't found user with userId: " + userId);
     }
+
+    public static CouldNotFoundUser withEmail(String email) {
+        return new CouldNotFoundUser("Couldn't found user with email: " + email);
+    }
 }

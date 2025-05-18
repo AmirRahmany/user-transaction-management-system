@@ -1,19 +1,16 @@
 package com.dev.user_transaction_management_system.helper;
 
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
-import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.ActivatingUserAccount;
 import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
-import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -32,16 +29,16 @@ public class UserAccountTestUtil {
     private MockMvc mockMvc;
 
     @Autowired
-    protected UserRepository userRepository;
-
-    @Autowired
-    private RegisteringUserAccount registeringUserAccount;
-
-    @Autowired
     private ActivatingUserAccount activatingUserAccount;
 
     @Autowired
     protected ObjectMapper objectMapper;
+
+    private final UserAccountRegistrationTestHelper registrationTestHelper;
+
+    public UserAccountTestUtil(UserRepository userRepository,PasswordEncoder passwordEncoder) {
+        this.registrationTestHelper = new UserAccountRegistrationTestHelper(userRepository,passwordEncoder);
+    }
 
     public String signIn(String username, String password) {
         try {
@@ -67,17 +64,11 @@ public class UserAccountTestUtil {
     }
 
     public UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
-        final UserRegistrationRequest user = userFakeBuilder.buildDTO();
-        registeringUserAccount.register(user);
-        return findUserByEmail(user.email());
+        return registrationTestHelper.havingRegistered(userFakeBuilder);
     }
 
-    public void activateUserAccount(String userId) {
-        activatingUserAccount.activate(userId);
-    }
-
-    private UserEntity findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElseThrow(CouldNotFindBankAccount::new);
+    public void activateUserAccount(String username) {
+        activatingUserAccount.activate(username);
     }
 
 }

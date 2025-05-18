@@ -28,7 +28,7 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableMethodSecurity
 public class SecurityConfiguration {
 
-    CustomUserUserDetailsService userDetailsService;
+    private final CustomUserUserDetailsService userDetailsService;
     private final JwtTokenUtils jwtTokenUtils;
 
     private final AuthJwtEntryPoint unauthorizedHandler;
@@ -46,6 +46,8 @@ public class SecurityConfiguration {
         http.authorizeHttpRequests((request) -> request
                         .requestMatchers("/api/auth/register").permitAll()
                         .requestMatchers("/api/auth/signin").permitAll()
+                        //.requestMatchers("/api/user/activation").hasRole("ADMIN")
+                        //.requestMatchers("/api/account/activation").hasRole("ADMIN")
                         .anyRequest().authenticated())
                 .csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))

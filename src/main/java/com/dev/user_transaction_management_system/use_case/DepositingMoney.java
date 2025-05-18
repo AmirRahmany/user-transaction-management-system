@@ -1,63 +1,57 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.transaction.*;
-import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
-import com.dev.user_transaction_management_system.use_case.dto.DepositReceipt;
+import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
-import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 
 @Service
 public class DepositingMoney {
 
     private final TransactionRepository transactionRepository;
     private final BankAccountRepository accountRepository;
-    private final WithdrawingMoney withdrawingMoney;
     private final BankAccountMapper bankAccountMapper;
 
     public DepositingMoney(TransactionRepository transactionRepository,
-                           BankAccountRepository accountRepository, WithdrawingMoney withdrawingMoney) {
+                           BankAccountRepository accountRepository) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
-        this.withdrawingMoney = withdrawingMoney;
         this.bankAccountMapper = new BankAccountMapper();
     }
 
     @Transactional
-    public DepositReceipt deposit(DepositRequest depositRequest) {
-        final AccountNumber fromAccountNumber = AccountNumber.of(depositRequest.fromAccountNumber());
-        final AccountNumber toAccountNumber = AccountNumber.of(depositRequest.toAccountNumber());
-        fromAccountNumber.ensureDistinctAccounts(toAccountNumber);
+    public TransactionReceipt deposit(DepositRequest depositRequest) {
+        final AccountNumber fromAccountNumber = AccountNumber.of(depositRequest.accountNumber());
 
-        final WithdrawalRequest withdrawalRequest = makeWithdrawalRequestOf(depositRequest);
-        ReferenceNumber referenceNumber = withdrawingMoney.withdraw(withdrawalRequest);
+        String referenceNumber = transactionRepository.generateReferenceNumber();
 
-        final BankAccount to = finAccountBy(toAccountNumber);
-        to.increaseAmount(Amount.of(depositRequest.amount()));
-        final Transaction transaction = initiateTransaction(depositRequest, referenceNumber);
+        final LocalDateTime createdAt = LocalDateTime.now();
+        final BankAccount bankAccount = finAccountBy(fromAccountNumber);
+        final Amount amount = Amount.of(depositRequest.amount());
 
 
-        accountRepository.save(to.toEntity());
+        bankAccount.increaseAmount(amount);
+
+        final Transaction transaction = initiateTransaction(depositRequest, referenceNumber,createdAt);
+
+        accountRepository.save(bankAccount.toEntity());
         transactionRepository.save(transaction.toEntity());
 
-        return DepositReceipt.makeOf(referenceNumber.toString(),
+        return TransactionReceipt.makeOf(amount.asDouble(),
+                referenceNumber,
                 fromAccountNumber.toString(),
-                toAccountNumber.toString(),
-                depositRequest.createdAt());
+                createdAt);
     }
 
-    private static WithdrawalRequest makeWithdrawalRequestOf(DepositRequest depositRequest) {
-        return new WithdrawalRequest(
-                depositRequest.amount(),
-                depositRequest.fromAccountNumber(),
-                depositRequest.description());
-    }
 
     private BankAccount finAccountBy(AccountNumber fromAccountNumber) {
         final BankAccountEntity fromEntity = accountRepository.findByAccountNumber(fromAccountNumber)
@@ -65,17 +59,16 @@ public class DepositingMoney {
         return bankAccountMapper.toDomain(fromEntity);
     }
 
-    private Transaction initiateTransaction(DepositRequest depositRequest, ReferenceNumber referenceNumber) {
-        final Amount amount = Amount.of(depositRequest.amount());
-        final String description = depositRequest.description();
+    private Transaction initiateTransaction(DepositRequest request, String referenceNumber, LocalDateTime createdAt) {
+        final Amount amount = Amount.of(request.amount());
+        final String description = request.description();
         final TransactionDetail transactionDetail = TransactionDetail.of(amount, TransactionType.DEPOSIT, description);
 
-        return Deposit.of(
+        return Transaction.of(
                 TransactionId.autoGenerateByDb(),
+                AccountNumber.of(request.accountNumber()),
                 transactionDetail,
-                AccountNumber.of(depositRequest.fromAccountNumber()),
-                AccountNumber.of(depositRequest.toAccountNumber()),
-                referenceNumber,
-                depositRequest.createdAt());
+                ReferenceNumber.fromString(referenceNumber),
+                createdAt);
     }
 }

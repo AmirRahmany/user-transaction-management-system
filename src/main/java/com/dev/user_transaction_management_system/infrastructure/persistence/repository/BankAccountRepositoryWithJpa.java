@@ -10,12 +10,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class BankAccountRepositoryImpl implements BankAccountRepository {
+public class BankAccountRepositoryWithJpa implements BankAccountRepository {
 
     private final EntityManager entityManager;
     private final UUIDIdentifierGenerator identifierGenerator;
 
-    public BankAccountRepositoryImpl(EntityManager entityManager) {
+    public BankAccountRepositoryWithJpa(EntityManager entityManager) {
         this.entityManager = entityManager;
         this.identifierGenerator = new UUIDIdentifierGenerator();
     }

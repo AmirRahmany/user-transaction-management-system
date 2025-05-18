@@ -17,7 +17,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collections;
 
-import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -46,8 +45,9 @@ class AuthenticateUserTests {
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 userDetails, null, userDetails.getAuthorities());
 
-        when(authenticationManager
-                .authenticate(any(UsernamePasswordAuthenticationToken.class))).thenReturn(authentication);
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+
         when(tokenUtils.generateJwtTokenFromUserName(userDetails)).thenReturn("mock.jwt.token");
 
         UserAuthenticationResponse response = authenticateUser.authenticate(loginRequest);

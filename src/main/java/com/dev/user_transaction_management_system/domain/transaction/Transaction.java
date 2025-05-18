@@ -1,36 +1,61 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
 
-import static com.dev.user_transaction_management_system.domain.transaction.TransactionStatus.PROCESSING;
+public class Transaction {
 
-public abstract class Transaction {
+    private final TransactionId transactionId;
+    private TransactionDetail transactionDetail;
+    private final AccountNumber accountNumber;
+    private final LocalDateTime createdAt;
+    private final ReferenceNumber referenceNumber;
 
-    protected final TransactionId transactionId;
-    protected TransactionDetail transactionDetail;
-    protected final TransactionStatus transactionStatus;
-    protected final LocalDateTime createdAt;
-    protected final ReferenceNumber referenceNumber;
+    public Transaction(
+            TransactionId transactionId,
+            AccountNumber fromAccountNumber,
+            TransactionDetail transactionDetail,
+            LocalDateTime createdAt,
+            ReferenceNumber referenceNumber) {
 
+        Assert.notNull(transactionId, "transaction id cannot be null");
+        Assert.notNull(transactionDetail, "transaction detail cannot be null");
+        Assert.notNull(referenceNumber, "reference number cannot be null");
+        Assert.notNull(createdAt, "created at cannot be null");
 
-    Transaction(TransactionId transactionId,
-                TransactionDetail transactionDetail,
-                ReferenceNumber referenceNumber,
-                LocalDateTime createdAt) {
-        Assert.notNull(transactionId,"transaction id cannot be null");
-        Assert.notNull(transactionDetail,"transaction detail cannot be null");
-        Assert.notNull(referenceNumber,"reference number cannot be null");
-        Assert.notNull(createdAt,"created at cannot be null");
-
-        this.transactionId = transactionId;
-        this.transactionDetail = transactionDetail;
+        this.accountNumber = fromAccountNumber;
         this.createdAt = createdAt;
-        this.transactionStatus = PROCESSING;
         this.referenceNumber = referenceNumber;
+        this.transactionDetail = transactionDetail;
+        this.transactionId = transactionId;
     }
 
-    public abstract TransactionEntity toEntity();
+    public static Transaction of(
+            TransactionId transactionId,
+            AccountNumber accountNumber,
+            TransactionDetail transactionDetail,
+            ReferenceNumber referenceNumber,
+            LocalDateTime createdAt) {
+
+        return new Transaction(transactionId,
+                accountNumber,
+                transactionDetail,
+                createdAt,
+                referenceNumber);
+    }
+
+
+    public TransactionEntity toEntity() {
+        final TransactionEntity entity = new TransactionEntity();
+        entity.setAmount(transactionDetail.amount().asDouble());
+        entity.setDescription(transactionDetail.description());
+        entity.setTransactionType(transactionDetail.transactionType());
+        entity.setAccountNumber(accountNumber.toString());
+        entity.setReferenceNumber(referenceNumber.toString());
+        entity.setCreatedAt(createdAt);
+        return entity;
+    }
 }

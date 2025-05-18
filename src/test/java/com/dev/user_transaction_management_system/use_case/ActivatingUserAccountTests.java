@@ -1,18 +1,15 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
-import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
-import com.dev.user_transaction_management_system.fake.AccountNumberGeneratorStubs;
-import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.PasswordEncoderStub;
 import com.dev.user_transaction_management_system.fake.UserRepositoryFake;
-import com.dev.user_transaction_management_system.helper.UserAccountTestHelper;
+import com.dev.user_transaction_management_system.helper.UserAccountRegistrationTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -27,19 +24,19 @@ class ActivatingUserAccountTests {
 
     private final ActivatingUserAccount activatingUserAccount;
 
-    private final UserAccountTestHelper helper;
+    private final UserAccountRegistrationTestHelper helper;
 
     public ActivatingUserAccountTests() {
         UserRepository userRepository = new UserRepositoryFake();
         activatingUserAccount = new ActivatingUserAccount(userRepository);
-        helper = new UserAccountTestHelper(userRepository);
+        helper = new UserAccountRegistrationTestHelper(userRepository,new PasswordEncoderStub());
     }
 
     @Test
     void enabling_user_account_successfully() {
         final UserEntity entity = helper.havingRegistered(aUser());
 
-        assertThatNoException().isThrownBy(() -> activatingUserAccount.activate(entity.getId()));
+        assertThatNoException().isThrownBy(() -> activatingUserAccount.activate(entity.getUsername()));
     }
 
     @Test
@@ -54,14 +51,13 @@ class ActivatingUserAccountTests {
     void should_not_persist_when_user_account_is_already_enabled() {
         final UserEntity entity = helper.havingRegistered(aUser());
         entity.setUserStatus(UserStatus.ENABLE);
+
         final UserRepository repository = mock(UserRepository.class);
         ActivatingUserAccount userAccount = new ActivatingUserAccount(repository);
 
-        final UserId userId = UserId.fromString(entity.getId());
+        when(repository.findByEmail(any())).thenReturn(Optional.of(entity));
 
-        when(repository.findById(any(UserId.class))).thenReturn(Optional.of(entity));
-
-        assertThatNoException().isThrownBy(() -> userAccount.activate(userId.asString()));
+        assertThatNoException().isThrownBy(() -> userAccount.activate(entity.getUsername()));
         verify(repository, never()).save(any(UserEntity.class));
     }
 }

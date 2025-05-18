@@ -24,7 +24,8 @@ public class BankAccount {
     private BankAccount(AccountId accountId,
                         AccountNumber accountNumber,
                         UserId userId, Amount balance,
-                        LocalDateTime createdAt) {
+                        LocalDateTime createdAt,
+                        AccountStatus status) {
 
         Assert.notNull(accountId,"account id cannot be null");
         Assert.notNull(accountNumber,"account number cannot be null");
@@ -40,27 +41,35 @@ public class BankAccount {
         this.userId = userId;
         this.balance = balance;
         this.createdAt = createdAt;
-        this.status = AccountStatus.DISABLE;
+        this.status = status;
     }
 
     public static BankAccount open(AccountId accountId,
                                    AccountNumber accountNumber,
                                    UserId userId,
                                    Amount balance,
+                                   AccountStatus status,
                                    LocalDateTime createdAt) {
-        return new BankAccount(accountId, accountNumber, userId, balance, createdAt);
+        return new BankAccount(accountId, accountNumber, userId, balance, createdAt,status);
     }
 
     public void increaseAmount(Amount amount) {
-        final double decreasedValue = this.balance.toValue() + amount.toValue();
+        if (isAccountDisable())
+            throw CouldNotProcessTransaction.withDisabledAccount();
+
+        final double decreasedValue = this.balance.asDouble() + amount.asDouble();
         this.balance = Amount.of(decreasedValue);
+    }
+
+    private boolean isAccountDisable() {
+        return status == AccountStatus.DISABLE;
     }
 
     public void decreaseBalance(Amount amount) {
         Assert.notNull(amount,"amount cannot be null");
         ensureSufficientBalanceFor(amount);
 
-        final double decreasedValue = this.balance.toValue() - amount.toValue();
+        final double decreasedValue = this.balance.asDouble() - amount.asDouble();
         this.balance = Amount.of(decreasedValue);
     }
 
@@ -71,7 +80,7 @@ public class BankAccount {
     }
 
     private boolean isBalanceSufficient(Amount amount) {
-        return balance.toValue() >= amount.toValue();
+        return balance.asDouble() >= amount.asDouble();
     }
 
     public void enable() {
@@ -79,7 +88,7 @@ public class BankAccount {
     }
 
     private boolean hasMinimumBalance(Amount balance) {
-        return balance.toValue() >= MINIMUM_BALANCE;
+        return balance.asDouble() >= MINIMUM_BALANCE;
     }
 
     public AccountNumber accountNumber() {
@@ -95,14 +104,14 @@ public class BankAccount {
         bankAccountEntity.setAccountId(accountId.asString());
         bankAccountEntity.setAccountNumber(accountNumberAsString());
         bankAccountEntity.setUserId(userId.asString());
-        bankAccountEntity.setBalance(balance.toValue());
+        bankAccountEntity.setBalance(balance.asDouble());
         bankAccountEntity.setStatus(status);
         bankAccountEntity.setCreatedAt(createdAt);
         return bankAccountEntity;
     }
 
     public OpeningAccountResponse toResponse(String fullName) {
-        return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.toValue(), createdAt, status);
+        return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.asDouble(), createdAt, status);
     }
 
     @Override

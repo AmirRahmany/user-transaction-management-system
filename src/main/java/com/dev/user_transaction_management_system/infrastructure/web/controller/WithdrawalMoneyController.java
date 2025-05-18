@@ -1,8 +1,7 @@
 package com.dev.user_transaction_management_system.infrastructure.web.controller;
 
-import com.dev.user_transaction_management_system.domain.transaction.ReferenceNumber;
-import com.dev.user_transaction_management_system.domain.transaction.Transaction;
 import com.dev.user_transaction_management_system.use_case.WithdrawingMoney;
+import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +22,8 @@ public class WithdrawalMoneyController {
     @PostMapping("/withdraw")
     public ResponseEntity<?> withdraw(@RequestBody WithdrawalRequest withdrawalRequest) {
         try {
-            final ReferenceNumber referenceNumber = withdrawingMoney.withdraw(withdrawalRequest);
-
-            return ResponseEntity.ok(referenceNumber.toString());
+            final TransactionReceipt referenceNumber = withdrawingMoney.withdraw(withdrawalRequest);
+            return ResponseEntity.ok(referenceNumber);
         } catch (Exception e) {
             return ResponseEntity.badRequest().build();
         }

@@ -12,12 +12,12 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public class UserRepositoryImpl implements UserRepository {
+public class UserRepositoryWithJpa implements UserRepository {
 
     private final EntityManager entityManager;
     private final UUIDIdentifierGenerator identifierGenerator;
 
-    public UserRepositoryImpl(EntityManager entityManager) {
+    public UserRepositoryWithJpa(EntityManager entityManager) {
         this.entityManager = entityManager;
         this.identifierGenerator = new UUIDIdentifierGenerator();
     }
