@@ -1,6 +1,5 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
@@ -8,7 +7,6 @@ import com.dev.user_transaction_management_system.infrastructure.persistence.mod
 import com.dev.user_transaction_management_system.use_case.DepositingMoney;
 import com.dev.user_transaction_management_system.use_case.ViewTransactionHistory;
 import com.dev.user_transaction_management_system.use_case.WithdrawingMoney;
-import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import com.dev.user_transaction_management_system.use_case.dto.TransactionHistory;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
@@ -43,7 +41,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc
 @Tag("INTEGRATION")
-class TransactionHistoryControllerTest extends BankAccountTestHelper {
+class TransactionHistoryControllerTests extends BankAccountTestHelper {
 
     @Autowired
     private MockMvc mockMvc;

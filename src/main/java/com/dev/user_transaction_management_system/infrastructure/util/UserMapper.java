@@ -12,7 +12,7 @@ public class UserMapper {
         final FullName fullName = FullName.of(userEntity.getFirstName(), userEntity.getLastName());
         final PhoneNumber phoneNumber = PhoneNumber.of(userEntity.getPhoneNumber());
         final Email email = Email.of(userEntity.getEmail());
-        final Password password = Password.fromPlainPassword(userEntity.getPassword());
+        final Password password = Password.fromHashedPassword(userEntity.getPassword());
         final Credential credential = Credential.of(email, password);
 
         return User.of(userId, fullName, phoneNumber, credential, userEntity.getUserStatus());

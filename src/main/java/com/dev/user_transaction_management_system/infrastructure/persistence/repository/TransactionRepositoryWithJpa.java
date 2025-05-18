@@ -11,12 +11,12 @@ import java.util.Optional;
 import java.util.Random;
 
 @Repository
-public class TransactionRepositoryImpl implements TransactionRepository {
+public class TransactionRepositoryWithJpa implements TransactionRepository {
 
     private final EntityManager entityManager;
     private final Random random;
 
-    public TransactionRepositoryImpl(EntityManager entityManager) {
+    public TransactionRepositoryWithJpa(EntityManager entityManager) {
         this.entityManager = entityManager;
         this.random = new Random();
     }

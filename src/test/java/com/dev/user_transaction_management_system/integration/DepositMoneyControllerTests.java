@@ -7,7 +7,6 @@ import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
-import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
@@ -21,10 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.util.Optional;
-import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
-import static com.dev.user_transaction_management_system.fake.TransferMoneyRequestBuilder.aTransferMoneyRequest;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -36,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Transactional
 @AutoConfigureMockMvc
 @Tag("INTEGRATION")
-class DepositMoneyControllerTest extends BankAccountTestHelper {
+class DepositMoneyControllerTests extends BankAccountTestHelper {
 
     @Autowired
     private MockMvc mockMvc;

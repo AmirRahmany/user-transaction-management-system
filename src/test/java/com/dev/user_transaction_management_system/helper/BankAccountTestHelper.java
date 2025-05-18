@@ -17,9 +17,6 @@ public class BankAccountTestHelper {
     @Autowired
     protected BankAccountRepository accountRepository;
 
-    @Autowired
-    protected OpeningBankAccount openingBankAccount;
-
     protected BankAccount havingOpened(AccountFakeBuilder accountFakeBuilder) {
         final BankAccount account = accountFakeBuilder.open();
 

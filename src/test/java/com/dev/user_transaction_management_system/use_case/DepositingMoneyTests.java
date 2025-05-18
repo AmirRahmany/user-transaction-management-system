@@ -47,7 +47,7 @@ class DepositingMoneyTests extends BankAccountTestHelper {
         final BankAccount bankAccount = havingOpened(anAccount().enabled().withBalance(500));
 
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(()->{
-            final DepositRequest depositRequest = aDepositRequest().withAmount(-200)
+            var depositRequest = aDepositRequest().withAmount(-200)
                     .withAccountNumber(bankAccount.accountNumberAsString()).initiate();
 
             depositingMoney.deposit(depositRequest);
