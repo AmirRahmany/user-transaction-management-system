@@ -1,9 +1,8 @@
 package com.dev.user_transaction_management_system.integration;
 
+import com.dev.user_transaction_management_system.UserAccountFixture;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
-import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
@@ -16,14 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,19 +42,18 @@ class BankAccountControllerTests {
     private BankAccountRepository accountRepository;
 
     @Autowired
-    private UserAccountTestUtil userAccountUtil;
+    private UserAccountFixture userAccountFixture;
 
     private Object token;
+
     private User userAccount;
 
 
     @BeforeEach
     void setUp() {
-        String username="amir@gmail.com";
-        String password = "@Abcd13785";
-        userAccount = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
-        userAccountUtil.activateUserAccount(username);
-        token = userAccountUtil.signIn(username, password);
+        var userAndToken = userAccountFixture.givenActivatedSignedInUserWithToken();
+        token = userAndToken.token();
+        userAccount = userAndToken.user();
     }
 
     @Test
@@ -70,9 +66,8 @@ class BankAccountControllerTests {
                 .andExpect(status().isOk())
                 .andReturn().getResponse().getContentAsString();
 
-        final OpeningAccountResponse openingAccountResponse = objectMapper.readValue(response, OpeningAccountResponse.class);
+        var openingAccountResponse = objectMapper.readValue(response, OpeningAccountResponse.class);
         final AccountNumber accountNumber = AccountNumber.of(openingAccountResponse.accountNumber());
-
         final Optional<BankAccountEntity> accountEntity = accountRepository.findByAccountNumber(accountNumber);
 
         assertThat(openingAccountResponse).isNotNull();

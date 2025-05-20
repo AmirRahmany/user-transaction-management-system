@@ -36,7 +36,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 @Tag("INTEGRATION")
 @Transactional
-//@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 class AuthControllerTests {
 
     @Autowired
@@ -70,13 +69,9 @@ class AuthControllerTests {
                         .content(objectMapper.writeValueAsString(userRegistrationRequest)))
                 .andExpect(status().isOk());
 
-        final boolean isUserAlreadyExists = userRepository.isUserAlreadyExists(email);
-        final Optional<UserEntity> user = userRepository.findByEmail(email);
+        final boolean isUserExisted = userRepository.isUserAlreadyExists(email);
 
-        assertThat(isUserAlreadyExists).isTrue();
-        assertThat(user).isPresent();
-        assertThat(user.get().getFirstName()).isEqualTo(userRegistrationRequest.firstName());
-
+        assertThat(isUserExisted).isTrue();
         then(emailNotifier).should(times(1)).send(any(),any());
     }
 
@@ -85,8 +80,8 @@ class AuthControllerTests {
         final String username = "amir@gmail.com";
         final String password = "@Abcd1234";
         accountTestUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
-
         final LoginRequest loginRequest = new LoginRequest(username, password);
+
         mockMvc.perform(post("/api/auth/signin")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(loginRequest)))

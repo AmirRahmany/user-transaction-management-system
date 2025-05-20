@@ -1,9 +1,9 @@
 package com.dev.user_transaction_management_system.integration;
 
+import com.dev.user_transaction_management_system.UserAccountFixture;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.use_case.DepositingMoney;
 import com.dev.user_transaction_management_system.use_case.ViewTransactionHistory;
 import com.dev.user_transaction_management_system.use_case.WithdrawingMoney;
@@ -20,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -30,7 +29,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
-import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -40,8 +38,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Tag("INTEGRATION")
 @Transactional
-//@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 class TransactionHistoryControllerTests {
+
+    public static final String TRANSACTION_DESCRIPTION = "transaction description";
+    public static final String ACCOUNT_NUMBER = "0300654789123";
 
     @Autowired
     private MockMvc mockMvc;
@@ -53,7 +53,7 @@ class TransactionHistoryControllerTests {
     private ViewTransactionHistory transactionRepository;
 
     @Autowired
-    private UserAccountTestUtil userAccountUtil;
+    private UserAccountFixture userAccountFixture;
 
     @Autowired
     private DepositingMoney depositingMoney;
@@ -69,57 +69,53 @@ class TransactionHistoryControllerTests {
 
     @BeforeEach
     void setUp() {
-        String username="amir@gmail.com";
-        String password = "@Abcd137845";
-
-        userAccount = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
-        token = userAccountUtil.signIn(username, password);
+        var userAndToken = userAccountFixture.givenActivatedSignedInUserWithToken();
+        token = userAndToken.token();
+        userAccount = userAndToken.user();
     }
 
     @Test
-    void view_user_transaction_history_by_account_number() throws Exception {
-        final String accountNumber = "0300654789123";
-        initFakeTransactionsWith(accountNumber);
-
+    void return_user_transaction_history_for_given_account_number() throws Exception {
+        populateTransactionHistoryFor(ACCOUNT_NUMBER);
 
         final MvcResult mvcResult = mockMvc.perform(
-                get("/api/transaction/history/{accountNumber}",accountNumber)
+                get("/api/transaction/history/{accountNumber}", ACCOUNT_NUMBER)
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
                         .header("Authorization", token))
                 .andExpect(status().isOk())
                 .andReturn();
 
         final List<TransactionHistory> transactionHistoryList = readTransactionHistoriesFrom(mvcResult);
+        List<TransactionHistory> dbTransactions = transactionRepository.getHistoryByAccountNumber(ACCOUNT_NUMBER);
 
 
-        List<TransactionHistory> histories = transactionRepository.getHistoryByAccountNumber(accountNumber);
-
-
-        assertThat(histories).isNotEmpty();
-        assertThat(transactionHistoryList).containsAll(histories);
+        assertThat(transactionHistoryList).containsAll(dbTransactions);
+        assertThat(dbTransactions)
+                .as("Expected at least one transaction in DB for account: %s", ACCOUNT_NUMBER)
+                .isNotEmpty();
     }
 
-    private void initFakeTransactionsWith(String accountNumber) {
+    private void populateTransactionHistoryFor(String accountNumber) {
         bankAccountHelper.havingOpened(anAccount().enabled().withUser(userAccount)
-                .withAccountNumber(accountNumber).withBalance(500));
+                .withAccountNumber(accountNumber)
+                .withBalance(500));
 
-        initDepositTransaction(accountNumber);
-        initWithdrawalTransaction(accountNumber);
+        depositFundsInto(accountNumber);
+        withdrawFundsFrom(accountNumber);
     }
 
-    private void initWithdrawalTransaction(String accountNumber) {
-        final String description = "transaction description";
+    private void withdrawFundsFrom(String accountNumber) {
         final WithdrawalRequest withdrawalRequest =
-                new WithdrawalRequest(200,accountNumber,description);
+                new WithdrawalRequest(200, accountNumber, TRANSACTION_DESCRIPTION);
 
         withdrawingMoney.withdraw(withdrawalRequest);
     }
 
-    private void initDepositTransaction(String accountNumber) {
+    private void depositFundsInto(String accountNumber) {
         final DepositRequest depositRequest = DepositRequestBuilder.aDepositRequest()
                 .withAmount(300)
                 .withAccountNumber(accountNumber)
-                .withDescription("transaction description")
+                .withDescription(TRANSACTION_DESCRIPTION)
                 .initiate();
 
         depositingMoney.deposit(depositRequest);

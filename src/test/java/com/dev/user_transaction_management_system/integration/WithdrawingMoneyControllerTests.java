@@ -1,9 +1,8 @@
 package com.dev.user_transaction_management_system.integration;
 
+import com.dev.user_transaction_management_system.UserAccountFixture;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -30,7 +28,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @Tag("INTEGRATION")
-//@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 class WithdrawingMoneyControllerTests{
 
     @Autowired
@@ -40,7 +37,7 @@ class WithdrawingMoneyControllerTests{
     private ObjectMapper objectMapper;
 
     @Autowired
-    private UserAccountTestUtil userAccountUtil;
+    private UserAccountFixture userAccountFixture;
 
     @Autowired
     private BankAccountTestHelper bankAccountHelper;
@@ -51,13 +48,9 @@ class WithdrawingMoneyControllerTests{
 
     @BeforeEach
     void setUp() {
-        String username = "amir@gamial.com";
-        String password = "@Abcd137824";
-
-        userAccount = userAccountUtil.havingRegistered(UserFakeBuilder.aUser()
-                .withEnabledStatus().withEmail(username).withPassword(password));
-
-        token = userAccountUtil.signIn(username, password);
+        var userAndToken = userAccountFixture.givenActivatedSignedInUserWithToken();
+        token = userAndToken.token();
+        userAccount = userAndToken.user();
     }
 
     @Test
