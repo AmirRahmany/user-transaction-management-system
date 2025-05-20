@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.helper;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
+import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
@@ -11,33 +12,36 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 
 @Component
+@Transactional
 public class UserAccountRegistrationTestHelper {
 
     private final UserRepository userRepository;
 
-    private final RegisteringUserAccount registeringUserAccount;
-
+    private final PasswordEncoder passwordEncoder;
 
 
     @Autowired
     public UserAccountRegistrationTestHelper(UserRepository userRepository,
-                                             PasswordEncoder passwordEncoder,
-                                             ApplicationEventPublisher publisher) {
+                                             PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.registeringUserAccount = new RegisteringUserAccount(userRepository, passwordEncoder,publisher);
+       this.passwordEncoder = passwordEncoder;
     }
+
 
 
     public UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
-        final UserRegistrationRequest request = userFakeBuilder.buildDTO();
-        this.registeringUserAccount.register(request);
-        return userRepository.findByEmail(request.email())
-                .orElseThrow(()->CouldNotFoundUser.withEmail(request.email()));
+        final User user = userFakeBuilder.build();
+        final UserEntity entity = user.toEntity();
+        entity.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(entity);
+        return entity;
     }
+
 
     public UserEntity havingEnabledUser() {
         final UserEntity entity = havingRegistered(aUser());

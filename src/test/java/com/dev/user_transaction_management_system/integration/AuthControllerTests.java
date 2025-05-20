@@ -7,16 +7,17 @@ import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -24,7 +25,6 @@ import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aU
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
@@ -35,6 +35,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @Tag("INTEGRATION")
+@Transactional
+//@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
 class AuthControllerTests {
 
     @Autowired
@@ -49,7 +51,7 @@ class AuthControllerTests {
     @Autowired
     private UserAccountTestUtil accountTestUtil;
 
-    @MockitoSpyBean
+    @MockitoBean
     private  EmailNotifier emailNotifier;
 
 
@@ -79,7 +81,6 @@ class AuthControllerTests {
     }
 
     @Test
-    @Transactional
     void sign_in_user_successfully() throws Exception {
         final String username = "amir@gmail.com";
         final String password = "@Abcd1234";

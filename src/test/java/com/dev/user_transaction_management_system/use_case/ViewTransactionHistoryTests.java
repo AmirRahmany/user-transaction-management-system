@@ -10,10 +10,12 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ViewTransactionHistoryTests extends BankAccountTestHelper {
+class ViewTransactionHistoryTests {
+
+    private BankAccountTestHelper helper;
 
     private TransferMoney transactionService;
     private ViewTransactionHistory viewTransactionHistory;
@@ -21,15 +23,16 @@ class ViewTransactionHistoryTests extends BankAccountTestHelper {
     @BeforeEach
     void setUp() {
         TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
-        super.accountRepository = new BankAccountRepositoryFake();
-        this.transactionService = new TransferMoney(transactionRepository, accountRepository);
+        final BankAccountRepositoryFake repositoryFake = new BankAccountRepositoryFake();
+        this.transactionService = new TransferMoney(transactionRepository, repositoryFake);
         this.viewTransactionHistory = new ViewTransactionHistory(transactionRepository);
+        this.helper = new BankAccountTestHelper(repositoryFake);
     }
 
     @Test
     void show_user_transactions_successfully() {
-        final BankAccount from = havingEnabledAccount();
-        final BankAccount to = havingOpened(anAccount().enabled().withAccountNumber("0300450012325"));
+        final BankAccount from = helper.havingEnabledAccount();
+        final BankAccount to = helper.havingOpened(anAccount().enabled().withAccountNumber("0300450012325"));
 
 
         final TransferMoneyRequest transferMoneyRequest = new TransferMoneyRequest(100,

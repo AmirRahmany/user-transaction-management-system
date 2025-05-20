@@ -3,32 +3,32 @@ package com.dev.user_transaction_management_system.helper;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
 import com.dev.user_transaction_management_system.use_case.ActivatingUserAccount;
-import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
-import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @Component
+@Transactional
 public class UserAccountTestUtil {
 
     private final UserMapper userMapper;
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -42,10 +42,9 @@ public class UserAccountTestUtil {
     private final UserAccountRegistrationTestHelper registrationTestHelper;
 
     public UserAccountTestUtil(UserRepository userRepository,
-                               PasswordEncoder passwordEncoder,
-                               ApplicationEventPublisher publisher) {
+                               PasswordEncoder passwordEncoder) {
 
-        this.registrationTestHelper = new UserAccountRegistrationTestHelper(userRepository,passwordEncoder,publisher);
+        this.registrationTestHelper = new UserAccountRegistrationTestHelper(userRepository,passwordEncoder);
         userMapper = new UserMapper();
     }
 
@@ -80,9 +79,5 @@ public class UserAccountTestUtil {
         activatingUserAccount.activate(username);
     }
 
-    public User havingEnabledUserAccount(){
-        final UserEntity entity = registrationTestHelper.havingEnabledUser();
-        return userMapper.toDomain(entity);
-    }
 
 }

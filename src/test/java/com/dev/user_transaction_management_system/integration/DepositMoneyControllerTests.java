@@ -15,13 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-
-import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -33,7 +32,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @Tag("INTEGRATION")
-class DepositMoneyControllerTests extends BankAccountTestHelper {
+//@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+class DepositMoneyControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,12 +44,15 @@ class DepositMoneyControllerTests extends BankAccountTestHelper {
     @Autowired
     private UserAccountTestUtil userAccountUtil;
 
+    @Autowired
+    private BankAccountTestHelper bankAccountHelper;
+
     private User userAccount;
     private String token;
 
     @BeforeEach
     void setUp() {
-        String username="amir@gmail.com";
+        String username = "amir@gmail.com";
         String password = "@Abcd137845";
 
         userAccount = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
@@ -59,7 +62,7 @@ class DepositMoneyControllerTests extends BankAccountTestHelper {
 
     @Test
     void init_deposit_money_request_successfully() throws Exception {
-        final BankAccount to =havingOpened(anAccount().enabled().withUser(userAccount)
+        final BankAccount to = bankAccountHelper.havingOpened(anAccount().enabled().withUser(userAccount)
                 .withAccountNumber("0300654789123").withBalance(500));
 
         final DepositRequest transferMoneyRequest = DepositRequestBuilder.aDepositRequest()
@@ -70,7 +73,7 @@ class DepositMoneyControllerTests extends BankAccountTestHelper {
 
         mockMvc.perform(post("/api/transaction/deposit")
                         .contentType(MediaType.APPLICATION_JSON_VALUE)
-                        .header("Authorization",token)
+                        .header("Authorization", token)
                         .content(objectMapper.writeValueAsString(transferMoneyRequest)))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.referenceNumber").exists())
@@ -78,9 +81,8 @@ class DepositMoneyControllerTests extends BankAccountTestHelper {
                 .andExpect(jsonPath("$.createdAt").exists());
 
 
-        Optional<BankAccountEntity> savedToAccount = accountRepository.findByAccountNumber(to.accountNumber());
+        BankAccountEntity savedToAccount = bankAccountHelper.findByAccountNumber(to.accountNumber());
 
-        assertThat(savedToAccount).isPresent();
-        assertThat(savedToAccount.get().getBalance()).isEqualTo(800);
+        assertThat(savedToAccount.getBalance()).isEqualTo(800);
     }
 }

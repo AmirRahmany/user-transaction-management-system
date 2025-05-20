@@ -1,30 +1,37 @@
 package com.dev.user_transaction_management_system.helper;
 
+import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
-import com.dev.user_transaction_management_system.fake.AccountFakeBuilder;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
+import com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.use_case.OpeningBankAccount;
-import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
-import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.transaction.Transactional;
+import org.springframework.stereotype.Component;
 
-import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 
+
+@Component
 public class BankAccountTestHelper {
-    
-    @Autowired
-    protected BankAccountRepository accountRepository;
 
-    protected BankAccount havingOpened(AccountFakeBuilder accountFakeBuilder) {
-        final BankAccount account = accountFakeBuilder.open();
+    private final BankAccountRepository accountRepository;
+
+    public BankAccountTestHelper(BankAccountRepository accountRepository) {
+        this.accountRepository = accountRepository;
+    }
+
+    @Transactional
+    public BankAccount havingOpened(BankAccountFakeBuilder bankAccountFakeBuilder) {
+        final BankAccount account = bankAccountFakeBuilder.open();
 
         accountRepository.save(account.toEntity());
         return account;
     }
 
-    protected BankAccount havingEnabledAccount() {
+    @Transactional
+    public BankAccount havingEnabledAccount() {
         final BankAccount to = anAccount().open();
         final BankAccountEntity entity = to.toEntity();
         entity.setStatus(AccountStatus.ENABLE);
@@ -33,4 +40,7 @@ public class BankAccountTestHelper {
     }
 
 
+    public BankAccountEntity findByAccountNumber(AccountNumber accountNumber) {
+        return accountRepository.findByAccountNumber(accountNumber).orElseThrow(CouldNotFindBankAccount::new);
+    }
 }

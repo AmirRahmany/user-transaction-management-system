@@ -33,7 +33,7 @@ class OpeningBankAccountTests  {
     @BeforeEach
     void setUp() {
         UserRepository userRepository = new UserRepositoryFake();
-        helper = new UserAccountRegistrationTestHelper(userRepository,new PasswordEncoderStub(),publisher);
+        helper = new UserAccountRegistrationTestHelper(userRepository,new PasswordEncoderStub());
         openingBankAccount = new OpeningBankAccount(new BankAccountRepositoryFake(),
                 new AccountNumberGeneratorStub(), userRepository);
     }

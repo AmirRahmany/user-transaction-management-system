@@ -59,4 +59,8 @@ public class AccountNumber {
     public String toString() {
         return accountNumber;
     }
+
+    public String asString() {
+        return accountNumber;
+    }
 }

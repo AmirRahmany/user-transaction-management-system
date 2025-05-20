@@ -14,14 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
-import java.util.UUID;
-
-import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.TransferMoneyRequestBuilder.aTransferMoneyRequest;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static java.time.LocalDateTime.of;
@@ -35,7 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @Tag("INTEGRATION")
-class TransferMoneyControllerTests extends BankAccountTestHelper {
+//@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+class TransferMoneyControllerTests{
 
     @Autowired
     private MockMvc mockMvc;
@@ -45,6 +44,9 @@ class TransferMoneyControllerTests extends BankAccountTestHelper {
 
     @Autowired
     private UserAccountTestUtil userAccountUtil;
+
+    @Autowired
+    private BankAccountTestHelper bankAccountHelper;
 
     private User userAccount;
     private String token;
@@ -61,10 +63,10 @@ class TransferMoneyControllerTests extends BankAccountTestHelper {
 
     @Test
     void init_transfer_money_transaction_successfully() throws Exception {
-        final BankAccount from =havingOpened(anAccount().withUser(userAccount)
+        final BankAccount from = bankAccountHelper.havingOpened(anAccount().withUser(userAccount)
                 .withAccountNumber("0300654789123").withBalance(500));
 
-        final BankAccount to = havingOpened(anAccount().enabled().withAccountNumber("0300456574853")
+        final BankAccount to = bankAccountHelper.havingOpened(anAccount().enabled().withAccountNumber("0300456574853")
                 .withBalance(140)
                 .withUser(userAccount)); //TODO create different fake users
 
@@ -82,12 +84,10 @@ class TransferMoneyControllerTests extends BankAccountTestHelper {
                 .andExpect(status().isOk());
 
 
-        Optional<BankAccountEntity> savedToAccount = accountRepository.findByAccountNumber(to.accountNumber());
-        Optional<BankAccountEntity> savedFromAccount = accountRepository.findByAccountNumber(from.accountNumber());
+        BankAccountEntity savedToAccount = bankAccountHelper.findByAccountNumber(to.accountNumber());
+        BankAccountEntity savedFromAccount = bankAccountHelper.findByAccountNumber(from.accountNumber());
 
-        assertThat(savedToAccount).isPresent();
-        assertThat(savedFromAccount).isPresent();
-        assertThat(savedToAccount.get().getBalance()).isEqualTo(440);
-        assertThat(savedFromAccount.get().getBalance()).isEqualTo(200);
+        assertThat(savedToAccount.getBalance()).isEqualTo(440);
+        assertThat(savedFromAccount.getBalance()).isEqualTo(200);
     }
 }

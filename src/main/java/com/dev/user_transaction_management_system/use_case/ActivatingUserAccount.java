@@ -12,7 +12,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 public class ActivatingUserAccount {
 
     private final UserRepository userRepository;
@@ -26,6 +25,7 @@ public class ActivatingUserAccount {
         this.eventPublisher = publisher;
     }
 
+    @Transactional
     public void activate(String email) {
         Assert.hasText(email,"username cannot be null or empty");
 

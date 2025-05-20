@@ -19,7 +19,7 @@ public class User {
     private final Credential credential;
     private final LocalDateTime createdAt;
     private UserStatus status;
-    private List<Event> events;
+    private final List<Event> events;
 
     private User(UserId userId,
                  FullName fullName,
@@ -119,7 +119,7 @@ public class User {
         return events;
     }
 
-    public String getUserName() {
+    public String email() {
         return credential.email();
     }
 

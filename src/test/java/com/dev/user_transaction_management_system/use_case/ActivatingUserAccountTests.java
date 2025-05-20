@@ -34,7 +34,7 @@ class ActivatingUserAccountTests {
         publisher = new CustomEventPublisher();
         UserRepository userRepository = new UserRepositoryFake();
         activatingUserAccount = new ActivatingUserAccount(userRepository, publisher);
-        helper = new UserAccountRegistrationTestHelper(userRepository, new PasswordEncoderStub(), publisher);
+        helper = new UserAccountRegistrationTestHelper(userRepository, new PasswordEncoderStub());
     }
 
     @Test

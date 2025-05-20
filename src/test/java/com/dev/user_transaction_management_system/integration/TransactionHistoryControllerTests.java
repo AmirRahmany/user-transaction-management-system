@@ -13,7 +13,6 @@ import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -21,27 +20,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@Transactional
 @Tag("INTEGRATION")
-class TransactionHistoryControllerTests extends BankAccountTestHelper {
+@Transactional
+//@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+class TransactionHistoryControllerTests {
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,6 +61,9 @@ class TransactionHistoryControllerTests extends BankAccountTestHelper {
     @Autowired
     private WithdrawingMoney withdrawingMoney;
 
+    @Autowired
+    private BankAccountTestHelper bankAccountHelper;
+
     private User userAccount;
     private String token;
 
@@ -70,7 +73,6 @@ class TransactionHistoryControllerTests extends BankAccountTestHelper {
         String password = "@Abcd137845";
 
         userAccount = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
-
         token = userAccountUtil.signIn(username, password);
     }
 
@@ -98,7 +100,7 @@ class TransactionHistoryControllerTests extends BankAccountTestHelper {
     }
 
     private void initFakeTransactionsWith(String accountNumber) {
-        havingOpened(anAccount().enabled().withUser(userAccount)
+        bankAccountHelper.havingOpened(anAccount().enabled().withUser(userAccount)
                 .withAccountNumber(accountNumber).withBalance(500));
 
         initDepositTransaction(accountNumber);

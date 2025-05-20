@@ -4,10 +4,8 @@ import com.dev.user_transaction_management_system.domain.Event;
 
 public record BankAccountActivated(String fullName,String accountNumber,String email) implements Event {
 
-
-
     @Override
     public String getMessage() {
-        return "";
+        return String.format("Hi %s your account (%s) was successfully activated.",fullName,accountNumber);
     }
 }

@@ -1,6 +1,5 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
@@ -16,12 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.util.Optional;
-
-import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -32,7 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @Transactional
 @Tag("INTEGRATION")
-class WithdrawingMoneyControllerTests extends BankAccountTestHelper {
+//@DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+class WithdrawingMoneyControllerTests{
 
     @Autowired
     private MockMvc mockMvc;
@@ -43,12 +42,15 @@ class WithdrawingMoneyControllerTests extends BankAccountTestHelper {
     @Autowired
     private UserAccountTestUtil userAccountUtil;
 
+    @Autowired
+    private BankAccountTestHelper bankAccountHelper;
+
 
     private String token;
     private User userAccount;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         String username = "amir@gamial.com";
         String password = "@Abcd137824";
 
@@ -60,7 +62,7 @@ class WithdrawingMoneyControllerTests extends BankAccountTestHelper {
 
     @Test
     void withdraw_money_transaction_successfully() throws Exception {
-        final BankAccount account = havingOpened(anAccount().withUser(userAccount)
+        var account = bankAccountHelper.havingOpened(anAccount().withUser(userAccount)
                 .withAccountNumber("0300654789123").withBalance(500));
 
         final WithdrawalRequest withdrawalRequest =
@@ -73,9 +75,8 @@ class WithdrawingMoneyControllerTests extends BankAccountTestHelper {
                 .andExpect(status().isOk());
 
 
-        Optional<BankAccountEntity> savedToAccount = accountRepository.findByAccountNumber(account.accountNumber());
+        BankAccountEntity savedToAccount = bankAccountHelper.findByAccountNumber(account.accountNumber());
 
-        assertThat(savedToAccount).isPresent();
-        assertThat(savedToAccount.get().getBalance()).isEqualTo(200);
+        assertThat(savedToAccount.getBalance()).isEqualTo(200);
     }
 }

@@ -3,19 +3,14 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
-import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifier;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.util.UUID;
 
