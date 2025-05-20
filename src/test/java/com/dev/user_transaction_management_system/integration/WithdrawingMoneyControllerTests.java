@@ -1,11 +1,11 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
+import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -45,14 +45,14 @@ class WithdrawingMoneyControllerTests extends BankAccountTestHelper {
 
 
     private String token;
-    private UserEntity entity;
+    private User userAccount;
 
     @BeforeEach
     void setUp() throws Exception {
         String username = "amir@gamial.com";
         String password = "@Abcd137824";
 
-        entity = userAccountUtil.havingRegistered(UserFakeBuilder.aUser()
+        userAccount = userAccountUtil.havingRegistered(UserFakeBuilder.aUser()
                 .withEnabledStatus().withEmail(username).withPassword(password));
 
         token = userAccountUtil.signIn(username, password);
@@ -60,7 +60,7 @@ class WithdrawingMoneyControllerTests extends BankAccountTestHelper {
 
     @Test
     void withdraw_money_transaction_successfully() throws Exception {
-        final BankAccount account = havingOpened(anAccount().withUserId(entity.getId())
+        final BankAccount account = havingOpened(anAccount().withUser(userAccount)
                 .withAccountNumber("0300654789123").withBalance(500));
 
         final WithdrawalRequest withdrawalRequest =

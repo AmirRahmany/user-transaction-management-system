@@ -8,6 +8,7 @@ import com.dev.user_transaction_management_system.infrastructure.persistence.mod
 import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
@@ -21,10 +22,13 @@ public class UserAccountRegistrationTestHelper {
     private final RegisteringUserAccount registeringUserAccount;
 
 
+
     @Autowired
-    public UserAccountRegistrationTestHelper(UserRepository userRepository,PasswordEncoder passwordEncoder) {
+    public UserAccountRegistrationTestHelper(UserRepository userRepository,
+                                             PasswordEncoder passwordEncoder,
+                                             ApplicationEventPublisher publisher) {
         this.userRepository = userRepository;
-        this.registeringUserAccount = new RegisteringUserAccount(userRepository, passwordEncoder);
+        this.registeringUserAccount = new RegisteringUserAccount(userRepository, passwordEncoder,publisher);
     }
 
 

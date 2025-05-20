@@ -13,7 +13,9 @@ import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static com.dev.user_transaction_management_system.fake.AccountRequestFakeBuilder.accountRequest;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
@@ -25,10 +27,13 @@ class OpeningBankAccountTests  {
 
     private UserAccountRegistrationTestHelper helper;
 
+    @Mock
+    private ApplicationEventPublisher publisher;
+
     @BeforeEach
     void setUp() {
         UserRepository userRepository = new UserRepositoryFake();
-        helper = new UserAccountRegistrationTestHelper(userRepository,new PasswordEncoderStub());
+        helper = new UserAccountRegistrationTestHelper(userRepository,new PasswordEncoderStub(),publisher);
         openingBankAccount = new OpeningBankAccount(new BankAccountRepositoryFake(),
                 new AccountNumberGeneratorStub(), userRepository);
     }

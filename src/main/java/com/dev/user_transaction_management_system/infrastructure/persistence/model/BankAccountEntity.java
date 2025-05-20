@@ -1,8 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.model;
 
-import com.dev.user_transaction_management_system.domain.bank_account.AccountId;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
-import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,8 +20,9 @@ public class BankAccountEntity {
     @Column(name = "account_number")
     private String accountNumber;
 
-    @Column(name = "user_id")
-    private String userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_account_id")
+    private UserEntity user;
 
     @Column(name = "balance")
     private Double balance;
@@ -36,5 +35,9 @@ public class BankAccountEntity {
 
     public boolean hasSameAccountNumber(String accountNumber) {
         return this.accountNumber.equals(accountNumber);
+    }
+
+    public String getUserEmail() {
+        return user.getEmail();
     }
 }

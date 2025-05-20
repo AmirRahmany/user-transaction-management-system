@@ -3,13 +3,19 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
+import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifier;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import java.util.UUID;
 
@@ -17,6 +23,7 @@ import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aU
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,11 +32,17 @@ class RegisteringUserAccountTests {
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
-    private RegisteringUserAccount registeringUserAccount;
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private ApplicationEventPublisher publisher;
+
+
+    @InjectMocks
+    private RegisteringUserAccount registeringUserAccount;
+
 
     @Test
     void register_user_successfully() {
@@ -42,7 +55,6 @@ class RegisteringUserAccountTests {
 
         assertThatNoException().isThrownBy(() -> registeringUserAccount.register(user));
         verify(passwordEncoder).encode(user.password());
-
         verify(userRepository).save(argThat(entity -> {
             assertThat(entity.getPassword()).isEqualTo("hashedPassword");
             assertThat(entity.getId()).isEqualTo(userId);

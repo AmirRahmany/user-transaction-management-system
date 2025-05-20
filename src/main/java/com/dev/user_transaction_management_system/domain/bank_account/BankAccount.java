@@ -1,35 +1,42 @@
 package com.dev.user_transaction_management_system.domain.bank_account;
 
+import com.dev.user_transaction_management_system.domain.Event;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
-import com.dev.user_transaction_management_system.domain.user.UserId;
+import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
-import java.util.Objects;
+import java.util.ArrayList;
+import java.util.List;
 
+@EqualsAndHashCode
+@ToString
 public class BankAccount {
 
     private static final int MINIMUM_BALANCE = 100;
 
     private final AccountId accountId;
     private final AccountNumber accountNumber;
-    private final UserId userId;
+    private final User user;
     private Amount balance;
     private final LocalDateTime createdAt;
     private AccountStatus status;
+    private final List<Event> events;
 
     private BankAccount(AccountId accountId,
                         AccountNumber accountNumber,
-                        UserId userId, Amount balance,
+                        User user, Amount balance,
                         LocalDateTime createdAt,
                         AccountStatus status) {
 
         Assert.notNull(accountId,"account id cannot be null");
         Assert.notNull(accountNumber,"account number cannot be null");
-        Assert.notNull(userId,"user id cannot be null");
+        Assert.notNull(user,"user id cannot be null");
         Assert.notNull(balance,"balance cannot be null");
         Assert.notNull(createdAt,"created at cannot be null");
 
@@ -38,19 +45,20 @@ public class BankAccount {
 
         this.accountId = accountId;
         this.accountNumber = accountNumber;
-        this.userId = userId;
+        this.user = user;
         this.balance = balance;
         this.createdAt = createdAt;
         this.status = status;
+        this.events = new ArrayList<>();
     }
 
     public static BankAccount open(AccountId accountId,
                                    AccountNumber accountNumber,
-                                   UserId userId,
+                                   User user,
                                    Amount balance,
                                    AccountStatus status,
                                    LocalDateTime createdAt) {
-        return new BankAccount(accountId, accountNumber, userId, balance, createdAt,status);
+        return new BankAccount(accountId, accountNumber, user, balance, createdAt,status);
     }
 
     public void increaseAmount(Amount amount) {
@@ -103,7 +111,7 @@ public class BankAccount {
         final BankAccountEntity bankAccountEntity = new BankAccountEntity();
         bankAccountEntity.setAccountId(accountId.asString());
         bankAccountEntity.setAccountNumber(accountNumberAsString());
-        bankAccountEntity.setUserId(userId.asString());
+        bankAccountEntity.setUser(user.toEntity());
         bankAccountEntity.setBalance(balance.asDouble());
         bankAccountEntity.setStatus(status);
         bankAccountEntity.setCreatedAt(createdAt);
@@ -112,34 +120,5 @@ public class BankAccount {
 
     public OpeningAccountResponse toResponse(String fullName) {
         return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.asDouble(), createdAt, status);
-    }
-
-    @Override
-    public boolean equals(Object o) {
-
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        BankAccount account = (BankAccount) o;
-        return Objects.equals(accountId, account.accountId) &&
-                Objects.equals(accountNumber, account.accountNumber) &&
-                Objects.equals(userId, account.userId) && Objects.equals(balance, account.balance) &&
-                Objects.equals(createdAt, account.createdAt) && status == account.status;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(accountId, accountNumber, userId, balance, createdAt, status);
-    }
-
-    @Override
-    public String toString() {
-        return "BankAccount{" +
-                "accountId='" + accountId + '\'' +
-                ", accountNumber='" + accountNumber + '\'' +
-                ", userId='" + userId + '\'' +
-                ", balance=" + balance +
-                ", createdAt=" + createdAt +
-                ", status=" + status +
-                '}';
     }
 }

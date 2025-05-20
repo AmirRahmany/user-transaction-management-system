@@ -1,2 +1,13 @@
-package com.dev.user_transaction_management_system.use_case.event;public class BankAccountActivated {
+package com.dev.user_transaction_management_system.use_case.event;
+
+import com.dev.user_transaction_management_system.domain.Event;
+
+public record BankAccountActivated(String fullName,String accountNumber,String email) implements Event {
+
+
+
+    @Override
+    public String getMessage() {
+        return "";
+    }
 }

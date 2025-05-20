@@ -1,14 +1,17 @@
 package com.dev.user_transaction_management_system.helper;
 
+import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
 import com.dev.user_transaction_management_system.use_case.ActivatingUserAccount;
 import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -25,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Component
 public class UserAccountTestUtil {
 
+    private final UserMapper userMapper;
     @Autowired
     private MockMvc mockMvc;
 
@@ -34,10 +38,15 @@ public class UserAccountTestUtil {
     @Autowired
     protected ObjectMapper objectMapper;
 
+
     private final UserAccountRegistrationTestHelper registrationTestHelper;
 
-    public UserAccountTestUtil(UserRepository userRepository,PasswordEncoder passwordEncoder) {
-        this.registrationTestHelper = new UserAccountRegistrationTestHelper(userRepository,passwordEncoder);
+    public UserAccountTestUtil(UserRepository userRepository,
+                               PasswordEncoder passwordEncoder,
+                               ApplicationEventPublisher publisher) {
+
+        this.registrationTestHelper = new UserAccountRegistrationTestHelper(userRepository,passwordEncoder,publisher);
+        userMapper = new UserMapper();
     }
 
     public String signIn(String username, String password) {
@@ -63,12 +72,17 @@ public class UserAccountTestUtil {
 
     }
 
-    public UserEntity havingRegistered(UserFakeBuilder userFakeBuilder) {
-        return registrationTestHelper.havingRegistered(userFakeBuilder);
+    public User havingRegistered(UserFakeBuilder userFakeBuilder) {
+        return userMapper.toDomain(registrationTestHelper.havingRegistered(userFakeBuilder));
     }
 
     public void activateUserAccount(String username) {
         activatingUserAccount.activate(username);
+    }
+
+    public User havingEnabledUserAccount(){
+        final UserEntity entity = registrationTestHelper.havingEnabledUser();
+        return userMapper.toDomain(entity);
     }
 
 }

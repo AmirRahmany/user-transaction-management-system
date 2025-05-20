@@ -3,6 +3,7 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
+import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
 import com.dev.user_transaction_management_system.fake.PasswordEncoderStub;
 import com.dev.user_transaction_management_system.fake.UserRepositoryFake;
 import com.dev.user_transaction_management_system.helper.UserAccountRegistrationTestHelper;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -25,11 +27,14 @@ class ActivatingUserAccountTests {
     private final ActivatingUserAccount activatingUserAccount;
 
     private final UserAccountRegistrationTestHelper helper;
+    private final CustomEventPublisher publisher;
+
 
     public ActivatingUserAccountTests() {
+        publisher = new CustomEventPublisher();
         UserRepository userRepository = new UserRepositoryFake();
-        activatingUserAccount = new ActivatingUserAccount(userRepository);
-        helper = new UserAccountRegistrationTestHelper(userRepository,new PasswordEncoderStub());
+        activatingUserAccount = new ActivatingUserAccount(userRepository, publisher);
+        helper = new UserAccountRegistrationTestHelper(userRepository, new PasswordEncoderStub(), publisher);
     }
 
     @Test
@@ -53,11 +58,11 @@ class ActivatingUserAccountTests {
         entity.setUserStatus(UserStatus.ENABLE);
 
         final UserRepository repository = mock(UserRepository.class);
-        ActivatingUserAccount userAccount = new ActivatingUserAccount(repository);
+        ActivatingUserAccount userAccount = new ActivatingUserAccount(repository, publisher);
 
         when(repository.findByEmail(any())).thenReturn(Optional.of(entity));
 
         assertThatNoException().isThrownBy(() -> userAccount.activate(entity.getUsername()));
-        verify(repository, never()).save(any(UserEntity.class));
+        then(repository).shouldHaveNoMoreInteractions();
     }
 }

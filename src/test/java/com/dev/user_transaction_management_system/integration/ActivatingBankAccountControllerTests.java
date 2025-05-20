@@ -3,10 +3,10 @@ package com.dev.user_transaction_management_system.integration;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
+import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.dto.BankAccountActivationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -49,14 +49,14 @@ class ActivatingBankAccountControllerTests extends BankAccountTestHelper {
 
 
     private String token;
-    private UserEntity entity;
+    private User userAccount;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         String username="amir@gmail.com";
         String password="@Abcd137854";
 
-        entity = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
+        userAccount = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
 
         token = userAccountUtil.signIn(username, password);
     }
@@ -64,7 +64,7 @@ class ActivatingBankAccountControllerTests extends BankAccountTestHelper {
 
     @Test
     void activate_user_bank_account_successfully() throws Exception {
-        final BankAccount bankAccount = havingOpened(anAccount().withUserId(entity.getId()));
+        final BankAccount bankAccount = havingOpened(anAccount().withUser(userAccount));
         final String accountNumber = bankAccount.accountNumberAsString();
 
         final BankAccountActivationRequest activationRequest = new BankAccountActivationRequest(accountNumber);

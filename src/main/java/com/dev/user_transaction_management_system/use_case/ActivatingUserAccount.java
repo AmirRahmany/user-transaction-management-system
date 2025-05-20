@@ -1,14 +1,14 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
-import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
+import com.dev.user_transaction_management_system.use_case.event.UserAccountActivated;
 import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,19 +18,24 @@ public class ActivatingUserAccount {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
 
-    public ActivatingUserAccount(UserRepository userRepository) {
+    private final ApplicationEventPublisher eventPublisher;
+
+    public ActivatingUserAccount(UserRepository userRepository,ApplicationEventPublisher publisher) {
         this.userRepository = userRepository;
         this.userMapper = new UserMapper();
+        this.eventPublisher = publisher;
     }
 
-    public void activate(String username) {
-        Assert.hasText(username,"user id cannot be null or empty");
+    public void activate(String email) {
+        Assert.hasText(email,"username cannot be null or empty");
 
-        final User user = finUserBy(username);
+        final User user = finUserBy(email);
         if (user.isDisable()){
             user.enabled();
             userRepository.save(user.toEntity());
         }
+
+        user.recordEvents().forEach(eventPublisher::publishEvent);
     }
 
     private User finUserBy(String username) {

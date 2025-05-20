@@ -1,10 +1,14 @@
 package com.dev.user_transaction_management_system.domain.user;
 
+import com.dev.user_transaction_management_system.domain.Event;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.use_case.event.UserAccountActivated;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class User {
@@ -15,6 +19,7 @@ public class User {
     private final Credential credential;
     private final LocalDateTime createdAt;
     private UserStatus status;
+    private List<Event> events;
 
     private User(UserId userId,
                  FullName fullName,
@@ -35,7 +40,7 @@ public class User {
         this.credential = credential;
         this.createdAt = createdAt;
         this.status = status;
-
+        this.events = new ArrayList<>();
     }
 
     public static User of(
@@ -54,6 +59,7 @@ public class User {
 
     public void enabled() {
         this.status = UserStatus.ENABLE;
+        this.events.add(new UserAccountActivated(fullName.asString(), credential.email(), phoneNumber.asString()));
     }
 
     public void disable() {
@@ -69,7 +75,7 @@ public class User {
     }
 
     public String fullName() {
-        return fullName.toString();
+        return fullName.asString();
     }
 
     public String userId() {
@@ -107,5 +113,17 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(userId, fullName, phoneNumber, credential, createdAt, status);
+    }
+
+    public List<Event> recordEvents() {
+        return events;
+    }
+
+    public String getUserName() {
+        return credential.email();
+    }
+
+    public String getPassword() {
+        return credential.password();
     }
 }

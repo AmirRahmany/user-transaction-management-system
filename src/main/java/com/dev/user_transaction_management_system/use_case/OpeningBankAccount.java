@@ -43,7 +43,7 @@ public class OpeningBankAccount {
         final UUID accountId = bankAccountRepository.nextIdentify();
         final AccountNumber accountNumber = generateAccountNumber();
 
-        final BankAccount account = openBankAccount(accountRequest, accountNumber, accountId,user.userId());
+        final BankAccount account = openBankAccount(accountRequest, accountNumber, accountId,user);
 
         bankAccountRepository.save(account.toEntity());
         return account.toResponse(user.fullName());
@@ -67,12 +67,12 @@ public class OpeningBankAccount {
     private static BankAccount openBankAccount(AccountRequest accountRequest,
                                                AccountNumber accountNumber,
                                                UUID accountUUID,
-                                               String plainUserId) {
+                                               User user) {
         final double balance = accountRequest.balance();
         final LocalDateTime createdAt = now();
         final AccountId accountId = AccountId.fromUUID(accountUUID);
-        final UserId userId = UserId.fromString(plainUserId);
-        return BankAccount.open(accountId, accountNumber, userId, Amount.of(balance), DISABLE, createdAt);
+
+        return BankAccount.open(accountId, accountNumber, user, Amount.of(balance), DISABLE, createdAt);
     }
 
 }

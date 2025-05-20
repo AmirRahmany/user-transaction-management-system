@@ -16,15 +16,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ViewTransactionHistoryTests extends BankAccountTestHelper {
 
     private TransferMoney transactionService;
-    private TransactionRepositoryFake transactionRepository;
     private ViewTransactionHistory viewTransactionHistory;
 
     @BeforeEach
     void setUp() {
+        TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
         super.accountRepository = new BankAccountRepositoryFake();
-
-        transactionRepository = new TransactionRepositoryFake();
-        WithdrawingMoney withdrawingMoney = new WithdrawingMoney(transactionRepository, accountRepository);
         this.transactionService = new TransferMoney(transactionRepository, accountRepository);
         this.viewTransactionHistory = new ViewTransactionHistory(transactionRepository);
     }

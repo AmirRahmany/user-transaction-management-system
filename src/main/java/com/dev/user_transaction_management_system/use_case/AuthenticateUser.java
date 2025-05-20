@@ -4,6 +4,7 @@ import com.dev.user_transaction_management_system.infrastructure.util.jwt.JwtTok
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserAuthenticationResponse;
 import io.jsonwebtoken.lang.Assert;
+import jakarta.transaction.Transactional;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -23,6 +24,7 @@ public class AuthenticateUser {
         this.jwtUtils = jwtUtils;
     }
 
+    @Transactional
     public UserAuthenticationResponse authenticate(LoginRequest request) {
         Assert.notNull(request,"login request cannot be null");
 

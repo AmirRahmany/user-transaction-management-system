@@ -5,6 +5,7 @@ import com.dev.user_transaction_management_system.domain.bank_account.BankAccoun
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import org.junit.jupiter.api.Test;
@@ -16,16 +17,19 @@ import java.util.Optional;
 import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class ActivatingBankAccountTests extends BankAccountTestHelper {
 
     private final ActivatingBankAccount activatingBankAccount;
+    private final CustomEventPublisher eventPublisher;
 
     public ActivatingBankAccountTests() {
         super.accountRepository = new BankAccountRepositoryFake();
-        activatingBankAccount = new ActivatingBankAccount(accountRepository);
+        eventPublisher = new CustomEventPublisher();
+        activatingBankAccount = new ActivatingBankAccount(accountRepository, eventPublisher);
     }
 
     @Test
@@ -45,7 +49,7 @@ class ActivatingBankAccountTests extends BankAccountTestHelper {
     void should_not_persist_when_account_is_already_enabled() {
         final BankAccount bankAccount = havingEnabledAccount();
         final BankAccountRepository repository = mock(BankAccountRepository.class);
-        final ActivatingBankAccount accountActivation = new ActivatingBankAccount(repository);
+        final ActivatingBankAccount accountActivation = new ActivatingBankAccount(repository,eventPublisher);
         final AccountNumber accountNumber = bankAccount.accountNumber();
 
         final BankAccountEntity entity = bankAccount.toEntity();

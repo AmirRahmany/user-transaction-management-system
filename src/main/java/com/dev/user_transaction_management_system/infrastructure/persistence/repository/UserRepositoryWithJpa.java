@@ -24,7 +24,7 @@ public class UserRepositoryWithJpa implements UserRepository {
 
     @Override
     public void save(UserEntity user) {
-       entityManager.merge(user);
+        entityManager.merge(user);
     }
 
     @Override
@@ -38,13 +38,11 @@ public class UserRepositoryWithJpa implements UserRepository {
     @Override
     public Optional<UserEntity> findByEmail(String email) {
         final String sql = "FROM UserEntity where email=:email";
-
         try {
             final UserEntity userEntity = entityManager.createQuery(sql, UserEntity.class)
                     .setParameter("email", email)
                     .getSingleResult();
             return Optional.ofNullable(userEntity);
-
         } catch (NoResultException e) {
             return Optional.empty();
         }

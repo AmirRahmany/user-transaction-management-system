@@ -1,9 +1,9 @@
 package com.dev.user_transaction_management_system.integration;
 
+import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.DepositingMoney;
 import com.dev.user_transaction_management_system.use_case.ViewTransactionHistory;
 import com.dev.user_transaction_management_system.use_case.WithdrawingMoney;
@@ -38,8 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Transactional
 @AutoConfigureMockMvc
+@Transactional
 @Tag("INTEGRATION")
 class TransactionHistoryControllerTests extends BankAccountTestHelper {
 
@@ -61,7 +61,7 @@ class TransactionHistoryControllerTests extends BankAccountTestHelper {
     @Autowired
     private WithdrawingMoney withdrawingMoney;
 
-    private UserEntity entity;
+    private User userAccount;
     private String token;
 
     @BeforeEach
@@ -69,7 +69,7 @@ class TransactionHistoryControllerTests extends BankAccountTestHelper {
         String username="amir@gmail.com";
         String password = "@Abcd137845";
 
-        entity = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
+        userAccount = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
 
         token = userAccountUtil.signIn(username, password);
     }
@@ -98,7 +98,7 @@ class TransactionHistoryControllerTests extends BankAccountTestHelper {
     }
 
     private void initFakeTransactionsWith(String accountNumber) {
-        havingOpened(anAccount().enabled().withUserId(entity.getId())
+        havingOpened(anAccount().enabled().withUser(userAccount)
                 .withAccountNumber(accountNumber).withBalance(500));
 
         initDepositTransaction(accountNumber);

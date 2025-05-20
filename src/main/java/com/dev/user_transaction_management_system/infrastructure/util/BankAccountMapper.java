@@ -12,10 +12,11 @@ import java.util.UUID;
 public class BankAccountMapper {
 
     public BankAccount toDomain(BankAccountEntity account) {
+        final UserMapper userMapper = new UserMapper();
         return BankAccount.open(
                 AccountId.fromUUID(UUID.fromString(account.getAccountId())),
                 AccountNumber.of(account.getAccountNumber()),
-                UserId.fromUUID(UUID.fromString(account.getUserId())),
+                userMapper.toDomain(account.getUser()),
                 Amount.of(account.getBalance()),
                 account.getStatus(),
                 account.getCreatedAt()

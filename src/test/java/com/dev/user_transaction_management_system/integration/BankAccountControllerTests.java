@@ -1,16 +1,14 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
-import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
-import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -20,8 +18,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.ResultActions;
 
 import java.util.Optional;
 
@@ -51,23 +47,21 @@ class BankAccountControllerTests {
     private UserAccountTestUtil userAccountUtil;
 
     private Object token;
-    private UserEntity user;
+    private User userAccount;
 
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         String username="amir@gmail.com";
         String password = "@Abcd13785";
-        user = userAccountUtil.havingRegistered(aUser().withEnabledStatus().withEmail(username).withPassword(password));
-
+        userAccount = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
+        userAccountUtil.activateUserAccount(username);
         token = userAccountUtil.signIn(username, password);
     }
 
     @Test
     void open_an_account_successfully() throws Exception {
-        userAccountUtil.activateUserAccount(user.getUsername());
-        final AccountRequest accountRequest = new AccountRequest(user.getUsername(), 5000);
-
+        final AccountRequest accountRequest = new AccountRequest(userAccount.getUserName(), 5000);
         final String response = mockMvc.perform(post("/api/account")
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization",token)

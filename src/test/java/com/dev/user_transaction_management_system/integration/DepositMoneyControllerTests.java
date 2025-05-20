@@ -1,14 +1,13 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
+import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -18,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
@@ -30,8 +30,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ActiveProfiles("test")
-@Transactional
 @AutoConfigureMockMvc
+@Transactional
 @Tag("INTEGRATION")
 class DepositMoneyControllerTests extends BankAccountTestHelper {
 
@@ -44,22 +44,22 @@ class DepositMoneyControllerTests extends BankAccountTestHelper {
     @Autowired
     private UserAccountTestUtil userAccountUtil;
 
-    private UserEntity entity;
+    private User userAccount;
     private String token;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         String username="amir@gmail.com";
         String password = "@Abcd137845";
 
-        entity = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
+        userAccount = userAccountUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
 
         token = userAccountUtil.signIn(username, password);
     }
 
     @Test
     void init_deposit_money_request_successfully() throws Exception {
-        final BankAccount to =havingOpened(anAccount().enabled().withUserId(entity.getId())
+        final BankAccount to =havingOpened(anAccount().enabled().withUser(userAccount)
                 .withAccountNumber("0300654789123").withBalance(500));
 
         final DepositRequest transferMoneyRequest = DepositRequestBuilder.aDepositRequest()
