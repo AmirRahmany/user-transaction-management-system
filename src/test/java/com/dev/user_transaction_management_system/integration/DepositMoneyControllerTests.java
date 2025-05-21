@@ -2,18 +2,20 @@ package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
 import com.dev.user_transaction_management_system.domain.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.Notifier;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifier;
+import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifierWithGmail;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -51,7 +53,8 @@ class DepositMoneyControllerTests {
     private BankAccountTestHelper bankAccountHelper;
 
     @MockitoSpyBean
-    private EmailNotifier emailNotifier;
+    @Qualifier("fakeEmailNotifier")
+    private Notifier emailNotifier;
 
     private User userAccount;
     private String token;

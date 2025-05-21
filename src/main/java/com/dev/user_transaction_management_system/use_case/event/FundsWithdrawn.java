@@ -8,7 +8,7 @@ import static java.lang.String.format;
 
 public record FundsWithdrawn(double decreaseAmount,
                              String from,
-                             String email,
+                             String toEmail,
                              String phoneNumber,
                              LocalDateTime createdAt,
                              double availableBalance) implements NotifiableEvent {
@@ -18,5 +18,10 @@ public record FundsWithdrawn(double decreaseAmount,
                 " in %s on %s at %s." +
                 " Available balance: Rs.%s.",
                 decreaseAmount,from,createdAt.toLocalDate(),createdAt.toLocalTime(),availableBalance);
+    }
+
+    @Override
+    public String getSubject() {
+        return "Funds Withdrawn";
     }
 }

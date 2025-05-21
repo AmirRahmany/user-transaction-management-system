@@ -5,11 +5,16 @@ import com.dev.user_transaction_management_system.use_case.RegisteringUserAccoun
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserAuthenticationResponse;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -25,11 +30,17 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody UserRegistrationRequest request) {
+    public ResponseEntity<HttpResponse> register(@RequestBody UserRegistrationRequest request) {
         try {
             registeringUserAccount.register(request);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException exception) {
+            final HttpResponse response = HttpResponse.builder().timestamps(LocalDateTime.now().toString()).
+                    data(Map.of("user", request))
+                    .message("User registered")
+                    .status(HttpStatus.CREATED)
+                    .statusCode(HttpStatus.CREATED.value())
+                    .build();
+            return ResponseEntity.created(new URI("")).body(response);
+        } catch (Exception exception) {
             return ResponseEntity.badRequest().build();
         }
     }

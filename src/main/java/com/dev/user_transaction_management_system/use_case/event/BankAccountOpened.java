@@ -6,7 +6,7 @@ import static java.lang.String.format;
 
 public record BankAccountOpened(String fullName,
                                 String accountNumber,
-                                String email,
+                                String toEmail,
                                 String phoneNumber) implements NotifiableEvent {
 
 
@@ -14,5 +14,10 @@ public record BankAccountOpened(String fullName,
     public String getMessage() {
         return format("Dear customer %s,welcome to our bank\n" +
                 "your account with number %s successfully opened.",fullName,accountNumber);
+    }
+
+    @Override
+    public String getSubject() {
+        return "Bank account opened";
     }
 }

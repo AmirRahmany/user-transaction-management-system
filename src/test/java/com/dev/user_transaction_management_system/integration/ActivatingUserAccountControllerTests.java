@@ -2,22 +2,25 @@ package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
 import com.dev.user_transaction_management_system.domain.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.Notifier;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifier;
+import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifierWithGmail;
 import com.dev.user_transaction_management_system.use_case.dto.UserActivationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,8 +51,10 @@ class ActivatingUserAccountControllerTests {
     @Autowired
     private UserAccountFixture userAccountFixture;
 
-    @MockitoBean
-    private EmailNotifier notifier;
+    @MockitoSpyBean
+    @Qualifier("fakeEmailNotifier")
+    private Notifier notifier;
+
     @Autowired
     private ObjectMapper objectMapper;
 
@@ -58,7 +63,7 @@ class ActivatingUserAccountControllerTests {
 
     @BeforeEach
     void setUp() {
-        var userAndToken = userAccountFixture.havingRegisteredUserWithToken("amir@gmail.com", "@Abcd137728");
+        var userAndToken = userAccountFixture.havingRegisteredUserWithToken("amirrhmani7017@gmail.com", "@Abcd137728");
         userAccount = userAndToken.user();
         token = userAndToken.token();
     }

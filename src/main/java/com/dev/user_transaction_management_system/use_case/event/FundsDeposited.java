@@ -10,7 +10,7 @@ import static java.lang.String.format;
 
 public record FundsDeposited(double increaseAmount,
                              String accountNumber,
-                             String email,
+                             String toEmail,
                              String phoneNumber,
                              double availableBalance,
                              LocalDateTime createdAt) implements NotifiableEvent {
@@ -23,9 +23,13 @@ public record FundsDeposited(double increaseAmount,
                 increaseAmount, accountNumber,createdAt.toLocalDate(), timeFormat(),availableBalance);
     }
 
+    @Override
+    public String getSubject() {
+        return "Funds Deposit";
+    }
+
     private String timeFormat() {
         return createdAt.toLocalTime()
-                .atOffset(ZoneOffset.of("Asia/Tehran"))
                 .format(DateTimeFormatter.ofPattern("HH:mm"));
     }
 }

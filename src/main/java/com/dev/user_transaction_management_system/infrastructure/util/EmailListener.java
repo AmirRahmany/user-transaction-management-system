@@ -10,9 +10,9 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 public class EmailListener {
 
-    private final EmailNotifier notifier;
+    private final EmailNotifierWithGmail notifier;
 
-    public EmailListener(EmailNotifier notifier) {
+    public EmailListener(EmailNotifierWithGmail notifier) {
         this.notifier = notifier;
     }
 

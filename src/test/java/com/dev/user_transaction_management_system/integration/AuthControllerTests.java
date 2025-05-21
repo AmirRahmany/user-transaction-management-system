@@ -1,8 +1,9 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.domain.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.Notifier;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
-import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifier;
+import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifierWithGmail;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
@@ -10,11 +11,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -47,8 +50,9 @@ class AuthControllerTests {
     @Autowired
     private UserAccountTestUtil accountTestUtil;
 
-    @MockitoBean
-    private  EmailNotifier emailNotifier;
+    @MockitoSpyBean
+    @Qualifier("fakeEmailNotifier")
+    private Notifier emailNotifier;
 
 
     @Test
@@ -64,7 +68,7 @@ class AuthControllerTests {
         mockMvc.perform(post("/api/auth/register")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userRegistrationRequest)))
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         final boolean isUserExisted = userRepository.isUserAlreadyExists(email);
 
@@ -74,7 +78,7 @@ class AuthControllerTests {
 
     @Test
     void sign_in_user_successfully() throws Exception {
-        final String username = "amir@gmail.com";
+        final String username = "amirrahmani7017@gmail.com";
         final String password = "@Abcd1234";
         accountTestUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
         final LoginRequest loginRequest = new LoginRequest(username, password);
