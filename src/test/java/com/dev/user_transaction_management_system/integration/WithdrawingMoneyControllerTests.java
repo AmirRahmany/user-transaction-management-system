@@ -1,9 +1,11 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
+import com.dev.user_transaction_management_system.domain.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifier;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.transaction.Transactional;
@@ -15,10 +17,14 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -41,6 +47,9 @@ class WithdrawingMoneyControllerTests{
 
     @Autowired
     private BankAccountTestHelper bankAccountHelper;
+
+    @MockitoSpyBean
+    private EmailNotifier emailNotifier;
 
 
     private String token;
@@ -69,7 +78,7 @@ class WithdrawingMoneyControllerTests{
 
 
         BankAccountEntity savedToAccount = bankAccountHelper.findByAccountNumber(account.accountNumber());
-
         assertThat(savedToAccount.getBalance()).isEqualTo(200);
+        then(emailNotifier).should(atLeastOnce()).send(any(NotifiableEvent.class));
     }
 }

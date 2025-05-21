@@ -11,6 +11,7 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoun
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,13 +28,15 @@ public class OpeningBankAccount {
     private final AccountNumberGenerator accountNumberGenerator;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public OpeningBankAccount(BankAccountRepository accountRepository,
                               AccountNumberGenerator accountNumberGenerator,
-                              UserRepository userRepository) {
+                              UserRepository userRepository, ApplicationEventPublisher eventPublisher) {
         this.bankAccountRepository = accountRepository;
         this.accountNumberGenerator = accountNumberGenerator;
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
         this.userMapper = new UserMapper();
     }
 
@@ -43,10 +46,11 @@ public class OpeningBankAccount {
         final UUID accountId = bankAccountRepository.nextIdentify();
         final AccountNumber accountNumber = generateAccountNumber();
 
-        final BankAccount account = openBankAccount(accountRequest, accountNumber, accountId,user);
+        var bankAccount = openBankAccount(accountRequest, accountNumber, accountId,user);
 
-        bankAccountRepository.save(account.toEntity());
-        return account.toResponse(user.fullName());
+        bankAccountRepository.save(bankAccount.toEntity());
+        bankAccount.recordEvents().forEach(eventPublisher::publishEvent);
+        return bankAccount.toResponse(user.fullName());
     }
 
     private User findUserBy(String email) {

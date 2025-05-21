@@ -1,8 +1,8 @@
 package com.dev.user_transaction_management_system.use_case.event;
 
-import com.dev.user_transaction_management_system.domain.Event;
+import com.dev.user_transaction_management_system.domain.NotifiableEvent;
 
-public record BankAccountActivated(String fullName,String accountNumber,String email) implements Event {
+public record BankAccountActivated(String fullName,String accountNumber,String email) implements NotifiableEvent {
 
     @Override
     public String getMessage() {

@@ -3,6 +3,7 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
@@ -25,7 +26,8 @@ class WithdrawingMoneyTests {
 
     public WithdrawingMoneyTests() {
         final BankAccountRepositoryFake accountRepositoryFake = new BankAccountRepositoryFake();
-        withdrawingMoney = new WithdrawingMoney(new TransactionRepositoryFake(),accountRepositoryFake);
+        withdrawingMoney = new WithdrawingMoney(new TransactionRepositoryFake(),
+                accountRepositoryFake, new CustomEventPublisher());
         this.helper = new BankAccountTestHelper(accountRepositoryFake);
     }
 

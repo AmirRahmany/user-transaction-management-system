@@ -3,6 +3,7 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
@@ -22,7 +23,7 @@ class DepositingMoneyTests  {
         final BankAccountRepositoryFake accountRepository = new BankAccountRepositoryFake();
 
         final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
-        this.depositingMoney = new DepositingMoney(transactionRepository, accountRepository);
+        this.depositingMoney = new DepositingMoney(transactionRepository, accountRepository, new CustomEventPublisher());
         this.bankAccountTestHelper = new BankAccountTestHelper(accountRepository);
     }
 

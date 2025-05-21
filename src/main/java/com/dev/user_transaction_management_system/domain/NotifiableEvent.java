@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.domain;
 
-public interface Event {
+public interface NotifiableEvent {
 
     String email();
 

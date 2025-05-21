@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
+import com.dev.user_transaction_management_system.domain.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
@@ -78,6 +79,6 @@ class ActivatingUserAccountControllerTests {
 
         assertThat(userEntity).isPresent();
         assertThat(userEntity.get().getUserStatus()).isEqualTo(UserStatus.ENABLE);
-        then(notifier).should(times(1)).send(any(),any());
+        then(notifier).should(times(1)).send(any(NotifiableEvent.class));
     }
 }

@@ -1,11 +1,13 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
+import com.dev.user_transaction_management_system.domain.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
+import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifier;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -16,11 +18,15 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -43,6 +49,9 @@ class DepositMoneyControllerTests {
 
     @Autowired
     private BankAccountTestHelper bankAccountHelper;
+
+    @MockitoSpyBean
+    private EmailNotifier emailNotifier;
 
     private User userAccount;
     private String token;
@@ -76,7 +85,7 @@ class DepositMoneyControllerTests {
 
 
         BankAccountEntity savedToAccount = bankAccountHelper.findByAccountNumber(to.accountNumber());
-
         assertThat(savedToAccount.getBalance()).isEqualTo(800);
+        then(emailNotifier).should(atLeastOnce()).send(any(NotifiableEvent.class));
     }
 }

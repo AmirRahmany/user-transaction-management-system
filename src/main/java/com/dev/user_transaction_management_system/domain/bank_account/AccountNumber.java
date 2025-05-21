@@ -14,10 +14,10 @@ public class AccountNumber {
     private final String accountNumber;
 
     private AccountNumber(String accountNumber) {
-        Assert.hasText(accountNumber,"bank account number cannot be null or empty");
+        Assert.hasText(accountNumber, "bank account number cannot be null or empty");
 
         if (!hasMinimumLength(accountNumber)) {
-            String message = format("bank account number length should be equal with: %s" ,ACCOUNT_NUMBER_LENGTH);
+            String message = format("bank account number length should be equal with: %s", ACCOUNT_NUMBER_LENGTH);
             throw new IllegalArgumentException(message);
         }
 
@@ -58,6 +58,10 @@ public class AccountNumber {
     @Override
     public String toString() {
         return accountNumber;
+    }
+
+    public String last4Ending() {
+        return accountNumber.substring(ACCOUNT_NUMBER_LENGTH - 4);
     }
 
     public String asString() {

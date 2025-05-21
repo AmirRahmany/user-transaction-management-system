@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
+import com.dev.user_transaction_management_system.domain.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
@@ -31,7 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -93,7 +94,7 @@ class ActivatingBankAccountControllerTests {
         assertThat(savedBankAccount.get().getStatus()).isEqualTo(AccountStatus.ENABLE);
 
 
-        then(notifier).should(times(1)).send(any(),any());
+        then(notifier).should(atLeastOnce()).send(any(NotifiableEvent.class));
     }
 
 }

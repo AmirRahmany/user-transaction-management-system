@@ -1,12 +1,15 @@
 package com.dev.user_transaction_management_system.domain.bank_account;
 
-import com.dev.user_transaction_management_system.domain.Event;
+import com.dev.user_transaction_management_system.domain.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.use_case.event.BankAccountActivated;
+import com.dev.user_transaction_management_system.use_case.event.BankAccountOpened;
+import com.dev.user_transaction_management_system.use_case.event.FundsDeposited;
+import com.dev.user_transaction_management_system.use_case.event.FundsWithdrawn;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.util.Assert;
@@ -27,7 +30,7 @@ public class BankAccount {
     private Amount balance;
     private final LocalDateTime createdAt;
     private AccountStatus status;
-    private final List<Event> events;
+    private final List<NotifiableEvent> events;
 
     private BankAccount(AccountId accountId,
                         AccountNumber accountNumber,
@@ -51,6 +54,13 @@ public class BankAccount {
         this.createdAt = createdAt;
         this.status = status;
         this.events = new ArrayList<>();
+        this.events.add(
+                new BankAccountOpened(user.fullName(), accountNumber.asString(), user.email(), user.phoneNumber())
+        );
+    }
+
+    private boolean hasMinimumBalance(Amount balance) {
+        return balance.asDouble() >= MINIMUM_BALANCE;
     }
 
     public static BankAccount open(AccountId accountId,
@@ -66,8 +76,18 @@ public class BankAccount {
         if (isAccountDisable())
             throw CouldNotProcessTransaction.withDisabledAccount();
 
-        final double decreasedValue = this.balance.asDouble() + amount.asDouble();
-        this.balance = Amount.of(decreasedValue);
+        final double increaseValue = this.balance.asDouble() + amount.asDouble();
+        this.balance = Amount.of(increaseValue);
+        this.events.add(fundsDeposited(amount.asDouble()));
+    }
+
+    private FundsDeposited fundsDeposited(double increaseValue) {
+        return new FundsDeposited(increaseValue,
+                accountNumber.last4Ending(),
+                user.email(),
+                user.phoneNumber(),
+                balance.asDouble(),
+                createdAt);
     }
 
     private boolean isAccountDisable() {
@@ -80,6 +100,15 @@ public class BankAccount {
 
         final double decreasedValue = this.balance.asDouble() - amount.asDouble();
         this.balance = Amount.of(decreasedValue);
+        events.add(fundsWithdrawn(amount));
+    }
+
+    private FundsWithdrawn fundsWithdrawn(Amount amount) {
+        return new FundsWithdrawn(amount.asDouble(),
+                accountNumber.last4Ending(),
+                user.email(),
+                user.phoneNumber(),
+                createdAt, balance.asDouble());
     }
 
     private void ensureSufficientBalanceFor(Amount amount) {
@@ -95,10 +124,6 @@ public class BankAccount {
     public void enable() {
         this.status = AccountStatus.ENABLE;
         this.events.add(new BankAccountActivated(user.fullName(), accountNumber.asString(), user.email()));
-    }
-
-    private boolean hasMinimumBalance(Amount balance) {
-        return balance.asDouble() >= MINIMUM_BALANCE;
     }
 
     public AccountNumber accountNumber() {
@@ -124,7 +149,7 @@ public class BankAccount {
         return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.asDouble(), createdAt, status);
     }
 
-    public List<Event> recordEvents() {
+    public List<NotifiableEvent> recordEvents() {
         return events;
     }
 }

@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.domain.user;
 
-import com.dev.user_transaction_management_system.domain.Event;
+import com.dev.user_transaction_management_system.domain.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.event.UserAccountActivated;
@@ -19,7 +19,7 @@ public class User {
     private final Credential credential;
     private final LocalDateTime createdAt;
     private UserStatus status;
-    private final List<Event> events;
+    private final List<NotifiableEvent> events;
 
     private User(UserId userId,
                  FullName fullName,
@@ -74,6 +74,11 @@ public class User {
         return !isEnabled();
     }
 
+    public void ensureUserIsEnabled() {
+        if (isDisable())
+            throw CouldNotOpenAnAccount.withDisableUser();
+    }
+
     public String fullName() {
         return fullName.asString();
     }
@@ -82,9 +87,20 @@ public class User {
         return userId.asString();
     }
 
-    public void ensureUserIsEnabled() {
-        if (isDisable())
-            throw CouldNotOpenAnAccount.withDisableUser();
+    public List<NotifiableEvent> recordEvents() {
+        return events;
+    }
+
+    public String email() {
+        return credential.email();
+    }
+
+    public String getPassword() {
+        return credential.password();
+    }
+
+    public String phoneNumber(){
+        return phoneNumber.asString();
     }
 
     public UserEntity toEntity() {
@@ -113,17 +129,5 @@ public class User {
     @Override
     public int hashCode() {
         return Objects.hash(userId, fullName, phoneNumber, credential, createdAt, status);
-    }
-
-    public List<Event> recordEvents() {
-        return events;
-    }
-
-    public String email() {
-        return credential.email();
-    }
-
-    public String getPassword() {
-        return credential.password();
     }
 }

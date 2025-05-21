@@ -1,8 +1,10 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
+import com.dev.user_transaction_management_system.domain.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.user.User;
+import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifier;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
@@ -16,12 +18,16 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,6 +49,9 @@ class BankAccountControllerTests {
 
     @Autowired
     private UserAccountFixture userAccountFixture;
+
+    @MockitoSpyBean
+    private EmailNotifier emailNotifier;
 
     private Object token;
 
@@ -72,5 +81,6 @@ class BankAccountControllerTests {
 
         assertThat(openingAccountResponse).isNotNull();
         assertThat(accountEntity).isPresent();
+        then(emailNotifier).should(times(1)).send(any(NotifiableEvent.class));
     }
 }

@@ -10,6 +10,7 @@ import com.dev.user_transaction_management_system.infrastructure.util.BankAccoun
 import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -20,31 +21,30 @@ public class DepositingMoney {
     private final TransactionRepository transactionRepository;
     private final BankAccountRepository accountRepository;
     private final BankAccountMapper bankAccountMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
     public DepositingMoney(TransactionRepository transactionRepository,
-                           BankAccountRepository accountRepository) {
+                           BankAccountRepository accountRepository, ApplicationEventPublisher eventPublisher) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
+        this.eventPublisher = eventPublisher;
         this.bankAccountMapper = new BankAccountMapper();
     }
 
     @Transactional
     public TransactionReceipt deposit(DepositRequest depositRequest) {
         final AccountNumber fromAccountNumber = AccountNumber.of(depositRequest.accountNumber());
-
         String referenceNumber = transactionRepository.generateReferenceNumber();
+        final BankAccount bankAccount = finAccountBy(fromAccountNumber);
 
         final LocalDateTime createdAt = LocalDateTime.now();
-        final BankAccount bankAccount = finAccountBy(fromAccountNumber);
         final Amount amount = Amount.of(depositRequest.amount());
-
-
         bankAccount.increaseAmount(amount);
-
         final Transaction transaction = initiateTransaction(depositRequest, referenceNumber,createdAt);
 
         accountRepository.save(bankAccount.toEntity());
         transactionRepository.save(transaction.toEntity());
+        bankAccount.recordEvents().forEach(eventPublisher::publishEvent);
 
         return TransactionReceipt.makeOf(amount.asDouble(),
                 referenceNumber,

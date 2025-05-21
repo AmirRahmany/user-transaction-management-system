@@ -3,10 +3,7 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
-import com.dev.user_transaction_management_system.fake.AccountNumberGeneratorStub;
-import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
-import com.dev.user_transaction_management_system.fake.PasswordEncoderStub;
-import com.dev.user_transaction_management_system.fake.UserRepositoryFake;
+import com.dev.user_transaction_management_system.fake.*;
 import com.dev.user_transaction_management_system.helper.UserAccountRegistrationTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
@@ -35,7 +32,8 @@ class OpeningBankAccountTests  {
         UserRepository userRepository = new UserRepositoryFake();
         helper = new UserAccountRegistrationTestHelper(userRepository,new PasswordEncoderStub());
         openingBankAccount = new OpeningBankAccount(new BankAccountRepositoryFake(),
-                new AccountNumberGeneratorStub(), userRepository);
+                new AccountNumberGeneratorStub(),
+                userRepository, new CustomEventPublisher());
     }
 
     @Test
