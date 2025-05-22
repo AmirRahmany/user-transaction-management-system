@@ -19,7 +19,7 @@ import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aU
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class OpeningBankAccountTests  {
+class OpeningBankAccountTests {
     private OpeningBankAccount openingBankAccount;
 
     private UserAccountRegistrationTestHelper helper;
@@ -30,10 +30,13 @@ class OpeningBankAccountTests  {
     @BeforeEach
     void setUp() {
         UserRepository userRepository = new UserRepositoryFake();
-        helper = new UserAccountRegistrationTestHelper(userRepository,new PasswordEncoderStub());
-        openingBankAccount = new OpeningBankAccount(new BankAccountRepositoryFake(),
+        helper = new UserAccountRegistrationTestHelper(userRepository, new PasswordEncoderStub());
+        openingBankAccount = new OpeningBankAccount(
+                new BankAccountRepositoryFake(),
                 new AccountNumberGeneratorStub(),
-                userRepository, new CustomEventPublisher());
+                userRepository,
+                new CustomEventPublisher()
+        );
     }
 
     @Test

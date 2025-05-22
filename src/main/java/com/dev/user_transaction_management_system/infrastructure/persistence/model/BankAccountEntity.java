@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "account")
+@Table(name = "bank_account")
 @NoArgsConstructor
 @Data
 public class BankAccountEntity {
@@ -37,7 +37,4 @@ public class BankAccountEntity {
         return this.accountNumber.equals(accountNumber);
     }
 
-    public String getUserEmail() {
-        return user.getEmail();
-    }
 }

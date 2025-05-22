@@ -5,7 +5,7 @@ import com.dev.user_transaction_management_system.domain.bank_account.BankAccoun
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -36,7 +36,7 @@ public class ActivatingBankAccount {
         bankAccount.enable();
 
         repository.save(bankAccount.toEntity());
-        bankAccount.recordEvents().forEach(eventPublisher::publishEvent);
+        bankAccount.releaseEvents().forEach(eventPublisher::publishEvent);
     }
 
     private BankAccountEntity findBankAccountBy(AccountNumber bankAccountNumber) {

@@ -2,6 +2,7 @@ package com.dev.user_transaction_management_system.domain.user;
 
 import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotActivateUserAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.event.UserAccountActivated;
 import org.springframework.util.Assert;
@@ -58,6 +59,8 @@ public class User {
     }
 
     public void enabled() {
+        this.ensureUserIsDisabled();
+
         this.status = UserStatus.ENABLE;
         this.events.add(new UserAccountActivated(fullName.asString(), credential.email(), phoneNumber.asString()));
     }
@@ -79,6 +82,11 @@ public class User {
             throw CouldNotOpenAnAccount.withDisableUser();
     }
 
+    private void ensureUserIsDisabled() {
+        if (isEnabled())
+            throw CouldNotActivateUserAccount.becauseUserAccountIsAlreadyActivated();
+    }
+
     public String fullName() {
         return fullName.asString();
     }
@@ -87,7 +95,7 @@ public class User {
         return userId.asString();
     }
 
-    public List<NotifiableEvent> recordEvents() {
+    public List<NotifiableEvent> releaseEvents() {
         return events;
     }
 

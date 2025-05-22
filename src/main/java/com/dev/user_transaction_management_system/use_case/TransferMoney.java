@@ -6,7 +6,7 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFind
 import com.dev.user_transaction_management_system.domain.transaction.*;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
 import com.dev.user_transaction_management_system.use_case.dto.TransferReceipt;
 import jakarta.transaction.Transactional;

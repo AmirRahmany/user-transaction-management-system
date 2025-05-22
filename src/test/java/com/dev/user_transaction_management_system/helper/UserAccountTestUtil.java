@@ -3,7 +3,7 @@ package com.dev.user_transaction_management_system.helper;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
-import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.UserMapper;
 import com.dev.user_transaction_management_system.use_case.ActivatingUserAccount;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;

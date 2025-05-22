@@ -1,12 +1,13 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.user.*;
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUser;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import com.dev.user_transaction_management_system.domain.event.RegisteredUserAccount;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,10 @@ public class RegisteringUserAccount {
     private final ApplicationEventPublisher eventPublisher;
 
     @Autowired
-    public RegisteringUserAccount(UserRepository userRepository,
-                                  PasswordEncoder passwordEncoder,
-                                  ApplicationEventPublisher publisher) {
+
+    public RegisteringUserAccount(@NonNull UserRepository userRepository,
+                                  @NonNull PasswordEncoder passwordEncoder,
+                                  @NonNull ApplicationEventPublisher publisher) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.eventPublisher = publisher;
@@ -33,6 +35,7 @@ public class RegisteringUserAccount {
     @Transactional
     public void register(UserRegistrationRequest request) {
         ensureUserDoesNotExistsWith(request.email());
+
         final String hashedPassword = passwordEncoder.encode(request.password());
         final UserId userId = UserId.fromUUID(userRepository.nextIdentify());
 
@@ -51,7 +54,7 @@ public class RegisteringUserAccount {
 
     private void ensureUserDoesNotExistsWith(String userEmail) {
         if (userRepository.isUserAlreadyExists(userEmail)) {
-            throw new CouldNotRegisterUserAlreadyExists();
+            throw CouldNotRegisterUser.becauseUserAlreadyExisted();
         }
     }
 }

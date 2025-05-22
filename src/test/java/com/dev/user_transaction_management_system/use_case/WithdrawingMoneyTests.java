@@ -6,10 +6,10 @@ import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake
 import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
@@ -27,7 +27,9 @@ class WithdrawingMoneyTests {
     public WithdrawingMoneyTests() {
         final BankAccountRepositoryFake accountRepositoryFake = new BankAccountRepositoryFake();
         withdrawingMoney = new WithdrawingMoney(new TransactionRepositoryFake(),
-                accountRepositoryFake, new CustomEventPublisher());
+                accountRepositoryFake,
+                new CustomEventPublisher(),
+                new BankAccountMapper());
         this.helper = new BankAccountTestHelper(accountRepositoryFake);
     }
 

@@ -6,11 +6,12 @@ import com.dev.user_transaction_management_system.domain.bank_account.BankAccoun
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.transaction.*;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -23,13 +24,15 @@ public class WithdrawingMoney {
     private final BankAccountMapper bankAccountMapper;
     private final ApplicationEventPublisher eventPublisher;
 
-    public WithdrawingMoney(TransactionRepository transactionRepository,
-                            BankAccountRepository bankAccountRepository, ApplicationEventPublisher eventPublisher) {
+    public WithdrawingMoney(@NonNull TransactionRepository transactionRepository,
+                            @NonNull BankAccountRepository bankAccountRepository,
+                            @NonNull ApplicationEventPublisher eventPublisher,
+                            @NonNull BankAccountMapper bankAccountMapper) {
 
         this.transactionRepository = transactionRepository;
         this.accountRepository = bankAccountRepository;
         this.eventPublisher = eventPublisher;
-        this.bankAccountMapper = new BankAccountMapper();
+        this.bankAccountMapper = bankAccountMapper;
     }
 
     @Transactional
@@ -53,7 +56,7 @@ public class WithdrawingMoney {
 
         accountRepository.save(account.toEntity());
         transactionRepository.save(transaction.toEntity());
-        account.recordEvents().forEach(eventPublisher::publishEvent);
+        account.releaseEvents().forEach(eventPublisher::publishEvent);
         return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.toString(),createdAt);
     }
 

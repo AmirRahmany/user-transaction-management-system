@@ -1,17 +1,18 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.repository;
 
-import com.dev.user_transaction_management_system.domain.user.UserId;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import io.jsonwebtoken.lang.Assert;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
+@Slf4j
 public class UserRepositoryWithJpa implements UserRepository {
 
     private final EntityManager entityManager;
@@ -28,14 +29,6 @@ public class UserRepositoryWithJpa implements UserRepository {
     }
 
     @Override
-    public Optional<UserEntity> findById(UserId userId) {
-        Assert.notNull(userId);
-
-        final UserEntity userEntity = entityManager.find(UserEntity.class, userId.asString());
-        return Optional.ofNullable(userEntity);
-    }
-
-    @Override
     public Optional<UserEntity> findByEmail(String email) {
         final String sql = "FROM UserEntity where email=:email";
         try {
@@ -44,6 +37,7 @@ public class UserRepositoryWithJpa implements UserRepository {
                     .getSingleResult();
             return Optional.ofNullable(userEntity);
         } catch (NoResultException e) {
+            log.error(e.getMessage());
             return Optional.empty();
         }
     }

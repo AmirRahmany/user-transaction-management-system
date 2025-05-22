@@ -1,14 +1,15 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
+import io.jsonwebtoken.lang.Assert;
+
 import java.util.Objects;
 
 public class Amount {
+    public static final double NEGATIVE_AMOUNT = -1;
     private final double amount;
 
     private Amount(double amount) {
-        if (amount < 0) {
-            throw new IllegalArgumentException("Amount must be positive!");
-        }
+        Assert.gt(amount, NEGATIVE_AMOUNT,"Amount must be positive!");
 
         this.amount = amount;
     }

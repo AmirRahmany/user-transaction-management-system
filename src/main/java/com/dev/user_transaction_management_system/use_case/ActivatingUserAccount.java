@@ -4,10 +4,11 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoun
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.UserMapper;
 import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -18,23 +19,23 @@ public class ActivatingUserAccount {
 
     private final ApplicationEventPublisher eventPublisher;
 
-    public ActivatingUserAccount(UserRepository userRepository,ApplicationEventPublisher publisher) {
+    public ActivatingUserAccount(@NonNull UserRepository userRepository,
+                                 @NonNull ApplicationEventPublisher publisher,
+                                 @NonNull UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.userMapper = new UserMapper();
+        this.userMapper = userMapper;
         this.eventPublisher = publisher;
     }
 
     @Transactional
     public void activate(String email) {
-        Assert.hasText(email,"username cannot be null or empty");
-
+        Assert.hasText(email, "username cannot be null or empty");
         final User user = finUserBy(email);
-        if (user.isDisable()){
-            user.enabled();
-            userRepository.save(user.toEntity());
-        }
 
-        user.recordEvents().forEach(eventPublisher::publishEvent);
+        user.enabled();
+
+        userRepository.save(user.toEntity());
+        user.releaseEvents().forEach(eventPublisher::publishEvent);
     }
 
     private User finUserBy(String username) {

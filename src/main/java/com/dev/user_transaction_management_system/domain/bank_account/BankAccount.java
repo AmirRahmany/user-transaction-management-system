@@ -18,11 +18,15 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.String.format;
+
 @EqualsAndHashCode
 @ToString
 public class BankAccount {
 
     private static final int MINIMUM_BALANCE = 100;
+    public static final String MINIMUM_BALANCE_MESSAGE =
+            format("a bank account can't be opened unless the user deposits at least {%s}",MINIMUM_BALANCE);
 
     private final AccountId accountId;
     private final AccountNumber accountNumber;
@@ -40,12 +44,11 @@ public class BankAccount {
 
         Assert.notNull(accountId, "account id cannot be null");
         Assert.notNull(accountNumber, "account number cannot be null");
-        Assert.notNull(user, "user id cannot be null");
+        Assert.notNull(user, "user cannot be null");
         Assert.notNull(balance, "balance cannot be null");
         Assert.notNull(createdAt, "created at cannot be null");
 
-        if (!hasMinimumBalance(balance))
-            throw new IllegalArgumentException("a bank account can't be opened unless the user deposits at least $100");
+        ensureUserHasMinimumBalance(balance);
 
         this.accountId = accountId;
         this.accountNumber = accountNumber;
@@ -57,6 +60,11 @@ public class BankAccount {
         this.events.add(
                 new BankAccountOpened(user.fullName(), accountNumber.asString(), user.email(), user.phoneNumber())
         );
+    }
+
+    private void ensureUserHasMinimumBalance(Amount balance) {
+        if (!hasMinimumBalance(balance))
+            throw new IllegalArgumentException(MINIMUM_BALANCE_MESSAGE);
     }
 
     private boolean hasMinimumBalance(Amount balance) {
@@ -149,7 +157,7 @@ public class BankAccount {
         return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.asDouble(), createdAt, status);
     }
 
-    public List<NotifiableEvent> recordEvents() {
+    public List<NotifiableEvent> releaseEvents() {
         return events;
     }
 }

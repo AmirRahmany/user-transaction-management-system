@@ -6,6 +6,7 @@ import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake
 import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import org.junit.jupiter.api.Test;
@@ -23,7 +24,10 @@ class DepositingMoneyTests  {
         final BankAccountRepositoryFake accountRepository = new BankAccountRepositoryFake();
 
         final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
-        this.depositingMoney = new DepositingMoney(transactionRepository, accountRepository, new CustomEventPublisher());
+        this.depositingMoney = new DepositingMoney(transactionRepository,
+                accountRepository,
+                new CustomEventPublisher(),
+                new BankAccountMapper());
         this.bankAccountTestHelper = new BankAccountTestHelper(accountRepository);
     }
 

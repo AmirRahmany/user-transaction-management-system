@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUser;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import org.junit.jupiter.api.Test;
@@ -18,7 +18,6 @@ import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aU
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -102,7 +101,7 @@ class RegisteringUserAccountTests {
 
         final UserRegistrationRequest newUser = aUser().withEmail("amirrahmani@gmail.com").buildDTO();
 
-        assertThatExceptionOfType(CouldNotRegisterUserAlreadyExists.class)
+        assertThatExceptionOfType(CouldNotRegisterUser.class)
                 .isThrownBy(() -> registeringUserAccount.register(newUser));
 
         verify(userRepository, never()).save(any());
