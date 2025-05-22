@@ -5,34 +5,42 @@ import com.dev.user_transaction_management_system.domain.bank_account.BankAccoun
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
-@Transactional
 public class ActivatingBankAccount {
 
     private final BankAccountRepository repository;
+
+    private final ApplicationEventPublisher eventPublisher;
     private final BankAccountMapper bankAccountMapper;
 
-    public ActivatingBankAccount(BankAccountRepository repository) {
+    @Autowired
+    public ActivatingBankAccount(BankAccountRepository repository,
+                                 ApplicationEventPublisher eventPublisher) {
         this.repository = repository;
+        this.eventPublisher = eventPublisher;
         this.bankAccountMapper = new BankAccountMapper();
     }
 
+    @Transactional
     public void activate(String accountNumber) {
         final AccountNumber bankAccountNumber = AccountNumber.of(accountNumber);
-        final BankAccount bankAccount = findBankAccountBy(bankAccountNumber);
+        final BankAccountEntity bankAccountEntity = findBankAccountBy(bankAccountNumber);
+        final BankAccount bankAccount = bankAccountMapper.toDomain(bankAccountEntity);
 
         bankAccount.enable();
 
         repository.save(bankAccount.toEntity());
+        bankAccount.releaseEvents().forEach(eventPublisher::publishEvent);
     }
 
-    private BankAccount findBankAccountBy(AccountNumber bankAccountNumber) {
-        final BankAccountEntity entity = repository.findByAccountNumber(bankAccountNumber)
+    private BankAccountEntity findBankAccountBy(AccountNumber bankAccountNumber) {
+        return repository.findByAccountNumber(bankAccountNumber)
                 .orElseThrow(() -> CouldNotFindBankAccount.withAccountNumber(bankAccountNumber.toString()));
-        return bankAccountMapper.toDomain(entity);
     }
 }

@@ -3,34 +3,40 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
-import com.dev.user_transaction_management_system.fake.AccountNumberGeneratorStub;
-import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
-import com.dev.user_transaction_management_system.fake.PasswordEncoderStub;
-import com.dev.user_transaction_management_system.fake.UserRepositoryFake;
+import com.dev.user_transaction_management_system.fake.*;
 import com.dev.user_transaction_management_system.helper.UserAccountRegistrationTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static com.dev.user_transaction_management_system.fake.AccountRequestFakeBuilder.accountRequest;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class OpeningBankAccountTests  {
+class OpeningBankAccountTests {
     private OpeningBankAccount openingBankAccount;
 
     private UserAccountRegistrationTestHelper helper;
 
+    @Mock
+    private ApplicationEventPublisher publisher;
+
     @BeforeEach
     void setUp() {
         UserRepository userRepository = new UserRepositoryFake();
-        helper = new UserAccountRegistrationTestHelper(userRepository,new PasswordEncoderStub());
-        openingBankAccount = new OpeningBankAccount(new BankAccountRepositoryFake(),
-                new AccountNumberGeneratorStub(), userRepository);
+        helper = new UserAccountRegistrationTestHelper(userRepository, new PasswordEncoderStub());
+        openingBankAccount = new OpeningBankAccount(
+                new BankAccountRepositoryFake(),
+                new AccountNumberGeneratorStub(),
+                userRepository,
+                new CustomEventPublisher()
+        );
     }
 
     @Test

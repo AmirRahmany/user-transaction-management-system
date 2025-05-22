@@ -3,27 +3,34 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
-class WithdrawingMoneyTests extends BankAccountTestHelper {
+class WithdrawingMoneyTests {
 
-    @InjectMocks
-    private WithdrawingMoney withdrawingMoney;
+    private final BankAccountTestHelper helper;
+
+
+    private final WithdrawingMoney withdrawingMoney;
 
 
     public WithdrawingMoneyTests() {
-        super.accountRepository = new BankAccountRepositoryFake();
-        withdrawingMoney = new WithdrawingMoney(new TransactionRepositoryFake(), super.accountRepository);
+        final BankAccountRepositoryFake accountRepositoryFake = new BankAccountRepositoryFake();
+        withdrawingMoney = new WithdrawingMoney(new TransactionRepositoryFake(),
+                accountRepositoryFake,
+                new CustomEventPublisher(),
+                new BankAccountMapper());
+        this.helper = new BankAccountTestHelper(accountRepositoryFake);
     }
 
     @Test
@@ -51,7 +58,7 @@ class WithdrawingMoneyTests extends BankAccountTestHelper {
 
     private WithdrawalRequest withdrawalRequestOf(double amount, double balance) {
         final String description = "buy something!";
-        final BankAccount bankAccount = havingOpened(anAccount().withBalance(balance));
+        final BankAccount bankAccount = helper.havingOpened(anAccount().withBalance(balance));
 
         return new WithdrawalRequest(amount, bankAccount.accountNumberAsString(), description);
     }

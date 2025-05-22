@@ -1,6 +1,5 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 
@@ -24,11 +23,6 @@ public class UserRepositoryFake implements UserRepository {
     @Override
     public boolean isUserAlreadyExists(String email) {
         return findByEmail(email).isPresent();
-    }
-
-    @Override
-    public Optional<UserEntity> findById(UserId userId) {
-        return recordUsers.values().stream().filter(user -> user.getId().equals(userId.asString())).findFirst();
     }
 
     @Override

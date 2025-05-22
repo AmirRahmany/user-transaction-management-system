@@ -1,0 +1,61 @@
+spring:
+  profiles:
+    active: ${ACTIVE_PROFILE:dev}
+  h2:
+    console:
+      enabled: true
+
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_SQL_HOST}:${POSTGRES_SQL_PORT}/${POSTGRES_SQL_DB}
+    username: ${POSTGRES_SQL_USERNAME}
+    password: ${POSTGRES_SQL_PASSWORD}
+  jpa:
+    generate-ddl: true
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+        globally_quoted_identifiers: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+  app:
+    jwtSecret: ${JWT_SECRET_KEY}
+    jwtExpirationMs: ${JWT_EXPIRATION_TIME}
+
+  mail:
+    host: ${EMAIL_HOST}
+    port: ${EMAIL_PORT}
+    username: ${EMAIL_ID}
+    password: ${EMAIL_PASSWORD}
+    default-encoding: UTF8
+    properties:
+      mail:
+        mime:
+          charset: UTF
+        smtp:
+          writetimeout: 10000
+          connectiontimeout: 10000
+          timeout: 10000
+          auth: true
+          starttls:
+            enable: true
+            required: true
+    verify:
+      host: ${EMAIL_HOST}
+
+
+
+server:
+  port: ${SERVER_PORT}
+
+logging:
+  level:
+    springframework:
+      security: debug
+    org:
+      springframework:
+        jdbc: DEBUG
+        hibernate.SQL: debug

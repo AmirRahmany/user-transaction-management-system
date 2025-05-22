@@ -11,7 +11,7 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
   app:
-    image: amirrahmany/transaction-management:1.0
+    image: amirrahmany/transaction-management:1.1
     container_name: spring-boot-app
     ports:
       - "8083:8083"

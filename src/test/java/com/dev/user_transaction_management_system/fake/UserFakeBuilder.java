@@ -38,9 +38,9 @@ public class UserFakeBuilder {
     }
 
     private UserFakeBuilder getUser() {
-        return new UserFakeBuilder("amir",
-                "rahmani",
-                "amir@gmail.com",
+        return new UserFakeBuilder("sara",
+                "bahrami",
+                "amirrahmani7017@gmail.com",
                 "@abcD1234#",
                 "09907994339");
     }

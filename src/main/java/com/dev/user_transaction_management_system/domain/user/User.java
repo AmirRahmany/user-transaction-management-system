@@ -1,10 +1,15 @@
 package com.dev.user_transaction_management_system.domain.user;
 
+import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotActivateUserAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.domain.event.UserAccountActivated;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class User {
@@ -15,6 +20,7 @@ public class User {
     private final Credential credential;
     private final LocalDateTime createdAt;
     private UserStatus status;
+    private final List<NotifiableEvent> events;
 
     private User(UserId userId,
                  FullName fullName,
@@ -35,7 +41,7 @@ public class User {
         this.credential = credential;
         this.createdAt = createdAt;
         this.status = status;
-
+        this.events = new ArrayList<>();
     }
 
     public static User of(
@@ -53,7 +59,10 @@ public class User {
     }
 
     public void enabled() {
+        this.ensureUserIsDisabled();
+
         this.status = UserStatus.ENABLE;
+        this.events.add(new UserAccountActivated(fullName.asString(), credential.email(), phoneNumber.asString()));
     }
 
     public void disable() {
@@ -68,17 +77,38 @@ public class User {
         return !isEnabled();
     }
 
+    public void ensureUserIsEnabled() {
+        if (isDisable())
+            throw CouldNotOpenAnAccount.withDisableUser();
+    }
+
+    private void ensureUserIsDisabled() {
+        if (isEnabled())
+            throw CouldNotActivateUserAccount.becauseUserAccountIsAlreadyActivated();
+    }
+
     public String fullName() {
-        return fullName.toString();
+        return fullName.asString();
     }
 
     public String userId() {
         return userId.asString();
     }
 
-    public void ensureUserIsEnabled() {
-        if (isDisable())
-            throw CouldNotOpenAnAccount.withDisableUser();
+    public List<NotifiableEvent> releaseEvents() {
+        return events;
+    }
+
+    public String email() {
+        return credential.email();
+    }
+
+    public String getPassword() {
+        return credential.password();
+    }
+
+    public String phoneNumber(){
+        return phoneNumber.asString();
     }
 
     public UserEntity toEntity() {

@@ -32,34 +32,4 @@ public class TransactionEntity {
     private String description;
     private String referenceNumber;
 
-    private TransactionEntity(String accountNumber,
-                              Double amount,
-                              LocalDateTime createdAt,
-                              TransactionType transactionType,
-                              String description,
-                              String referenceNumber) {
-        this.accountNumber = accountNumber;
-        this.amount = amount;
-        this.createdAt = createdAt;
-        this.transactionType = transactionType;
-        this.description = description;
-        this.referenceNumber = referenceNumber;
-    }
-
-    public static TransactionEntity initOf(String accountNumber,
-                                           double amount,
-                                           TransactionType transactionType,
-                                           String description,
-                                           String referenceNumber,
-                                           LocalDateTime createdAt
-    ) {
-        return new TransactionEntity(
-                accountNumber,
-                amount,
-                createdAt,
-                transactionType,
-                description,
-                referenceNumber);
-
-    }
 }

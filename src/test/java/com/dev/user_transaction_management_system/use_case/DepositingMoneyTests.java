@@ -1,33 +1,39 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import org.junit.jupiter.api.Test;
 
-import static com.dev.user_transaction_management_system.fake.AccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
 import static com.dev.user_transaction_management_system.fake.DepositRequestBuilder.aDepositRequest;
 import static org.assertj.core.api.Assertions.*;
 
-class DepositingMoneyTests extends BankAccountTestHelper {
+class DepositingMoneyTests  {
 
+    private final BankAccountTestHelper bankAccountTestHelper;
     private final DepositingMoney depositingMoney;
 
     public DepositingMoneyTests() {
-        super.accountRepository = new BankAccountRepositoryFake();
+        final BankAccountRepositoryFake accountRepository = new BankAccountRepositoryFake();
 
         final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
-        this.depositingMoney = new DepositingMoney(transactionRepository, accountRepository);
+        this.depositingMoney = new DepositingMoney(transactionRepository,
+                accountRepository,
+                new CustomEventPublisher(),
+                new BankAccountMapper());
+        this.bankAccountTestHelper = new BankAccountTestHelper(accountRepository);
     }
 
     @Test
     void deposit_money_successfully() {
-        final BankAccount bankAccount = havingOpened(anAccount().enabled().withBalance(500));
+        var bankAccount = bankAccountTestHelper.havingOpened(anAccount().enabled().withBalance(500));
 
         final DepositRequest depositRequest = aDepositRequest()
                 .withAmount(300)
@@ -44,7 +50,7 @@ class DepositingMoneyTests extends BankAccountTestHelper {
 
     @Test
     void cannot_deposit_money_with_negative_amount() {
-        final BankAccount bankAccount = havingOpened(anAccount().enabled().withBalance(500));
+        var bankAccount = bankAccountTestHelper.havingOpened(anAccount().enabled().withBalance(500));
 
         assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(()->{
             var depositRequest = aDepositRequest().withAmount(-200)
@@ -66,7 +72,7 @@ class DepositingMoneyTests extends BankAccountTestHelper {
 
     @Test
     void cannot_deposit_money_to_disable_account() {
-        final BankAccount disableAccount = havingOpened(anAccount().disabled());
+        var disableAccount = bankAccountTestHelper.havingOpened(anAccount().disabled());
 
         final DepositRequest depositRequest = aDepositRequest()
                 .withAccountNumber(disableAccount.accountNumberAsString()).initiate();

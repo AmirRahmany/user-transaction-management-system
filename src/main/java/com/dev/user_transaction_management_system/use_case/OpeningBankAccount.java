@@ -3,14 +3,15 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.bank_account.*;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.domain.user.UserId;
-import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
+import com.dev.user_transaction_management_system.infrastructure.util.mapper.UserMapper;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import jakarta.transaction.Transactional;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -27,26 +28,31 @@ public class OpeningBankAccount {
     private final AccountNumberGenerator accountNumberGenerator;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ApplicationEventPublisher eventPublisher;
 
-    public OpeningBankAccount(BankAccountRepository accountRepository,
-                              AccountNumberGenerator accountNumberGenerator,
-                              UserRepository userRepository) {
+    public OpeningBankAccount(@NonNull BankAccountRepository accountRepository,
+                              @NonNull AccountNumberGenerator accountNumberGenerator,
+                              @NonNull UserRepository userRepository,
+                              @NonNull ApplicationEventPublisher eventPublisher) {
+
         this.bankAccountRepository = accountRepository;
         this.accountNumberGenerator = accountNumberGenerator;
         this.userRepository = userRepository;
+        this.eventPublisher = eventPublisher;
         this.userMapper = new UserMapper();
     }
 
     public OpeningAccountResponse open(AccountRequest accountRequest) {
-        final User user = findUserBy(accountRequest.username());
-        user.ensureUserIsEnabled();
         final UUID accountId = bankAccountRepository.nextIdentify();
-        final AccountNumber accountNumber = generateAccountNumber();
+        final var accountNumber = generateAccountNumber();
+        final User user = findUserBy(accountRequest.username());
 
-        final BankAccount account = openBankAccount(accountRequest, accountNumber, accountId,user.userId());
+        user.ensureUserIsEnabled();
+        final var bankAccount = openBankaccount(accountRequest, accountNumber, accountId, user);
 
-        bankAccountRepository.save(account.toEntity());
-        return account.toResponse(user.fullName());
+        bankAccountRepository.save(bankAccount.toEntity());
+        bankAccount.releaseEvents().forEach(eventPublisher::publishEvent);
+        return bankAccount.toResponse(user.fullName());
     }
 
     private User findUserBy(String email) {
@@ -64,15 +70,14 @@ public class OpeningBankAccount {
         return accountNumber;
     }
 
-    private static BankAccount openBankAccount(AccountRequest accountRequest,
+    private static BankAccount openBankaccount(AccountRequest accountRequest,
                                                AccountNumber accountNumber,
                                                UUID accountUUID,
-                                               String plainUserId) {
+                                               User user) {
         final double balance = accountRequest.balance();
         final LocalDateTime createdAt = now();
         final AccountId accountId = AccountId.fromUUID(accountUUID);
-        final UserId userId = UserId.fromString(plainUserId);
-        return BankAccount.open(accountId, accountNumber, userId, Amount.of(balance), DISABLE, createdAt);
-    }
 
+        return BankAccount.open(accountId, accountNumber, user, Amount.of(balance), DISABLE, createdAt);
+    }
 }

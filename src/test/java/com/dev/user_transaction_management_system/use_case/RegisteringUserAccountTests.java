@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
+import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUser;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import org.junit.jupiter.api.Test;
@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.UUID;
@@ -25,11 +26,17 @@ class RegisteringUserAccountTests {
     @Mock
     private UserRepository userRepository;
 
-    @InjectMocks
-    private RegisteringUserAccount registeringUserAccount;
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private ApplicationEventPublisher publisher;
+
+
+    @InjectMocks
+    private RegisteringUserAccount registeringUserAccount;
+
 
     @Test
     void register_user_successfully() {
@@ -42,7 +49,6 @@ class RegisteringUserAccountTests {
 
         assertThatNoException().isThrownBy(() -> registeringUserAccount.register(user));
         verify(passwordEncoder).encode(user.password());
-
         verify(userRepository).save(argThat(entity -> {
             assertThat(entity.getPassword()).isEqualTo("hashedPassword");
             assertThat(entity.getId()).isEqualTo(userId);
@@ -95,7 +101,7 @@ class RegisteringUserAccountTests {
 
         final UserRegistrationRequest newUser = aUser().withEmail("amirrahmani@gmail.com").buildDTO();
 
-        assertThatExceptionOfType(CouldNotRegisterUserAlreadyExists.class)
+        assertThatExceptionOfType(CouldNotRegisterUser.class)
                 .isThrownBy(() -> registeringUserAccount.register(newUser));
 
         verify(userRepository, never()).save(any());
