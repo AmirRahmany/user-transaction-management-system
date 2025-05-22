@@ -5,7 +5,6 @@ import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.UserMapper;
-import com.dev.user_transaction_management_system.use_case.event.UserAccountActivated;
 import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;

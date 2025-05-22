@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.fake;
 
-import com.dev.user_transaction_management_system.domain.NotifiableEvent;
-import com.dev.user_transaction_management_system.domain.Notifier;
+import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Notifier;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;

@@ -1,9 +1,9 @@
 package com.dev.user_transaction_management_system.domain.user;
 
-import com.dev.user_transaction_management_system.domain.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.use_case.event.UserAccountActivated;
+import com.dev.user_transaction_management_system.domain.event.UserAccountActivated;
 import org.springframework.util.Assert;
 
 import java.time.LocalDateTime;

@@ -4,12 +4,8 @@ import com.dev.user_transaction_management_system.domain.bank_account.AccountNum
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
-import com.dev.user_transaction_management_system.domain.user.FullName;
-import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.infrastructure.util.BankAccountMapper;
-import com.dev.user_transaction_management_system.use_case.event.BankAccountActivated;
-import com.dev.user_transaction_management_system.use_case.event.UserAccountActivated;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;

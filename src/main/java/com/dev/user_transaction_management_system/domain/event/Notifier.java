@@ -1,4 +1,4 @@
-package com.dev.user_transaction_management_system.domain;
+package com.dev.user_transaction_management_system.domain.event;
 
 public interface Notifier {
 

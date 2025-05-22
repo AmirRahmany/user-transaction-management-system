@@ -1,9 +1,8 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.domain.NotifiableEvent;
-import com.dev.user_transaction_management_system.domain.Notifier;
+import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Notifier;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
-import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifierWithGmail;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
@@ -16,7 +15,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;

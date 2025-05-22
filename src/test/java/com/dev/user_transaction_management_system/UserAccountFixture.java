@@ -10,6 +10,7 @@ import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aU
 
 @Component
 public class UserAccountFixture {
+
     @Autowired
     private UserAccountTestUtil util;
 

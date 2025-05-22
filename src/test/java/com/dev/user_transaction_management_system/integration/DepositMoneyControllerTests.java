@@ -1,14 +1,13 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
-import com.dev.user_transaction_management_system.domain.NotifiableEvent;
-import com.dev.user_transaction_management_system.domain.Notifier;
+import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Notifier;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifierWithGmail;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -82,9 +81,9 @@ class DepositMoneyControllerTests {
                         .header("Authorization", token)
                         .content(objectMapper.writeValueAsString(transferMoneyRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.referenceNumber").exists())
-                .andExpect(jsonPath("$.accountNumber").exists())
-                .andExpect(jsonPath("$.createdAt").exists());
+                .andExpect(jsonPath("$.data.referenceNumber").exists())
+                .andExpect(jsonPath("$.data.accountNumber").exists())
+                .andExpect(jsonPath("$.data.createdAt").exists());
 
 
         BankAccountEntity savedToAccount = bankAccountHelper.findByAccountNumber(to.accountNumber());

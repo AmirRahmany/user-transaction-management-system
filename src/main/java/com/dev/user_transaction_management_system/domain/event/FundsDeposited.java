@@ -1,9 +1,6 @@
-package com.dev.user_transaction_management_system.use_case.event;
-
-import com.dev.user_transaction_management_system.domain.NotifiableEvent;
+package com.dev.user_transaction_management_system.domain.event;
 
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 
 import static java.lang.String.format;

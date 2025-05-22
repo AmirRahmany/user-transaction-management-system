@@ -3,7 +3,7 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUserAlreadyExists;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
-import com.dev.user_transaction_management_system.use_case.event.RegisteredUserAccount;
+import com.dev.user_transaction_management_system.domain.event.RegisteredUserAccount;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;

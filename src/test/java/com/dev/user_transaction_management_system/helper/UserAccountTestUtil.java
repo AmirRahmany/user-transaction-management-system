@@ -44,7 +44,7 @@ public class UserAccountTestUtil {
     public UserAccountTestUtil(UserRepository userRepository,
                                PasswordEncoder passwordEncoder) {
 
-        this.registrationTestHelper = new UserAccountRegistrationTestHelper(userRepository,passwordEncoder);
+        this.registrationTestHelper = new UserAccountRegistrationTestHelper(userRepository, passwordEncoder);
         userMapper = new UserMapper();
     }
 

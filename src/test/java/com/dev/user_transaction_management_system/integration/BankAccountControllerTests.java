@@ -1,16 +1,17 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
-import com.dev.user_transaction_management_system.domain.NotifiableEvent;
-import com.dev.user_transaction_management_system.domain.Notifier;
+import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Notifier;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.infrastructure.util.EmailNotifierWithGmail;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -75,14 +76,17 @@ class BankAccountControllerTests {
                         .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization",token)
                         .content(objectMapper.writeValueAsString(accountRequest)))
-                .andExpect(status().isOk())
+                .andExpect(status().isCreated())
                 .andReturn().getResponse().getContentAsString();
 
-        var openingAccountResponse = objectMapper.readValue(response, OpeningAccountResponse.class);
+
+        final JsonNode path = objectMapper.readTree(response).path("data");
+        var openingAccountResponse = objectMapper.readValue(path.toString(),OpeningAccountResponse.class);
+        assertThat(openingAccountResponse).isNotNull();
+
         final AccountNumber accountNumber = AccountNumber.of(openingAccountResponse.accountNumber());
         final Optional<BankAccountEntity> accountEntity = accountRepository.findByAccountNumber(accountNumber);
 
-        assertThat(openingAccountResponse).isNotNull();
         assertThat(accountEntity).isPresent();
         then(emailNotifier).should(times(1)).send(any(NotifiableEvent.class));
     }

@@ -43,7 +43,7 @@ public class WithdrawingMoney {
         account.decreaseBalance(amount);
 
         final LocalDateTime createdAt = LocalDateTime.now();
-        //TODO refactor transaction class
+
         final Transaction transaction = Transaction.of(
                 TransactionId.autoGenerateByDb(),
                 fromAccountNumber,

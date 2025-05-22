@@ -1,6 +1,4 @@
-package com.dev.user_transaction_management_system.use_case.event;
-
-import com.dev.user_transaction_management_system.domain.NotifiableEvent;
+package com.dev.user_transaction_management_system.domain.event;
 
 public record UserAccountActivated(String fullName, String toEmail, String phoneNumber) implements NotifiableEvent {
 

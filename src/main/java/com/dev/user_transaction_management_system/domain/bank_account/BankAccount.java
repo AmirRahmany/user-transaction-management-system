@@ -1,15 +1,15 @@
 package com.dev.user_transaction_management_system.domain.bank_account;
 
-import com.dev.user_transaction_management_system.domain.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
-import com.dev.user_transaction_management_system.use_case.event.BankAccountActivated;
-import com.dev.user_transaction_management_system.use_case.event.BankAccountOpened;
-import com.dev.user_transaction_management_system.use_case.event.FundsDeposited;
-import com.dev.user_transaction_management_system.use_case.event.FundsWithdrawn;
+import com.dev.user_transaction_management_system.domain.event.BankAccountActivated;
+import com.dev.user_transaction_management_system.domain.event.BankAccountOpened;
+import com.dev.user_transaction_management_system.domain.event.FundsDeposited;
+import com.dev.user_transaction_management_system.domain.event.FundsWithdrawn;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.util.Assert;

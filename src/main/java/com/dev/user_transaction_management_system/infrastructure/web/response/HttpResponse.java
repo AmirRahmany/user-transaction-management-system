@@ -1,11 +1,9 @@
-package com.dev.user_transaction_management_system.infrastructure.web.controller;
+package com.dev.user_transaction_management_system.infrastructure.web.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Data;
 import lombok.experimental.SuperBuilder;
 import org.springframework.http.HttpStatus;
-
-import java.util.Map;
 
 @Data
 @SuperBuilder
@@ -17,5 +15,5 @@ public class HttpResponse {
     protected String message;
     protected String path;
     protected String requestMethod;
-    protected Map<?,?> data;
+    protected Object data;
 }

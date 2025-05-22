@@ -1,7 +1,7 @@
-package com.dev.user_transaction_management_system.infrastructure.util;
+package com.dev.user_transaction_management_system.infrastructure.service;
 
-import com.dev.user_transaction_management_system.domain.NotifiableEvent;
-import com.dev.user_transaction_management_system.domain.Notifier;
+import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Notifier;
 import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Profile("!test")
-public class EmailNotifierWithGmail implements Notifier {
+public class EmailNotifier implements Notifier {
 
     @Value("${spring.mail.host}")
     private String host;

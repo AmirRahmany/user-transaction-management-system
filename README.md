@@ -1,7 +1,6 @@
 # 🚀 TransMon - User Transaction Management System
 
-**TransMon** is a lightweight, scalable system for managing user registrations and tracking financial transactions.  
-Built with **Spring Boot**, **PostgreSQL**, and **Docker**, this project follows clean code practices and sets a foundation for real-world, production-grade backend services.
+**TransMon** is a lightweight, scalable system for managing user registrations and tracking financial transactions. Built with **Spring Boot**, **PostgreSQL**, and **Docker**, this project follows clean code practices and sets a foundation for real-world, production-grade backend services.
 
 ---
 
@@ -27,6 +26,7 @@ Built with **Spring Boot**, **PostgreSQL**, and **Docker**, this project follows
 - **Version Control:** Git, GitHub Flow
 - **Testing:** JUnit 5, Mockito
 - **Build Tool:** Maven
+
 ---
 
 ## Getting Started
@@ -46,13 +46,7 @@ The easiest way to get started with this project is using Docker Compose. Ensure
     docker-compose up -d
     ```
     This command will build the necessary Docker image and start the application containers in detached mode.
-### Accessing the Application
 
-Once the containers are running, you can access the application at the following URL:
-
-* **Backend API:** [Likely `http://localhost:8083`, but adjust if your `docker-compose.yml` specifies a different port for the backend service]
-
-Refer to your application's documentation or API specifications for available endpoints and functionalities.
 ### Accessing the Application
 
 The API is running at `http://localhost:8083`.
@@ -64,9 +58,7 @@ Below are the available API endpoints for the User Transaction Management System
 ### Authentication
 
 * **`POST /api/auth/register`**: Registers a new user.
-
     * **Request Body:**
-
         ```json
         {
             "firstName": "John",
@@ -77,9 +69,7 @@ Below are the available API endpoints for the User Transaction Management System
         }
         ```
 * **`POST /api/auth/signin`**: Signs in an existing user.
-
     * **Request Body:**
-
         ```json
         {
             "username": "john.doe@example.com",
@@ -89,10 +79,8 @@ Below are the available API endpoints for the User Transaction Management System
 
 ### User Management
 
-* **`POST /api/user/activation`**: Activates a user account. Requires a valid Bearer token in the `Authorization` header.
-
+* **`POST /api/user/activate`**: Activates a user account. Requires a valid Bearer token in the `Authorization` header.
     * **Request Body:**
-
         ```json
         {
             "username": "john.doe@example.com"
@@ -102,19 +90,15 @@ Below are the available API endpoints for the User Transaction Management System
 ### Account Management
 
 * **`POST /api/account`**: Opens a new bank account. Requires a valid Bearer token in the `Authorization` header.
-
     * **Request Body:**
-
         ```json
         {
             "username": "john.doe@example.com",
             "balance": 100.00
         }
         ```
-* **`POST /api/account/activation`**: Activates a bank account. Requires a valid Bearer token in the `Authorization` header.
-
+* **`POST /api/account/activate`**: Activates a bank account. Requires a valid Bearer token in the `Authorization` header.
     * **Request Body:**
-
         ```json
         {
             "accountNumber": "1234567890"
@@ -124,9 +108,7 @@ Below are the available API endpoints for the User Transaction Management System
 ### Transaction Management
 
 * **`POST /api/transaction/deposit`**: Deposits funds into an account. Requires a valid Bearer token in the `Authorization` header.
-
     * **Request Body:**
-
         ```json
         {
             "amount": 100.00,
@@ -135,9 +117,7 @@ Below are the available API endpoints for the User Transaction Management System
         }
         ```
 * **`POST /api/transaction/withdraw`**: Withdraws funds from an account. Requires a valid Bearer token in the `Authorization` header.
-
     * **Request Body:**
-
         ```json
         {
             "funds": 50.00,
@@ -146,5 +126,5 @@ Below are the available API endpoints for the User Transaction Management System
         }
         ```
 * **`GET /api/transaction/history/{accountNumber}`**: Retrieves the transaction history for a specific account. Requires a valid Bearer token in the `Authorization` header.
-
     * **Path Parameter:** `accountNumber` - The account number for which to retrieve the history.
+    * **Example URL:** `http://localhost:8083/api/transaction/history/0300275128874`

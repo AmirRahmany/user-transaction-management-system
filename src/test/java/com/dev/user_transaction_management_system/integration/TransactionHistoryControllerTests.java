@@ -126,10 +126,11 @@ class TransactionHistoryControllerTests {
 
         final String response = mvcResult.getResponse().getContentAsString();
 
+        final String historyNode = objectMapper.readTree(response).path("data").toString();
 
         final CollectionType valueType = objectMapper.getTypeFactory()
                 .constructCollectionType(List.class, TransactionHistory.class);
 
-        return objectMapper.readValue(response, valueType);
+        return objectMapper.readValue(historyNode, valueType);
     }
 }

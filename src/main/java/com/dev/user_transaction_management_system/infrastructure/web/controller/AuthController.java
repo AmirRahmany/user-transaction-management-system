@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.web.controller;
 
+import com.dev.user_transaction_management_system.infrastructure.web.response.HttpResponse;
 import com.dev.user_transaction_management_system.use_case.AuthenticateUser;
 import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
@@ -34,7 +35,7 @@ public class AuthController {
         try {
             registeringUserAccount.register(request);
             final HttpResponse response = HttpResponse.builder().timestamps(LocalDateTime.now().toString()).
-                    data(Map.of("user", request))
+                    data(request)
                     .message("User registered")
                     .status(HttpStatus.CREATED)
                     .statusCode(HttpStatus.CREATED.value())
