@@ -1,12 +1,14 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
-import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Message;
+import com.dev.user_transaction_management_system.domain.event.Subject;
 import com.dev.user_transaction_management_system.domain.event.Notifier;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
+import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
@@ -37,12 +39,13 @@ import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@Tag("INTEGRATION")
 @Transactional
 @Import(UserAccountFixture.class)
+@Tag("INTEGRATION")
 class ActivatingBankAccountControllerTests {
 
     @Autowired
@@ -96,7 +99,7 @@ class ActivatingBankAccountControllerTests {
         assertThat(savedBankAccount.get().getStatus()).isEqualTo(AccountStatus.ENABLE);
 
 
-        then(notifier).should(atLeastOnce()).send(any(NotifiableEvent.class));
+        then(notifier).should(atLeastOnce()).sendSimpleMessage(any(Subject.class),any(Message.class),any(Email.class));
     }
 
 }

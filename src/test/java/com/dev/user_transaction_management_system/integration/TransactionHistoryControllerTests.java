@@ -36,8 +36,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@Tag("INTEGRATION")
 @Transactional
+@Tag("INTEGRATION")
 class TransactionHistoryControllerTests {
 
     public static final String TRANSACTION_DESCRIPTION = "transaction description";

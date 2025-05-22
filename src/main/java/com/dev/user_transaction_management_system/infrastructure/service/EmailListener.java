@@ -20,6 +20,6 @@ public class EmailListener {
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async
     public void onNotifiableEvent(NotifiableEvent event) {
-        this.notifier.send(event);
+        this.notifier.sendSimpleMessage(event.subject(),event.message(),event.to());
     }
 }

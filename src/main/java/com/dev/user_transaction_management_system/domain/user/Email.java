@@ -26,7 +26,7 @@ public class Email {
         return !email.matches(PATTERN);
     }
 
-    public String value(){
+    public String asString(){
         return value;
     }
 }

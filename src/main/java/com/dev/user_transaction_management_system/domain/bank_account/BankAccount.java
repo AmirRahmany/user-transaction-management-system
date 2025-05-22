@@ -58,7 +58,7 @@ public class BankAccount {
         this.status = status;
         this.events = new ArrayList<>();
         this.events.add(
-                new BankAccountOpened(user.fullName(), accountNumber.asString(), user.email(), user.phoneNumber())
+                new BankAccountOpened(user.fullName(), accountNumber.asString(), user.email().asString(), user.phoneNumber())
         );
     }
 
@@ -92,7 +92,7 @@ public class BankAccount {
     private FundsDeposited fundsDeposited(double increaseValue) {
         return new FundsDeposited(increaseValue,
                 accountNumber.last4Ending(),
-                user.email(),
+                user.email().asString(),
                 user.phoneNumber(),
                 balance.asDouble(),
                 createdAt);
@@ -114,7 +114,7 @@ public class BankAccount {
     private FundsWithdrawn fundsWithdrawn(Amount amount) {
         return new FundsWithdrawn(amount.asDouble(),
                 accountNumber.last4Ending(),
-                user.email(),
+                user.email().asString(),
                 user.phoneNumber(),
                 createdAt, balance.asDouble());
     }
@@ -131,7 +131,7 @@ public class BankAccount {
 
     public void enable() {
         this.status = AccountStatus.ENABLE;
-        this.events.add(new BankAccountActivated(user.fullName(), accountNumber.asString(), user.email()));
+        this.events.add(new BankAccountActivated(user.fullName(), accountNumber.asString(), user.email().asString()));
     }
 
     public AccountNumber accountNumber() {

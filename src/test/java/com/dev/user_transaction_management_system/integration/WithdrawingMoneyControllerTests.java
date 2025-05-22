@@ -1,8 +1,10 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
-import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Message;
+import com.dev.user_transaction_management_system.domain.event.Subject;
 import com.dev.user_transaction_management_system.domain.event.Notifier;
+import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
@@ -81,6 +83,6 @@ class WithdrawingMoneyControllerTests{
 
         BankAccountEntity savedToAccount = bankAccountHelper.findByAccountNumber(account.accountNumber());
         assertThat(savedToAccount.getBalance()).isEqualTo(200);
-        then(emailNotifier).should(atLeastOnce()).send(any(NotifiableEvent.class));
+        then(emailNotifier).should(atLeastOnce()).sendSimpleMessage(any(Subject.class),any(Message.class),any(Email.class));
     }
 }

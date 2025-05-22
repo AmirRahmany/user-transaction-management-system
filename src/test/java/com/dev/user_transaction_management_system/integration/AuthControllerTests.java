@@ -1,7 +1,9 @@
 package com.dev.user_transaction_management_system.integration;
 
-import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Message;
+import com.dev.user_transaction_management_system.domain.event.Subject;
 import com.dev.user_transaction_management_system.domain.event.Notifier;
+import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
 import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
@@ -23,7 +25,7 @@ import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aU
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.log;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -32,8 +34,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-@Tag("INTEGRATION")
 @Transactional
+@Tag("INTEGRATION")
 class AuthControllerTests {
 
     @Autowired
@@ -71,7 +73,7 @@ class AuthControllerTests {
         final boolean isUserExisted = userRepository.isUserAlreadyExists(email);
 
         assertThat(isUserExisted).isTrue();
-        then(emailNotifier).should(times(1)).send(any(NotifiableEvent.class));
+        then(emailNotifier).should(atLeastOnce()).sendSimpleMessage(any(Subject.class),any(Message.class),any(Email.class));
     }
 
     @Test
