@@ -41,7 +41,7 @@ public class EmailNotifier implements Notifier {
 
             log(to.asString(), simpleMailMessage);
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.error(e.getMessage());
             throw new IllegalArgumentException("email cant sent");
         }
     }
@@ -53,7 +53,7 @@ public class EmailNotifier implements Notifier {
 
     private SimpleMailMessage createSimpleMessage(Subject subject , Message message, Email to) {
         final var simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setSubject(PREFIX_SUBJECT + subject);
+        simpleMailMessage.setSubject(PREFIX_SUBJECT + subject.subject());
         simpleMailMessage.setFrom(fromEmail);
         simpleMailMessage.setTo(to.asString());
         simpleMailMessage.setText(message.body());
