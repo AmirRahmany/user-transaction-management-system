@@ -21,7 +21,7 @@ public class ViewTransactionHistory {
     }
 
     public List<TransactionHistory> getHistoryByAccountNumber(String accountNumberRequest) {
-        Assert.notNull(accountNumberRequest, "account number cannot be null");
+        Assert.hasText(accountNumberRequest, "account number cannot be null or empty");
 
         final List<TransactionEntity> result =
                 transactionRepository.findByAccountNumber(AccountNumber.of(accountNumberRequest));

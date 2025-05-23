@@ -9,6 +9,7 @@ import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountRes
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
@@ -43,6 +44,8 @@ public class OpeningBankAccount {
     }
 
     public OpeningAccountResponse open(AccountRequest accountRequest) {
+        Assert.notNull(accountRequest,"account request cannot be null");
+
         final UUID accountId = bankAccountRepository.nextIdentify();
         final var accountNumber = generateAccountNumber();
         final User user = findUserBy(accountRequest.username());

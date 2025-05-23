@@ -9,6 +9,7 @@ import com.dev.user_transaction_management_system.infrastructure.persistence.mod
 import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
 import com.dev.user_transaction_management_system.use_case.dto.TransferReceipt;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
@@ -30,6 +31,8 @@ public class TransferMoney {
 
     @Transactional
     public TransferReceipt transfer(TransferMoneyRequest request) {
+        Assert.notNull(request,"transfer money request cannot be null");
+
         final AccountNumber fromAccountNumber = AccountNumber.of(request.fromAccountNumber());
         final AccountNumber toAccountNumber = AccountNumber.of(request.toAccountNumber());
         fromAccountNumber.ensureDistinctAccounts(toAccountNumber);

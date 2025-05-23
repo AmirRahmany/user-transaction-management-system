@@ -4,6 +4,7 @@ import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUser;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import com.dev.user_transaction_management_system.domain.event.RegisteredUserAccount;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
@@ -34,18 +35,23 @@ public class RegisteringUserAccount {
 
     @Transactional
     public void register(UserRegistrationRequest request) {
-        ensureUserDoesNotExistsWith(request.email());
+        Assert.notNull(request,"user registration request cannot be null");
 
+        ensureUserDoesNotExistsWith(request.email());
         final String hashedPassword = passwordEncoder.encode(request.password());
         final UserId userId = UserId.fromUUID(userRepository.nextIdentify());
 
-        final User user = User.of(userId,
-                FullName.of(request.firstName(), request.lastName()),
-                PhoneNumber.of(request.phoneNumber()),
-                Credential.of(Email.of(request.email()), Password.fromHashedPassword(hashedPassword)));
+        final User user = openUserAccountFrom(request, userId, hashedPassword);
 
         userRepository.save(user.toEntity());
         eventPublisher.publishEvent(event(request, user));
+    }
+
+    private static User openUserAccountFrom(UserRegistrationRequest request, UserId userId, String hashedPassword) {
+        return User.of(userId,
+                FullName.of(request.firstName(), request.lastName()),
+                PhoneNumber.of(request.phoneNumber()),
+                Credential.of(Email.of(request.email()), Password.fromHashedPassword(hashedPassword)));
     }
 
     private static RegisteredUserAccount event(UserRegistrationRequest request, User user) {
