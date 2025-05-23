@@ -1,14 +1,29 @@
 package com.dev.user_transaction_management_system.domain.event;
 
-public record UserAccountActivated(String fullName, String toEmail, String phoneNumber) implements NotifiableEvent {
+import com.dev.user_transaction_management_system.domain.user.Email;
+
+public record UserAccountActivated(String fullName,
+                                   String receiverEmail,
+                                   String phoneNumber) implements NotifiableEvent {
 
     @Override
-    public String getMessage() {
-        return String.format("Hi %s\n" + " Your registration was successful.",fullName);
+    public Subject subject()
+    {
+        return Subject.of("Your account activated");
     }
 
     @Override
-    public String getSubject() {
-        return "Your account activated";
+    public Message message()
+    {
+        return Message.of(body());
+    }
+
+    @Override
+    public Email to() {
+        return Email.of(receiverEmail);
+    }
+
+    private String body(){
+        return String.format("Hi %s\n" + " Your registration was successful.",fullName);
     }
 }

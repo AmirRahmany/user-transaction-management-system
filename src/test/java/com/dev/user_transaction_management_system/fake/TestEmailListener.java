@@ -17,7 +17,7 @@ public class TestEmailListener {
 
     @EventListener
     public void onAllEvents(NotifiableEvent event) {
-        this.emailNotifier.send(event);
+        this.emailNotifier.sendSimpleMessage(event.subject(),event.message(),event.to());
     }
 
 }

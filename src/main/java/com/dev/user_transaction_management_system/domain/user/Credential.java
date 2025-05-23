@@ -27,7 +27,7 @@ public class Credential {
         return password.toString();
     }
 
-    public String email() {
-        return email.value();
+    public Email email() {
+        return email;
     }
 }

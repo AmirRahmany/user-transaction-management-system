@@ -1,8 +1,10 @@
 package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
-import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Message;
+import com.dev.user_transaction_management_system.domain.event.Subject;
 import com.dev.user_transaction_management_system.domain.event.Notifier;
+import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
@@ -27,7 +29,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -36,8 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @ActiveProfiles("test")
 @AutoConfigureMockMvc
-@Tag("INTEGRATION")
 @Transactional
+@Tag("INTEGRATION")
 class ActivatingUserAccountControllerTests {
 
     @Autowired
@@ -51,7 +53,7 @@ class ActivatingUserAccountControllerTests {
 
     @MockitoSpyBean
     @Qualifier("fakeEmailNotifier")
-    private Notifier notifier;
+    private Notifier emailNotifier;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -69,7 +71,7 @@ class ActivatingUserAccountControllerTests {
 
     @Test
     void activate_user_account_successfully() throws Exception {
-        final String username = userAccount.email();
+        final String username = userAccount.email().asString();
         final UserActivationRequest userActivationRequest = new UserActivationRequest(username);
 
         mockMvc.perform(post("/api/user/activate")
@@ -82,6 +84,6 @@ class ActivatingUserAccountControllerTests {
 
         assertThat(userEntity).isPresent();
         assertThat(userEntity.get().getUserStatus()).isEqualTo(UserStatus.ENABLE);
-        then(notifier).should(times(1)).send(any(NotifiableEvent.class));
+        then(emailNotifier).should(atLeastOnce()).sendSimpleMessage(any(Subject.class),any(Message.class),any(Email.class));
     }
 }

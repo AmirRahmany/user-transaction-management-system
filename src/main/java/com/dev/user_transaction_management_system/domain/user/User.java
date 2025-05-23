@@ -62,7 +62,7 @@ public class User {
         this.ensureUserIsDisabled();
 
         this.status = UserStatus.ENABLE;
-        this.events.add(new UserAccountActivated(fullName.asString(), credential.email(), phoneNumber.asString()));
+        this.events.add(new UserAccountActivated(fullName.asString(), credential.email().asString(), phoneNumber.asString()));
     }
 
     public void disable() {
@@ -91,15 +91,11 @@ public class User {
         return fullName.asString();
     }
 
-    public String userId() {
-        return userId.asString();
-    }
-
     public List<NotifiableEvent> releaseEvents() {
         return events;
     }
 
-    public String email() {
+    public Email email() {
         return credential.email();
     }
 
@@ -116,7 +112,7 @@ public class User {
         entity.setId(userId.asString());
         entity.setFirstName(fullName.firstName());
         entity.setLastName(fullName.lastName());
-        entity.setEmail(credential.email());
+        entity.setEmail(credential.email().asString());
         entity.setPassword(credential.password());
         entity.setPhoneNumber(phoneNumber.asString());
         entity.setUserStatus(status);

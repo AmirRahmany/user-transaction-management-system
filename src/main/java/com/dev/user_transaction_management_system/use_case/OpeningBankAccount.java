@@ -25,18 +25,18 @@ import static java.time.LocalDateTime.now;
 public class OpeningBankAccount {
 
     private final BankAccountRepository bankAccountRepository;
-    private final AccountNumberGenerator accountNumberGenerator;
+    private final AccountNumberProvider accountNumberProvider;
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ApplicationEventPublisher eventPublisher;
 
     public OpeningBankAccount(@NonNull BankAccountRepository accountRepository,
-                              @NonNull AccountNumberGenerator accountNumberGenerator,
+                              @NonNull AccountNumberProvider accountNumberProvider,
                               @NonNull UserRepository userRepository,
                               @NonNull ApplicationEventPublisher eventPublisher) {
 
         this.bankAccountRepository = accountRepository;
-        this.accountNumberGenerator = accountNumberGenerator;
+        this.accountNumberProvider = accountNumberProvider;
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
         this.userMapper = new UserMapper();
@@ -63,7 +63,7 @@ public class OpeningBankAccount {
     }
 
     private AccountNumber generateAccountNumber() {
-        final AccountNumber accountNumber = accountNumberGenerator.generate();
+        final AccountNumber accountNumber = accountNumberProvider.generateAccountNumber();
         if (bankAccountRepository.accountExists(accountNumber)) {
             throw new IllegalArgumentException("BankAccount Number must be unique");
         }

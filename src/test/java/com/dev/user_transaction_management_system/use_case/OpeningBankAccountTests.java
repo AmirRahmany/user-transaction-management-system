@@ -33,7 +33,7 @@ class OpeningBankAccountTests {
         helper = new UserAccountRegistrationTestHelper(userRepository, new PasswordEncoderStub());
         openingBankAccount = new OpeningBankAccount(
                 new BankAccountRepositoryFake(),
-                new AccountNumberGeneratorStub(),
+                new AccountNumberProviderStub(),
                 userRepository,
                 new CustomEventPublisher()
         );

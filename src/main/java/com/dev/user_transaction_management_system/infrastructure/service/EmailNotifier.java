@@ -1,7 +1,9 @@
 package com.dev.user_transaction_management_system.infrastructure.service;
 
-import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Message;
+import com.dev.user_transaction_management_system.domain.event.Subject;
 import com.dev.user_transaction_management_system.domain.event.Notifier;
+import com.dev.user_transaction_management_system.domain.user.Email;
 import io.jsonwebtoken.lang.Assert;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -11,12 +13,15 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import static java.lang.String.format;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 @Profile("!test")
 public class EmailNotifier implements Notifier {
 
+    public static final String PREFIX_SUBJECT = "Notification! ";
     @Value("${spring.mail.host}")
     private String host;
 
@@ -26,27 +31,32 @@ public class EmailNotifier implements Notifier {
 
 
     @Override
-    public void send(NotifiableEvent event) {
-        Assert.notNull(event,"event cannot be null");
+    public void sendSimpleMessage(Subject subject, Message message, Email to) {
+        Assert.notNull(message, "message cannot be null");
+        Assert.notNull(to, "receiver email cannot be null");
 
-        final String emailBody = String.format("##Sending Email... : %s to %s", event.getMessage(), event.toEmail());
         try {
-            final SimpleMailMessage message = createSimpleMessage(event);
-            mailSender.send(message);
+            final var simpleMailMessage = createSimpleMessage(subject ,message, to);
+            mailSender.send(simpleMailMessage);
 
-            log.info(emailBody);
+            log(to.asString(), simpleMailMessage);
         } catch (Exception e) {
             log.info(e.getMessage());
             throw new IllegalArgumentException("email cant sent");
         }
     }
 
-    private SimpleMailMessage createSimpleMessage(NotifiableEvent event) {
-        final SimpleMailMessage message = new SimpleMailMessage();
-        message.setSubject("Notification! " + event.getSubject());
-        message.setFrom(fromEmail);
-        message.setTo(event.toEmail());
-        message.setText(event.getMessage());
-        return message;
+    private static void log(String to, SimpleMailMessage message) {
+        final String emailBody = format("##Sending Email... : %s to %s", message, to);
+        log.info(emailBody);
+    }
+
+    private SimpleMailMessage createSimpleMessage(Subject subject , Message message, Email to) {
+        final var simpleMailMessage = new SimpleMailMessage();
+        simpleMailMessage.setSubject(PREFIX_SUBJECT + subject);
+        simpleMailMessage.setFrom(fromEmail);
+        simpleMailMessage.setTo(to.asString());
+        simpleMailMessage.setText(message.body());
+        return simpleMailMessage;
     }
 }
