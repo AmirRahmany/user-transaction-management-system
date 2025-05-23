@@ -9,6 +9,7 @@ import com.dev.user_transaction_management_system.infrastructure.persistence.mod
 import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
@@ -36,13 +37,15 @@ public class DepositingMoney {
 
     @Transactional
     public TransactionReceipt deposit(DepositRequest depositRequest) {
+        Assert.notNull(depositRequest,"deposit request cannot be null");
+
         final AccountNumber fromAccountNumber = AccountNumber.of(depositRequest.accountNumber());
         String referenceNumber = transactionRepository.generateReferenceNumber();
         final BankAccount bankAccount = finAccountBy(fromAccountNumber);
 
-        final LocalDateTime createdAt = LocalDateTime.now();
         final Amount amount = Amount.of(depositRequest.amount());
         bankAccount.increaseAmount(amount);
+        final LocalDateTime createdAt = LocalDateTime.now();
         final Transaction transaction = initiateTransaction(depositRequest, referenceNumber,createdAt);
 
         accountRepository.save(bankAccount.toEntity());

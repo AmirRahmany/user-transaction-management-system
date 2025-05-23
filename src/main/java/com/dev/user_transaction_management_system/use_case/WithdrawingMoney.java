@@ -9,6 +9,7 @@ import com.dev.user_transaction_management_system.infrastructure.persistence.mod
 import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
@@ -37,6 +38,8 @@ public class WithdrawingMoney {
 
     @Transactional
     public TransactionReceipt withdraw(WithdrawalRequest request) {
+        Assert.notNull(request,"withdraw request cannot be null");
+
         AccountNumber fromAccountNumber = AccountNumber.of(request.fromAccountNumber());
         final BankAccount account = finAccountBy(request.fromAccountNumber());
         String referenceNumber = transactionRepository.generateReferenceNumber();
@@ -46,18 +49,24 @@ public class WithdrawingMoney {
         account.decreaseBalance(amount);
 
         final LocalDateTime createdAt = LocalDateTime.now();
+        final var transaction = initiateTransaction(request, fromAccountNumber, amount, referenceNumber, createdAt);
 
-        final Transaction transaction = Transaction.of(
+        accountRepository.save(account.toEntity());
+        transactionRepository.save(transaction.toEntity());
+        account.releaseEvents().forEach(eventPublisher::publishEvent);
+        return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.asString(),createdAt);
+    }
+
+    private Transaction initiateTransaction(WithdrawalRequest request,
+                                                   AccountNumber fromAccountNumber,
+                                                   Amount amount, String referenceNumber,
+                                                   LocalDateTime createdAt) {
+        return Transaction.of(
                 TransactionId.autoGenerateByDb(),
                 fromAccountNumber,
                 TransactionDetail.of(amount, TransactionType.WITHDRAWAL, request.description()),
                 ReferenceNumber.fromString(referenceNumber),
                 createdAt);
-
-        accountRepository.save(account.toEntity());
-        transactionRepository.save(transaction.toEntity());
-        account.releaseEvents().forEach(eventPublisher::publishEvent);
-        return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.toString(),createdAt);
     }
 
     private BankAccount finAccountBy(String reqAccountNumber) {
