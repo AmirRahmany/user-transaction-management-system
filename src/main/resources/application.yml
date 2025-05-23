@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: ${ACTIVE_PROFILE:dev}
+    active: ${ACTIVE_PROFILE:prod}
   h2:
     console:
       enabled: true
@@ -11,7 +11,7 @@ spring:
     password: ${POSTGRES_SQL_PASSWORD}
   jpa:
     generate-ddl: true
-    show-sql: true
+    show-sql: ${JPA_SHOW_SQL:false}
     hibernate:
       ddl-auto: create-drop
     properties:
@@ -46,16 +46,15 @@ spring:
     verify:
       host: ${EMAIL_HOST}
 
-
-
 server:
   port: ${SERVER_PORT}
 
 logging:
   level:
     springframework:
-      security: debug
     org:
       springframework:
-        jdbc: DEBUG
-        hibernate.SQL: debug
+        security: ${LOG_LEVEL_SECURITY:INFO}
+        jdbc: ${LOG_LEVEL_JDBC:INFO}
+        hibernate:
+          SQL: ${LOG_LEVEL_HIBERNATE:INFO}
