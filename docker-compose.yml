@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: postgres-db
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "137729"
+      POSTGRES_DB: "transaction_system"
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+  app:
+    image: amirrahmany/transaction-management:1.1
+    container_name: spring-boot-app
+    ports:
+      - "8083:8083"
+    depends_on:
+      - db
+volumes:
+  db_data:
