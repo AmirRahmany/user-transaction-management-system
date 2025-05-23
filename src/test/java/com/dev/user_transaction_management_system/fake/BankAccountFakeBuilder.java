@@ -1,11 +1,13 @@
 package com.dev.user_transaction_management_system.fake;
 
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountId;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
+import lombok.Data;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -20,6 +22,7 @@ public class BankAccountFakeBuilder {
     private User user = aUser().build();
     private Amount balance = Amount.of(5000.50);
     private AccountStatus accountStatus = DISABLE;
+    private final Date createdAt = (new FakeCalendar()).today();
 
     public static BankAccountFakeBuilder anAccount() {
         return new BankAccountFakeBuilder();
@@ -61,7 +64,6 @@ public class BankAccountFakeBuilder {
     }
 
     public BankAccount open() {
-        LocalDateTime createdAt = LocalDateTime.of(2025, 6, 14, 8, 16, 15);
         final AccountId id = AccountId.fromUUID(UUID.fromString(accountId.toString()));
         final AccountNumber bankAccountNumber = AccountNumber.of(accountNumber);
         return BankAccount.open(id, bankAccountNumber, user, balance, accountStatus, createdAt);

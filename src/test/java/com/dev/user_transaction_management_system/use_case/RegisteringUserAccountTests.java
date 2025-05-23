@@ -1,5 +1,8 @@
 package com.dev.user_transaction_management_system.use_case;
 
+import com.dev.user_transaction_management_system.domain.Calendar;
+import com.dev.user_transaction_management_system.domain.Date;
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUser;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
@@ -12,6 +15,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
@@ -33,6 +38,8 @@ class RegisteringUserAccountTests {
     @Mock
     private ApplicationEventPublisher publisher;
 
+    @Mock
+    private Calendar calendar;
 
     @InjectMocks
     private RegisteringUserAccount registeringUserAccount;
@@ -42,13 +49,15 @@ class RegisteringUserAccountTests {
     void register_user_successfully() {
         var user = aUser().buildDTO();
         String userId= "8c5148ea-857b-4996-a09c-5a5131a33564";
-        when(userRepository.nextIdentify()).thenReturn(UUID.fromString(userId));
+        when(userRepository.nextIdentify()).thenReturn(UserId.fromString(userId));
         when(passwordEncoder.encode(user.password())).thenReturn("hashedPassword");
+        when(calendar.today()).thenReturn(dateTime());
         doNothing().when(userRepository).save(any(UserEntity.class));
 
 
         assertThatNoException().isThrownBy(() -> registeringUserAccount.register(user));
         verify(passwordEncoder).encode(user.password());
+        verify(calendar).today();
         verify(userRepository).save(argThat(entity -> {
             assertThat(entity.getPassword()).isEqualTo("hashedPassword");
             assertThat(entity.getId()).isEqualTo(userId);
@@ -125,4 +134,10 @@ class RegisteringUserAccountTests {
                 .isThrownBy(() -> registeringUserAccount.register(aUser().withPassword("12345678").buildDTO()));
     }
 
+
+    private static Date dateTime() {
+        final LocalDateTime localDateTime = LocalDateTime.parse("2024-10-23 12:32",
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        return Date.fromLocalDateTime(localDateTime);
+    }
 }

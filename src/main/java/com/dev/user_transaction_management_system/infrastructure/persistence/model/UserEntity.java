@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.model;
 
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
 import jakarta.persistence.*;
 import lombok.*;
@@ -8,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -57,4 +59,5 @@ public class UserEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Collections.emptyList() ;
     }
+
 }

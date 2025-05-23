@@ -7,7 +7,7 @@ import java.util.UUID;
 public final class AccountId {
     private final UUID id;
 
-    public AccountId(UUID id) {
+    public AccountId(UUID  id) {
         Assert.notNull(id,"user id cannot be null");
         this.id = id;
     }

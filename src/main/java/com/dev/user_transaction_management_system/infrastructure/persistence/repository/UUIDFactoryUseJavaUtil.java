@@ -2,10 +2,10 @@ package com.dev.user_transaction_management_system.infrastructure.persistence.re
 
 import java.util.UUID;
 
-public class UUIDIdentifierGenerator implements IdentifierGenerator<UUID> {
+public class UUIDFactoryUseJavaUtil implements IdentifierFactory<UUID> {
 
     @Override
-    public UUID generate() {
+    public UUID create() {
         return UUID.randomUUID();
     }
 }

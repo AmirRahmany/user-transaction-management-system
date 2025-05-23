@@ -1,13 +1,12 @@
 package com.dev.user_transaction_management_system.domain.user;
 
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotOpenAnAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotActivateUserAccount;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import com.dev.user_transaction_management_system.domain.event.UserAccountActivated;
 import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -18,7 +17,7 @@ public class User {
     private final FullName fullName;
     private final PhoneNumber phoneNumber;
     private final Credential credential;
-    private final LocalDateTime createdAt;
+    private final Date createdAt;
     private UserStatus status;
     private final List<NotifiableEvent> events;
 
@@ -26,7 +25,7 @@ public class User {
                  FullName fullName,
                  PhoneNumber phoneNumber,
                  Credential credential,
-                 LocalDateTime createdAt,
+                 Date createdAt,
                  UserStatus status) {
 
         Assert.notNull(userId, "userId cannot be null");
@@ -44,25 +43,20 @@ public class User {
         this.events = new ArrayList<>();
     }
 
-    public static User of(
-            UserId userId,
-            FullName fullName,
-            PhoneNumber phoneNumber,
-            Credential credential,
-            UserStatus status) {
-
-        return new User(userId, fullName, phoneNumber, credential, LocalDateTime.now(), status);
-    }
-
-    public static User of(UserId userId,FullName fullName, PhoneNumber phoneNumber, Credential credential) {
-        return new User(userId, fullName, phoneNumber, credential, LocalDateTime.now(), UserStatus.DISABLE);
+    public static User of(UserId userId,
+                          FullName fullName,
+                          PhoneNumber phoneNumber,
+                          Credential credential,
+                          UserStatus status,
+                          Date date) {
+        return new User(userId, fullName, phoneNumber, credential, date, status);
     }
 
     public void enabled() {
         this.ensureUserIsDisabled();
 
         this.status = UserStatus.ENABLE;
-        this.events.add(new UserAccountActivated(fullName.asString(), credential.email().asString(), phoneNumber.asString()));
+        this.events.add(new UserAccountWasActivated(fullName.asString(), credential.email().asString(), phoneNumber.asString()));
     }
 
     public void disable() {
@@ -116,7 +110,7 @@ public class User {
         entity.setPassword(credential.password());
         entity.setPhoneNumber(phoneNumber.asString());
         entity.setUserStatus(status);
-        entity.setCreatedAt(createdAt);
+        entity.setCreatedAt(createdAt.asLocalDateTime());
         return entity;
     }
 

@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
@@ -8,6 +9,7 @@ import io.jsonwebtoken.lang.Assert;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,13 +29,17 @@ public class ViewTransactionHistory {
                 transactionRepository.findByAccountNumber(AccountNumber.of(accountNumberRequest));
 
         List<TransactionHistory> histories = new ArrayList<>();
-        result.forEach(transaction -> histories.add(new TransactionHistory(
-                transaction.getTransactionType().name(),
-                transaction.getCreatedAt(),
-                transaction.getAmount(),
-                transaction.getReferenceNumber())
+        result.forEach(transaction -> histories.add(createTransactionHistory(transaction)
         ));
 
         return histories;
+    }
+
+    private static TransactionHistory createTransactionHistory(TransactionEntity transaction) {
+        return new TransactionHistory(
+                transaction.getTransactionType().name(),
+                Date.fromLocalDateTime(transaction.getCreatedAt()).asString(),
+                transaction.getAmount(),
+                transaction.getReferenceNumber());
     }
 }

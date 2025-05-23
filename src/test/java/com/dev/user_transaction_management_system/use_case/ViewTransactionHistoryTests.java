@@ -2,6 +2,7 @@ package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.FakeCalendar;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.use_case.dto.*;
@@ -19,12 +20,14 @@ class ViewTransactionHistoryTests {
 
     private TransferMoney transactionService;
     private ViewTransactionHistory viewTransactionHistory;
+    private FakeCalendar calendar;
 
     @BeforeEach
     void setUp() {
         TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
         final BankAccountRepositoryFake repositoryFake = new BankAccountRepositoryFake();
-        this.transactionService = new TransferMoney(transactionRepository, repositoryFake);
+        calendar = new FakeCalendar();
+        this.transactionService = new TransferMoney(transactionRepository, repositoryFake, calendar);
         this.viewTransactionHistory = new ViewTransactionHistory(transactionRepository);
         this.helper = new BankAccountTestHelper(repositoryFake);
     }
@@ -42,8 +45,8 @@ class ViewTransactionHistoryTests {
 
         final List<TransactionHistory> histories = viewTransactionHistory.getHistoryByAccountNumber(from.accountNumberAsString());
 
-        TransactionHistory expectedHistory = new TransactionHistory("DEPOSIT", receipt.createdAt(),
-                100,receipt.referenceNumber());
+        var expectedHistory =
+                new TransactionHistory("DEPOSIT", receipt.createdAt(), 100,receipt.referenceNumber());
         assertThat(histories).containsOnly(expectedHistory);
 
     }

@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.fake;
 
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 
@@ -26,7 +27,7 @@ public class UserRepositoryFake implements UserRepository {
     }
 
     @Override
-    public UUID nextIdentify() {
-        return UUID.randomUUID();
+    public UserId nextIdentify() {
+        return UserId.fromUUID(UUID.fromString("123e4567-e89b-12d3-a456-426614174000"));
     }
 }

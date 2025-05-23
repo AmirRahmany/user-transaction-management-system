@@ -1,5 +1,7 @@
 package com.dev.user_transaction_management_system.use_case;
 
+import com.dev.user_transaction_management_system.domain.Calendar;
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
@@ -24,16 +26,19 @@ public class WithdrawingMoney {
     private final BankAccountRepository accountRepository;
     private final BankAccountMapper bankAccountMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final Calendar calendar;
 
     public WithdrawingMoney(@NonNull TransactionRepository transactionRepository,
                             @NonNull BankAccountRepository bankAccountRepository,
                             @NonNull ApplicationEventPublisher eventPublisher,
-                            @NonNull BankAccountMapper bankAccountMapper) {
+                            @NonNull BankAccountMapper bankAccountMapper,
+                            @NonNull Calendar calendar) {
 
         this.transactionRepository = transactionRepository;
         this.accountRepository = bankAccountRepository;
         this.eventPublisher = eventPublisher;
         this.bankAccountMapper = bankAccountMapper;
+        this.calendar = calendar;
     }
 
     @Transactional
@@ -43,24 +48,22 @@ public class WithdrawingMoney {
         AccountNumber fromAccountNumber = AccountNumber.of(request.fromAccountNumber());
         final BankAccount account = finAccountBy(request.fromAccountNumber());
         String referenceNumber = transactionRepository.generateReferenceNumber();
-
+        final var createdAt = calendar.today();
 
         final Amount amount = Amount.of(request.funds());
         account.decreaseBalance(amount);
-
-        final LocalDateTime createdAt = LocalDateTime.now();
         final var transaction = initiateTransaction(request, fromAccountNumber, amount, referenceNumber, createdAt);
 
         accountRepository.save(account.toEntity());
         transactionRepository.save(transaction.toEntity());
         account.releaseEvents().forEach(eventPublisher::publishEvent);
-        return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.asString(),createdAt);
+        return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.asString(),createdAt.asString());
     }
 
     private Transaction initiateTransaction(WithdrawalRequest request,
                                                    AccountNumber fromAccountNumber,
                                                    Amount amount, String referenceNumber,
-                                                   LocalDateTime createdAt) {
+                                                   Date createdAt) {
         return Transaction.of(
                 TransactionId.autoGenerateByDb(),
                 fromAccountNumber,

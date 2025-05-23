@@ -5,9 +5,9 @@ import com.dev.user_transaction_management_system.domain.bank_account.AccountSta
 import java.time.LocalDateTime;
 
 public record OpeningAccountResponse(
-         String accountNumber,
-         String fullName,
-         Double balance,
-         LocalDateTime createdAt,
+        String accountNumber,
+        String fullName,
+        Double balance,
+        String createdAt,
         AccountStatus status) {
 }

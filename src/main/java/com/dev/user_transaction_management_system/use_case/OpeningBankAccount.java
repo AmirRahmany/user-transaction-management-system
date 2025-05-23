@@ -1,5 +1,7 @@
 package com.dev.user_transaction_management_system.use_case;
 
+import com.dev.user_transaction_management_system.domain.Calendar;
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.*;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
@@ -15,9 +17,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-import java.util.UUID;
-
 import static com.dev.user_transaction_management_system.domain.bank_account.AccountStatus.DISABLE;
 import static java.time.LocalDateTime.now;
 
@@ -30,28 +29,33 @@ public class OpeningBankAccount {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final Calendar calendar;
 
     public OpeningBankAccount(@NonNull BankAccountRepository accountRepository,
                               @NonNull AccountNumberProvider accountNumberProvider,
                               @NonNull UserRepository userRepository,
-                              @NonNull ApplicationEventPublisher eventPublisher) {
+                              @NonNull ApplicationEventPublisher eventPublisher,
+                              @NonNull Calendar calendar) {
 
         this.bankAccountRepository = accountRepository;
         this.accountNumberProvider = accountNumberProvider;
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
+        this.calendar = calendar;
         this.userMapper = new UserMapper();
     }
 
-    public OpeningAccountResponse open(AccountRequest accountRequest) {
-        Assert.notNull(accountRequest,"account request cannot be null");
+    public OpeningAccountResponse open(AccountRequest request) {
+        Assert.notNull(request,"account request cannot be null");
 
-        final UUID accountId = bankAccountRepository.nextIdentify();
+        final AccountId accountId = bankAccountRepository.nextIdentify();
         final var accountNumber = generateAccountNumber();
-        final User user = findUserBy(accountRequest.username());
+        final User user = findUserBy(request.username());
+        final Date createAt = calendar.today();
 
         user.ensureUserIsEnabled();
-        final var bankAccount = openBankaccount(accountRequest, accountNumber, accountId, user);
+        final var bankAccount =
+                BankAccount.open(accountId, accountNumber, user, Amount.of(request.balance()), DISABLE, createAt);
 
         bankAccountRepository.save(bankAccount.toEntity());
         bankAccount.releaseEvents().forEach(eventPublisher::publishEvent);
@@ -73,14 +77,4 @@ public class OpeningBankAccount {
         return accountNumber;
     }
 
-    private static BankAccount openBankaccount(AccountRequest accountRequest,
-                                               AccountNumber accountNumber,
-                                               UUID accountUUID,
-                                               User user) {
-        final double balance = accountRequest.balance();
-        final LocalDateTime createdAt = now();
-        final AccountId accountId = AccountId.fromUUID(accountUUID);
-
-        return BankAccount.open(accountId, accountNumber, user, Amount.of(balance), DISABLE, createdAt);
-    }
 }

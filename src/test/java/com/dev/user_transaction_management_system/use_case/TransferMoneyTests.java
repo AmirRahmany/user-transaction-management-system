@@ -5,6 +5,7 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFind
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.FakeCalendar;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
@@ -26,7 +27,8 @@ class TransferMoneyTests {
         final BankAccountRepositoryFake accountRepository = new BankAccountRepositoryFake();
 
         final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
-        this.transactionService = new TransferMoney(transactionRepository, accountRepository);
+        this.transactionService = new TransferMoney(transactionRepository,
+                accountRepository, new FakeCalendar());
         this.helper = new BankAccountTestHelper(accountRepository);
     }
 

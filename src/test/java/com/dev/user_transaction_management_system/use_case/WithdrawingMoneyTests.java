@@ -4,6 +4,7 @@ import com.dev.user_transaction_management_system.domain.bank_account.BankAccoun
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
 import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
+import com.dev.user_transaction_management_system.fake.FakeCalendar;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
@@ -29,7 +30,8 @@ class WithdrawingMoneyTests {
         withdrawingMoney = new WithdrawingMoney(new TransactionRepositoryFake(),
                 accountRepositoryFake,
                 new CustomEventPublisher(),
-                new BankAccountMapper());
+                new BankAccountMapper(),
+                new FakeCalendar());
         this.helper = new BankAccountTestHelper(accountRepositoryFake);
     }
 
