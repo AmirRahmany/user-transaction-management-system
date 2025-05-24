@@ -3,7 +3,6 @@ package com.dev.user_transaction_management_system.infrastructure.util.mapper;
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
-import jakarta.persistence.Column;
 import org.springframework.stereotype.Component;
 
 import java.util.UUID;
@@ -24,6 +23,6 @@ public class UserMapper {
                 phoneNumber,
                 credential,
                 entity.getUserStatus(),
-                Date.fromLocalDateTime(entity.getCreatedAt()));
+                Date.fromCurrentTime(entity.getCreatedAt()));
     }
 }

@@ -2,7 +2,7 @@ package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
-import com.dev.user_transaction_management_system.fake.FakeCalendar;
+import com.dev.user_transaction_management_system.fake.FakeClock;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.use_case.dto.*;
@@ -20,13 +20,13 @@ class ViewTransactionHistoryTests {
 
     private TransferMoney transactionService;
     private ViewTransactionHistory viewTransactionHistory;
-    private FakeCalendar calendar;
+    private FakeClock calendar;
 
     @BeforeEach
     void setUp() {
         TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
         final BankAccountRepositoryFake repositoryFake = new BankAccountRepositoryFake();
-        calendar = new FakeCalendar();
+        calendar = new FakeClock();
         this.transactionService = new TransferMoney(transactionRepository, repositoryFake, calendar);
         this.viewTransactionHistory = new ViewTransactionHistory(transactionRepository);
         this.helper = new BankAccountTestHelper(repositoryFake);

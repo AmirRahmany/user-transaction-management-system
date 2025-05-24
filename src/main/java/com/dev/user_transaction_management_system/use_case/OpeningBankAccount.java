@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.Calendar;
+import com.dev.user_transaction_management_system.domain.Clock;
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.*;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
@@ -29,19 +29,19 @@ public class OpeningBankAccount {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final ApplicationEventPublisher eventPublisher;
-    private final Calendar calendar;
+    private final Clock clock;
 
     public OpeningBankAccount(@NonNull BankAccountRepository accountRepository,
                               @NonNull AccountNumberProvider accountNumberProvider,
                               @NonNull UserRepository userRepository,
                               @NonNull ApplicationEventPublisher eventPublisher,
-                              @NonNull Calendar calendar) {
+                              @NonNull Clock clock) {
 
         this.bankAccountRepository = accountRepository;
         this.accountNumberProvider = accountNumberProvider;
         this.userRepository = userRepository;
         this.eventPublisher = eventPublisher;
-        this.calendar = calendar;
+        this.clock = clock;
         this.userMapper = new UserMapper();
     }
 
@@ -51,7 +51,7 @@ public class OpeningBankAccount {
         final AccountId accountId = bankAccountRepository.nextIdentify();
         final var accountNumber = generateAccountNumber();
         final User user = findUserBy(request.username());
-        final Date createAt = calendar.today();
+        final Date createAt = Date.fromCurrentTime(clock.currentTime());
 
         user.ensureUserIsEnabled();
         final var bankAccount =

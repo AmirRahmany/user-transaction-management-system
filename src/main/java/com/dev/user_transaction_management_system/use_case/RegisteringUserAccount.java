@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.Calendar;
+import com.dev.user_transaction_management_system.domain.Clock;
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUser;
@@ -14,6 +14,8 @@ import org.springframework.lang.NonNull;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class RegisteringUserAccount {
 
@@ -24,31 +26,30 @@ public class RegisteringUserAccount {
 
     private final ApplicationEventPublisher eventPublisher;
 
-    private final Calendar calendar;
+    private final Clock clock;
 
     @Autowired
 
     public RegisteringUserAccount(@NonNull UserRepository userRepository,
                                   @NonNull PasswordEncoder passwordEncoder,
                                   @NonNull ApplicationEventPublisher publisher,
-                                  @NonNull Calendar calendar) {
+                                  @NonNull Clock clock) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.eventPublisher = publisher;
-        this.calendar = calendar;
+        this.clock = clock;
     }
 
 
     @Transactional
     public void register(UserRegistrationRequest request) {
         Assert.notNull(request, "user registration request cannot be null");
-
         ensureUserDoesNotExistsWith(request.email());
+
         final String hashedPassword = passwordEncoder.encode(request.password());
         final UserId userId = userRepository.nextIdentify();
-        final Date createdAt = calendar.today();
 
-        final User user = openUserAccountFrom(request, userId, hashedPassword,createdAt);
+        final User user = openUserAccountFrom(request, userId, hashedPassword, clock.currentTime());
 
         userRepository.save(user.toEntity());
         eventPublisher.publishEvent(event(request, user));
@@ -57,13 +58,13 @@ public class RegisteringUserAccount {
     private static User openUserAccountFrom(UserRegistrationRequest request,
                                             UserId userId,
                                             String hashedPassword,
-                                            Date date) {
+                                            LocalDateTime currentTime) {
         return User.of(userId,
                 FullName.of(request.firstName(), request.lastName()),
                 PhoneNumber.of(request.phoneNumber()),
                 Credential.of(Email.of(request.email()), Password.fromHashedPassword(hashedPassword)),
                 UserStatus.DISABLE,
-                date);
+                Date.fromCurrentTime(currentTime));
     }
 
     private static UserAccountWasRegistered event(UserRegistrationRequest request, User user) {

@@ -18,7 +18,7 @@ public class Date {
         this.dateTime = dateTime;
     }
 
-    public static Date fromLocalDateTime(LocalDateTime dateTime){
+    public static Date fromCurrentTime(LocalDateTime dateTime){
         return new Date(dateTime
                 .atZone(zone())
                 .format(dateFormat()));

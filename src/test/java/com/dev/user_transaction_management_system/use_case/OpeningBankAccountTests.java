@@ -36,7 +36,7 @@ class OpeningBankAccountTests {
                 new AccountNumberProviderStub(),
                 userRepository,
                 new CustomEventPublisher(),
-                new FakeCalendar()
+                new FakeClock()
         );
     }
 

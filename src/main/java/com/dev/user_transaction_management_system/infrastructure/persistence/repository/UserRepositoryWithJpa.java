@@ -9,17 +9,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 @Slf4j
 public class UserRepositoryWithJpa implements UserRepository {
 
     private final EntityManager entityManager;
-    private final UUIDFactoryUseJavaUtil uuidFactory;
 
     public UserRepositoryWithJpa(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.uuidFactory = new UUIDFactoryUseJavaUtil();
     }
 
     @Override
@@ -48,6 +47,6 @@ public class UserRepositoryWithJpa implements UserRepository {
 
     @Override
     public UserId nextIdentify() {
-        return UserId.fromUUID(uuidFactory.create());
+        return UserId.fromUUID(UUID.randomUUID());
     }
 }

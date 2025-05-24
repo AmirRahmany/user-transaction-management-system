@@ -4,8 +4,6 @@ import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 
-import java.util.UUID;
-
 public class UserFakeBuilder {
 
     public static final String BLANK = " ";
@@ -17,7 +15,7 @@ public class UserFakeBuilder {
     private String plainPassword;
     private String phoneNumber;
     private UserStatus userStatus = UserStatus.DISABLE;
-    private final Date createdAt = (new FakeCalendar()).today();
+    private final Date createdAt = Date.fromCurrentTime((new FakeClock()).currentTime());
 
 
     private UserFakeBuilder(String firstName,

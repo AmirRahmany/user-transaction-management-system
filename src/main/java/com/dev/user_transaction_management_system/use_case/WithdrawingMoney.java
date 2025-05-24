@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.Calendar;
+import com.dev.user_transaction_management_system.domain.Clock;
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
@@ -17,8 +17,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 public class WithdrawingMoney {
 
@@ -26,19 +24,19 @@ public class WithdrawingMoney {
     private final BankAccountRepository accountRepository;
     private final BankAccountMapper bankAccountMapper;
     private final ApplicationEventPublisher eventPublisher;
-    private final Calendar calendar;
+    private final Clock clock;
 
     public WithdrawingMoney(@NonNull TransactionRepository transactionRepository,
                             @NonNull BankAccountRepository bankAccountRepository,
                             @NonNull ApplicationEventPublisher eventPublisher,
                             @NonNull BankAccountMapper bankAccountMapper,
-                            @NonNull Calendar calendar) {
+                            @NonNull Clock clock) {
 
         this.transactionRepository = transactionRepository;
         this.accountRepository = bankAccountRepository;
         this.eventPublisher = eventPublisher;
         this.bankAccountMapper = bankAccountMapper;
-        this.calendar = calendar;
+        this.clock = clock;
     }
 
     @Transactional
@@ -48,16 +46,16 @@ public class WithdrawingMoney {
         AccountNumber fromAccountNumber = AccountNumber.of(request.fromAccountNumber());
         final BankAccount account = finAccountBy(request.fromAccountNumber());
         String referenceNumber = transactionRepository.generateReferenceNumber();
-        final var createdAt = calendar.today();
+        final Date currentTime = Date.fromCurrentTime(clock.currentTime());
 
         final Amount amount = Amount.of(request.funds());
         account.decreaseBalance(amount);
-        final var transaction = initiateTransaction(request, fromAccountNumber, amount, referenceNumber, createdAt);
+        final var transaction = initiateTransaction(request, fromAccountNumber, amount, referenceNumber, currentTime);
 
         accountRepository.save(account.toEntity());
         transactionRepository.save(transaction.toEntity());
         account.releaseEvents().forEach(eventPublisher::publishEvent);
-        return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.asString(),createdAt.asString());
+        return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.asString(),currentTime.asString());
     }
 
     private Transaction initiateTransaction(WithdrawalRequest request,

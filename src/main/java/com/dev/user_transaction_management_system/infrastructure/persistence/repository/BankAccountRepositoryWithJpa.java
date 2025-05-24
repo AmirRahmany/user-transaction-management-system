@@ -8,16 +8,15 @@ import jakarta.persistence.EntityManager;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class BankAccountRepositoryWithJpa implements BankAccountRepository {
 
     private final EntityManager entityManager;
-    private final UUIDFactoryUseJavaUtil identifierGenerator;
 
     public BankAccountRepositoryWithJpa(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.identifierGenerator = new UUIDFactoryUseJavaUtil();
     }
 
     @Override
@@ -48,7 +47,7 @@ public class BankAccountRepositoryWithJpa implements BankAccountRepository {
 
     @Override
     public AccountId nextIdentify() {
-        return AccountId.fromUUID(identifierGenerator.create());
+        return AccountId.fromUUID(UUID.randomUUID());
     }
 
 }

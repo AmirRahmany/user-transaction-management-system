@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.Calendar;
+import com.dev.user_transaction_management_system.domain.Clock;
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
@@ -15,22 +15,22 @@ import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
+@Deprecated
+//I don't like this feature implementation
 public class TransferMoney {
 
     private final TransactionRepository transactionRepository;
     private final BankAccountRepository accountRepository;
     private final BankAccountMapper bankAccountMapper;
-    private final Calendar calendar;
+    private final Clock clock;
 
     public TransferMoney(TransactionRepository transactionRepository,
                          BankAccountRepository accountRepository,
-                         Calendar calendar) {
+                         Clock clock) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
-        this.calendar = calendar;
+        this.clock = clock;
         this.bankAccountMapper = new BankAccountMapper();
     }
 
@@ -50,7 +50,7 @@ public class TransferMoney {
         from.decreaseBalance(amount);
         to.increaseAmount(amount);
 
-        final Date createdAt = calendar.today();
+        final Date createdAt = Date.fromCurrentTime(clock.currentTime());
         final Transaction transaction = initiateTransaction(request, referenceNumber,createdAt);
 
         accountRepository.save(from.toEntity());

@@ -7,9 +7,7 @@ import com.dev.user_transaction_management_system.domain.bank_account.AccountId;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
-import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.domain.bank_account.AccountStatus.DISABLE;
@@ -17,20 +15,15 @@ import static com.dev.user_transaction_management_system.domain.bank_account.Acc
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 
 public class BankAccountFakeBuilder {
-    private UUID accountId = UUID.randomUUID();
+    private final UUID accountId = UUID.randomUUID();
     private String accountNumber = "0300123002145";
     private User user = aUser().build();
     private Amount balance = Amount.of(5000.50);
     private AccountStatus accountStatus = DISABLE;
-    private final Date createdAt = (new FakeCalendar()).today();
+    private final Date createdAt = Date.fromCurrentTime(new FakeClock().currentTime());
 
     public static BankAccountFakeBuilder anAccount() {
         return new BankAccountFakeBuilder();
-    }
-
-    public BankAccountFakeBuilder withAccountId(String accountId) {
-        this.accountId = UUID.fromString(accountId);
-        return this;
     }
 
     public BankAccountFakeBuilder withUser(User user) {

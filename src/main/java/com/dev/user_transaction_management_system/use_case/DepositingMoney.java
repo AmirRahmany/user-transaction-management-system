@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.Calendar;
+import com.dev.user_transaction_management_system.domain.Clock;
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
@@ -17,8 +17,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
-
 @Service
 public class DepositingMoney {
 
@@ -26,18 +24,18 @@ public class DepositingMoney {
     private final BankAccountRepository accountRepository;
     private final BankAccountMapper bankAccountMapper;
     private final ApplicationEventPublisher eventPublisher;
-    private final Calendar calendar;
+    private final Clock clock;
 
     public DepositingMoney(@NonNull TransactionRepository transactionRepository,
                            @NonNull BankAccountRepository accountRepository,
                            @NonNull ApplicationEventPublisher eventPublisher,
                            @NonNull BankAccountMapper bankAccountMapper,
-                           @NonNull Calendar calendar) {
+                           @NonNull Clock clock) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
         this.eventPublisher = eventPublisher;
         this.bankAccountMapper = bankAccountMapper;
-        this.calendar = calendar;
+        this.clock = clock;
     }
 
     @Transactional
@@ -47,7 +45,7 @@ public class DepositingMoney {
         final AccountNumber fromAccountNumber = AccountNumber.of(depositRequest.accountNumber());
         String referenceNumber = transactionRepository.generateReferenceNumber();
         final BankAccount bankAccount = finAccountBy(fromAccountNumber);
-        final Date createdAt = calendar.today();
+        final Date createdAt = Date.fromCurrentTime(clock.currentTime());
 
         final Amount amount = Amount.of(depositRequest.amount());
         bankAccount.increaseAmount(amount);
