@@ -1,9 +1,8 @@
 package com.dev.user_transaction_management_system.fake;
 
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
-
-import java.util.UUID;
 
 public class UserFakeBuilder {
 
@@ -16,6 +15,7 @@ public class UserFakeBuilder {
     private String plainPassword;
     private String phoneNumber;
     private UserStatus userStatus = UserStatus.DISABLE;
+    private final Date createdAt = Date.fromCurrentTime((new FakeClock()).currentTime());
 
 
     private UserFakeBuilder(String firstName,
@@ -127,7 +127,7 @@ public class UserFakeBuilder {
         final Password password = Password.fromPlainPassword(plainPassword);
         final Credential credential = Credential.of(mail, password);
 
-        return User.of(id, fullName, phone, credential, userStatus);
+        return User.of(id, fullName, phone, credential, userStatus,createdAt);
     }
 
     public UserRegistrationRequest buildDTO() {

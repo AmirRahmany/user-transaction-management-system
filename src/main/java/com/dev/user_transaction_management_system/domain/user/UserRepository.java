@@ -14,5 +14,5 @@ public interface UserRepository {
 
     boolean isUserAlreadyExists(String email);
 
-    UUID nextIdentify();
+    UserId nextIdentify();
 }

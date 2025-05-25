@@ -1,13 +1,16 @@
-package com.dev.user_transaction_management_system.domain.event;
+package com.dev.user_transaction_management_system.domain.bank_account;
 
+import com.dev.user_transaction_management_system.domain.event.Message;
+import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
+import com.dev.user_transaction_management_system.domain.event.Subject;
 import com.dev.user_transaction_management_system.domain.user.Email;
 
 import static java.lang.String.format;
 
-public record BankAccountOpened(String fullName,
-                                String accountNumber,
-                                String receiverEmail,
-                                String phoneNumber) implements NotifiableEvent {
+public record BankAccountWasOpened(String fullName,
+                                   String accountNumber,
+                                   String receiverEmail,
+                                   String phoneNumber) implements NotifiableEvent {
 
 
     @Override

@@ -6,13 +6,13 @@ public record TransactionReceipt(
         double amount,
         String referenceNumber,
         String accountNumber,
-        LocalDateTime createdAt) {
+        String createdAt) {
 
     public static TransactionReceipt makeOf(
             double amount,
             String referenceNumber,
             String fromAccountNumber,
-            LocalDateTime createdAt) {
+            String createdAt) {
         return new TransactionReceipt(amount,referenceNumber, fromAccountNumber, createdAt);
     }
 }

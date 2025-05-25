@@ -1,5 +1,7 @@
 package com.dev.user_transaction_management_system.use_case;
 
+import com.dev.user_transaction_management_system.domain.Clock;
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
@@ -9,12 +11,11 @@ import com.dev.user_transaction_management_system.infrastructure.persistence.mod
 import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class WithdrawingMoney {
@@ -23,41 +24,50 @@ public class WithdrawingMoney {
     private final BankAccountRepository accountRepository;
     private final BankAccountMapper bankAccountMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final Clock clock;
 
     public WithdrawingMoney(@NonNull TransactionRepository transactionRepository,
                             @NonNull BankAccountRepository bankAccountRepository,
                             @NonNull ApplicationEventPublisher eventPublisher,
-                            @NonNull BankAccountMapper bankAccountMapper) {
+                            @NonNull BankAccountMapper bankAccountMapper,
+                            @NonNull Clock clock) {
 
         this.transactionRepository = transactionRepository;
         this.accountRepository = bankAccountRepository;
         this.eventPublisher = eventPublisher;
         this.bankAccountMapper = bankAccountMapper;
+        this.clock = clock;
     }
 
     @Transactional
     public TransactionReceipt withdraw(WithdrawalRequest request) {
+        Assert.notNull(request,"withdraw request cannot be null");
+
         AccountNumber fromAccountNumber = AccountNumber.of(request.fromAccountNumber());
         final BankAccount account = finAccountBy(request.fromAccountNumber());
         String referenceNumber = transactionRepository.generateReferenceNumber();
-
+        final Date currentTime = Date.fromCurrentTime(clock.currentTime());
 
         final Amount amount = Amount.of(request.funds());
         account.decreaseBalance(amount);
+        final var transaction = initiateTransaction(request, fromAccountNumber, amount, referenceNumber, currentTime);
 
-        final LocalDateTime createdAt = LocalDateTime.now();
+        accountRepository.save(account.toEntity());
+        transactionRepository.save(transaction.toEntity());
+        account.releaseEvents().forEach(eventPublisher::publishEvent);
+        return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.asString(),currentTime.asString());
+    }
 
-        final Transaction transaction = Transaction.of(
+    private Transaction initiateTransaction(WithdrawalRequest request,
+                                                   AccountNumber fromAccountNumber,
+                                                   Amount amount, String referenceNumber,
+                                                   Date createdAt) {
+        return Transaction.of(
                 TransactionId.autoGenerateByDb(),
                 fromAccountNumber,
                 TransactionDetail.of(amount, TransactionType.WITHDRAWAL, request.description()),
                 ReferenceNumber.fromString(referenceNumber),
                 createdAt);
-
-        accountRepository.save(account.toEntity());
-        transactionRepository.save(transaction.toEntity());
-        account.releaseEvents().forEach(eventPublisher::publishEvent);
-        return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.toString(),createdAt);
     }
 
     private BankAccount finAccountBy(String reqAccountNumber) {

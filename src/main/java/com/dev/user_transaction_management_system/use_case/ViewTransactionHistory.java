@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.use_case;
 
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
@@ -21,19 +22,23 @@ public class ViewTransactionHistory {
     }
 
     public List<TransactionHistory> getHistoryByAccountNumber(String accountNumberRequest) {
-        Assert.notNull(accountNumberRequest, "account number cannot be null");
+        Assert.hasText(accountNumberRequest, "account number cannot be null or empty");
 
         final List<TransactionEntity> result =
                 transactionRepository.findByAccountNumber(AccountNumber.of(accountNumberRequest));
 
         List<TransactionHistory> histories = new ArrayList<>();
-        result.forEach(transaction -> histories.add(new TransactionHistory(
-                transaction.getTransactionType().name(),
-                transaction.getCreatedAt(),
-                transaction.getAmount(),
-                transaction.getReferenceNumber())
+        result.forEach(transaction -> histories.add(createTransactionHistory(transaction)
         ));
 
         return histories;
+    }
+
+    private static TransactionHistory createTransactionHistory(TransactionEntity transaction) {
+        return new TransactionHistory(
+                transaction.getTransactionType().name(),
+                Date.fromCurrentTime(transaction.getCreatedAt()).asString(),
+                transaction.getAmount(),
+                transaction.getReferenceNumber());
     }
 }

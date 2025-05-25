@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.repository;
 
+import com.dev.user_transaction_management_system.domain.bank_account.AccountId;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
@@ -13,11 +14,9 @@ import java.util.UUID;
 public class BankAccountRepositoryWithJpa implements BankAccountRepository {
 
     private final EntityManager entityManager;
-    private final UUIDIdentifierGenerator identifierGenerator;
 
     public BankAccountRepositoryWithJpa(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.identifierGenerator = new UUIDIdentifierGenerator();
     }
 
     @Override
@@ -38,7 +37,8 @@ public class BankAccountRepositoryWithJpa implements BankAccountRepository {
 
     @Override
     public boolean accountExists(AccountNumber accountNumber) {
-        final int isExist = entityManager.createNativeQuery("SELECT EXISTS(SELECT 1 FROM account where accountNumber=:accountNumber)")
+        final String sql = "SELECT EXISTS(SELECT 1 FROM account where accountNumber=:accountNumber)";
+        final int isExist = entityManager.createNativeQuery(sql)
                 .setParameter("accountNumber", accountNumber)
                 .getFirstResult();
         return isExist == 1;
@@ -46,8 +46,8 @@ public class BankAccountRepositoryWithJpa implements BankAccountRepository {
     }
 
     @Override
-    public UUID nextIdentify() {
-        return identifierGenerator.generate();
+    public AccountId nextIdentify() {
+        return AccountId.fromUUID(UUID.randomUUID());
     }
 
 }

@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.model;
 
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
 import jakarta.persistence.*;
 import lombok.Data;

@@ -4,6 +4,7 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFind
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
 import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
+import com.dev.user_transaction_management_system.fake.FakeClock;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
@@ -23,11 +24,11 @@ class DepositingMoneyTests  {
     public DepositingMoneyTests() {
         final BankAccountRepositoryFake accountRepository = new BankAccountRepositoryFake();
 
-        final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
-        this.depositingMoney = new DepositingMoney(transactionRepository,
+        this.depositingMoney = new DepositingMoney(new TransactionRepositoryFake(),
                 accountRepository,
                 new CustomEventPublisher(),
-                new BankAccountMapper());
+                new BankAccountMapper(),
+                new FakeClock());
         this.bankAccountTestHelper = new BankAccountTestHelper(accountRepository);
     }
 

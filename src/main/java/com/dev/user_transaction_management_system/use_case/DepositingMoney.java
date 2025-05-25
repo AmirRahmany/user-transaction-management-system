@@ -1,5 +1,7 @@
 package com.dev.user_transaction_management_system.use_case;
 
+import com.dev.user_transaction_management_system.domain.Clock;
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
@@ -9,12 +11,11 @@ import com.dev.user_transaction_management_system.infrastructure.persistence.mod
 import com.dev.user_transaction_management_system.infrastructure.util.mapper.BankAccountMapper;
 import com.dev.user_transaction_management_system.use_case.dto.TransactionReceipt;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
+import io.jsonwebtoken.lang.Assert;
 import jakarta.transaction.Transactional;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class DepositingMoney {
@@ -23,24 +24,29 @@ public class DepositingMoney {
     private final BankAccountRepository accountRepository;
     private final BankAccountMapper bankAccountMapper;
     private final ApplicationEventPublisher eventPublisher;
+    private final Clock clock;
 
     public DepositingMoney(@NonNull TransactionRepository transactionRepository,
                            @NonNull BankAccountRepository accountRepository,
                            @NonNull ApplicationEventPublisher eventPublisher,
-                           @NonNull BankAccountMapper bankAccountMapper) {
+                           @NonNull BankAccountMapper bankAccountMapper,
+                           @NonNull Clock clock) {
         this.transactionRepository = transactionRepository;
         this.accountRepository = accountRepository;
         this.eventPublisher = eventPublisher;
         this.bankAccountMapper = bankAccountMapper;
+        this.clock = clock;
     }
 
     @Transactional
     public TransactionReceipt deposit(DepositRequest depositRequest) {
+        Assert.notNull(depositRequest,"deposit request cannot be null");
+
         final AccountNumber fromAccountNumber = AccountNumber.of(depositRequest.accountNumber());
         String referenceNumber = transactionRepository.generateReferenceNumber();
         final BankAccount bankAccount = finAccountBy(fromAccountNumber);
+        final Date createdAt = Date.fromCurrentTime(clock.currentTime());
 
-        final LocalDateTime createdAt = LocalDateTime.now();
         final Amount amount = Amount.of(depositRequest.amount());
         bankAccount.increaseAmount(amount);
         final Transaction transaction = initiateTransaction(depositRequest, referenceNumber,createdAt);
@@ -52,7 +58,7 @@ public class DepositingMoney {
         return TransactionReceipt.makeOf(amount.asDouble(),
                 referenceNumber,
                 fromAccountNumber.toString(),
-                createdAt);
+                createdAt.asString());
     }
 
 
@@ -62,7 +68,7 @@ public class DepositingMoney {
         return bankAccountMapper.toDomain(fromEntity);
     }
 
-    private Transaction initiateTransaction(DepositRequest request, String referenceNumber, LocalDateTime createdAt) {
+    private Transaction initiateTransaction(DepositRequest request, String referenceNumber, Date createdAt) {
         final Amount amount = Amount.of(request.amount());
         final String description = request.description();
         final TransactionDetail transactionDetail = TransactionDetail.of(amount, TransactionType.DEPOSIT, description);

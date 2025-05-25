@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.repository;
 
-import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
+import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import jakarta.persistence.EntityManager;
@@ -16,11 +16,9 @@ import java.util.UUID;
 public class UserRepositoryWithJpa implements UserRepository {
 
     private final EntityManager entityManager;
-    private final UUIDIdentifierGenerator identifierGenerator;
 
     public UserRepositoryWithJpa(EntityManager entityManager) {
         this.entityManager = entityManager;
-        this.identifierGenerator = new UUIDIdentifierGenerator();
     }
 
     @Override
@@ -48,7 +46,7 @@ public class UserRepositoryWithJpa implements UserRepository {
     }
 
     @Override
-    public UUID nextIdentify() {
-        return identifierGenerator.generate();
+    public UserId nextIdentify() {
+        return UserId.fromUUID(UUID.randomUUID());
     }
 }

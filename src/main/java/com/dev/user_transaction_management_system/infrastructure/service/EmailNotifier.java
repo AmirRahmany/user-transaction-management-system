@@ -22,6 +22,7 @@ import static java.lang.String.format;
 public class EmailNotifier implements Notifier {
 
     public static final String PREFIX_SUBJECT = "Notification! ";
+
     @Value("${spring.mail.host}")
     private String host;
 
@@ -32,8 +33,9 @@ public class EmailNotifier implements Notifier {
 
     @Override
     public void sendSimpleMessage(Subject subject, Message message, Email to) {
+        Assert.notNull(subject, "subject cannot be null");
         Assert.notNull(message, "message cannot be null");
-        Assert.notNull(to, "receiver email cannot be null");
+        Assert.notNull(to, "receiver's email cannot be null");
 
         try {
             final var simpleMailMessage = createSimpleMessage(subject ,message, to);
@@ -41,19 +43,18 @@ public class EmailNotifier implements Notifier {
 
             log(to.asString(), simpleMailMessage);
         } catch (Exception e) {
-            log.info(e.getMessage());
+            log.error(e.getMessage());
             throw new IllegalArgumentException("email cant sent");
         }
     }
 
     private static void log(String to, SimpleMailMessage message) {
-        final String emailBody = format("##Sending Email... : %s to %s", message, to);
-        log.info(emailBody);
+        log.info(format("##Sending Email... : %s to %s", message, to));
     }
 
     private SimpleMailMessage createSimpleMessage(Subject subject , Message message, Email to) {
         final var simpleMailMessage = new SimpleMailMessage();
-        simpleMailMessage.setSubject(PREFIX_SUBJECT + subject);
+        simpleMailMessage.setSubject(PREFIX_SUBJECT + subject.subject());
         simpleMailMessage.setFrom(fromEmail);
         simpleMailMessage.setTo(to.asString());
         simpleMailMessage.setText(message.body());
