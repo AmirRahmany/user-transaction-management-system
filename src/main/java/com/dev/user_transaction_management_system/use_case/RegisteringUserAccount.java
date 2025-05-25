@@ -44,12 +44,16 @@ public class RegisteringUserAccount {
     @Transactional
     public void register(UserRegistrationRequest request) {
         Assert.notNull(request, "user registration request cannot be null");
-        ensureUserDoesNotExistsWith(request.email());
 
-        final String hashedPassword = passwordEncoder.encode(request.password());
+        final var email = Email.of(request.email());
+        final var password = Password.fromPlainPassword(request.password());
+        ensureUserDoesNotExistsWith(email);
+
+        final String hashedPassword = passwordEncoder.encode(password.toString());
         final UserId userId = userRepository.nextIdentify();
 
-        final User user = openUserAccountFrom(request, userId, hashedPassword, clock.currentTime());
+        final var credential = Credential.of(email, Password.fromHashedPassword(hashedPassword));
+        final User user = openUserAccountFrom(request, userId,credential, clock.currentTime());
 
         userRepository.save(user.toEntity());
         eventPublisher.publishEvent(event(request, user));
@@ -57,12 +61,12 @@ public class RegisteringUserAccount {
 
     private static User openUserAccountFrom(UserRegistrationRequest request,
                                             UserId userId,
-                                            String hashedPassword,
+                                            Credential credential,
                                             LocalDateTime currentTime) {
         return User.of(userId,
                 FullName.of(request.firstName(), request.lastName()),
                 PhoneNumber.of(request.phoneNumber()),
-                Credential.of(Email.of(request.email()), Password.fromHashedPassword(hashedPassword)),
+                credential,
                 UserStatus.DISABLE,
                 Date.fromCurrentTime(currentTime));
     }
@@ -71,7 +75,7 @@ public class RegisteringUserAccount {
         return new UserAccountWasRegistered(user.fullName(), request.email(), request.phoneNumber());
     }
 
-    private void ensureUserDoesNotExistsWith(String userEmail) {
+    private void ensureUserDoesNotExistsWith(Email userEmail) {
         if (userRepository.isUserAlreadyExists(userEmail)) {
             throw CouldNotRegisterUser.becauseUserAlreadyExisted();
         }

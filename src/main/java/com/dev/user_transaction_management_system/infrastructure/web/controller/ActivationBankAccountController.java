@@ -32,6 +32,12 @@ public class ActivationBankAccountController {
                     .status(HttpStatus.OK)
                     .statusCode(HttpStatus.OK.value())
                     .message("bank account activated").build());
+        } catch (IllegalArgumentException e){
+           return ResponseEntity.badRequest().body(HttpResponse.builder()
+                    .timestamps(LocalDateTime.now().toString())
+                    .status(HttpStatus.BAD_REQUEST)
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .message(e.getMessage()).build());
         } catch (Exception e) {
             log.error("ActivationBankAccountController: {}", e.getMessage());
             return ResponseEntity.badRequest().build();

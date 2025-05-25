@@ -4,7 +4,7 @@ import com.dev.user_transaction_management_system.domain.bank_account.AccountNum
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
-import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
+import com.dev.user_transaction_management_system.fake.FakeEventPublisher;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import org.junit.jupiter.api.Test;
@@ -23,12 +23,12 @@ class ActivatingBankAccountTests {
 
     private final BankAccountTestHelper bankAccountHelper;
     private final ActivatingBankAccount activatingBankAccount;
-    private final CustomEventPublisher eventPublisher;
+    private final FakeEventPublisher eventPublisher;
 
     public ActivatingBankAccountTests() {
         BankAccountRepository accountRepository = new BankAccountRepositoryFake();
         this.bankAccountHelper = new BankAccountTestHelper(accountRepository);
-        eventPublisher = new CustomEventPublisher();
+        eventPublisher = new FakeEventPublisher();
         activatingBankAccount = new ActivatingBankAccount(accountRepository, eventPublisher);
     }
 

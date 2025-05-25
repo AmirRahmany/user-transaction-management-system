@@ -71,8 +71,7 @@ class ActivatingUserAccountControllerTests {
 
     @Test
     void activate_user_account_successfully() throws Exception {
-        final String username = userAccount.email().asString();
-        final UserActivationRequest userActivationRequest = new UserActivationRequest(username);
+        final UserActivationRequest userActivationRequest = new UserActivationRequest(userAccount.email().asString());
 
         mockMvc.perform(post("/api/user/activate")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -80,7 +79,7 @@ class ActivatingUserAccountControllerTests {
                         .content(objectMapper.writeValueAsString(userActivationRequest)))
                 .andExpect(status().isOk());
 
-        final Optional<UserEntity> userEntity = userRepository.findByEmail(username);
+        final Optional<UserEntity> userEntity = userRepository.findByEmail(userAccount.email());
 
         assertThat(userEntity).isPresent();
         assertThat(userEntity.get().getUserStatus()).isEqualTo(UserStatus.ENABLE);

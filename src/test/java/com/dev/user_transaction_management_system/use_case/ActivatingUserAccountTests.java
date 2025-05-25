@@ -4,7 +4,7 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotActi
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
-import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
+import com.dev.user_transaction_management_system.fake.FakeEventPublisher;
 import com.dev.user_transaction_management_system.fake.PasswordEncoderStub;
 import com.dev.user_transaction_management_system.fake.UserRepositoryFake;
 import com.dev.user_transaction_management_system.helper.UserAccountRegistrationTestHelper;
@@ -15,8 +15,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
-import java.util.UUID;
 
+import static com.dev.user_transaction_management_system.fake.FakeUser.UNKNOWN_USER;
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -29,11 +29,11 @@ class ActivatingUserAccountTests {
     private final ActivatingUserAccount activatingUserAccount;
 
     private final UserAccountRegistrationTestHelper helper;
-    private final CustomEventPublisher publisher;
+    private final FakeEventPublisher publisher;
 
 
     public ActivatingUserAccountTests() {
-        publisher = new CustomEventPublisher();
+        publisher = new FakeEventPublisher();
         UserRepository userRepository = new UserRepositoryFake();
         activatingUserAccount = new ActivatingUserAccount(userRepository, publisher,new UserMapper());
         helper = new UserAccountRegistrationTestHelper(userRepository, new PasswordEncoderStub());
@@ -49,8 +49,7 @@ class ActivatingUserAccountTests {
     @Test
     void cant_enabling_an_unknown_user_account() {
         assertThatExceptionOfType(CouldNotFoundUser.class).isThrownBy(() -> {
-            final String unknownUser = UUID.randomUUID().toString();
-            activatingUserAccount.activate(unknownUser);
+            activatingUserAccount.activate(UNKNOWN_USER);
         });
     }
 

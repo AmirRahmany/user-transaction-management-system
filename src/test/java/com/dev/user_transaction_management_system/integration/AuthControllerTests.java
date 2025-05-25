@@ -70,7 +70,7 @@ class AuthControllerTests {
                         .content(objectMapper.writeValueAsString(userRegistrationRequest)))
                 .andExpect(status().isCreated());
 
-        final boolean isUserExisted = userRepository.isUserAlreadyExists(email);
+        final boolean isUserExisted = userRepository.isUserAlreadyExists(Email.of(email));
 
         assertThat(isUserExisted).isTrue();
         then(emailNotifier).should(atLeastOnce()).sendSimpleMessage(any(Subject.class),any(Message.class),any(Email.class));

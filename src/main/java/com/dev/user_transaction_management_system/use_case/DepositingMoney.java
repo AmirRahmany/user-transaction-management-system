@@ -43,7 +43,7 @@ public class DepositingMoney {
         Assert.notNull(depositRequest,"deposit request cannot be null");
 
         final AccountNumber fromAccountNumber = AccountNumber.of(depositRequest.accountNumber());
-        String referenceNumber = transactionRepository.generateReferenceNumber();
+        ReferenceNumber referenceNumber = transactionRepository.generateReferenceNumber();
         final BankAccount bankAccount = finAccountBy(fromAccountNumber);
         final Date createdAt = Date.fromCurrentTime(clock.currentTime());
 
@@ -56,7 +56,7 @@ public class DepositingMoney {
         bankAccount.releaseEvents().forEach(eventPublisher::publishEvent);
 
         return TransactionReceipt.makeOf(amount.asDouble(),
-                referenceNumber,
+                referenceNumber.toString(),
                 fromAccountNumber.toString(),
                 createdAt.asString());
     }
@@ -68,7 +68,7 @@ public class DepositingMoney {
         return bankAccountMapper.toDomain(fromEntity);
     }
 
-    private Transaction initiateTransaction(DepositRequest request, String referenceNumber, Date createdAt) {
+    private Transaction initiateTransaction(DepositRequest request, ReferenceNumber referenceNumber, Date createdAt) {
         final Amount amount = Amount.of(request.amount());
         final String description = request.description();
         final TransactionDetail transactionDetail = TransactionDetail.of(amount, TransactionType.DEPOSIT, description);
@@ -77,7 +77,7 @@ public class DepositingMoney {
                 TransactionId.autoGenerateByDb(),
                 AccountNumber.of(request.accountNumber()),
                 transactionDetail,
-                ReferenceNumber.fromString(referenceNumber),
+                referenceNumber,
                 createdAt);
     }
 }

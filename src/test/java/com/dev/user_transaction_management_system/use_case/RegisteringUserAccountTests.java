@@ -1,12 +1,17 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.Clock;
-import com.dev.user_transaction_management_system.domain.Date;
+import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.UserId;
+import com.dev.user_transaction_management_system.fake.FakeClock;
+import com.dev.user_transaction_management_system.fake.FakeEventPublisher;
+import com.dev.user_transaction_management_system.fake.PasswordEncoderStub;
+import com.dev.user_transaction_management_system.fake.UserRepositoryFake;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUser;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -16,7 +21,6 @@ import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
@@ -28,41 +32,27 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class RegisteringUserAccountTests {
 
-    @Mock
-    private UserRepository userRepository;
-
-
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
-    @Mock
-    private ApplicationEventPublisher publisher;
-
-    @Mock
-    private Clock clock;
-
-    @InjectMocks
     private RegisteringUserAccount registeringUserAccount;
 
+    @BeforeEach
+    void setUp() {
+        this.registeringUserAccount = new RegisteringUserAccount(
+                new UserRepositoryFake()
+                , new PasswordEncoderStub(),
+                new FakeEventPublisher(),
+                new FakeClock());
+    }
 
     @Test
     void register_user_successfully() {
-        var user = aUser().buildDTO();
-        String userId = "8c5148ea-857b-4996-a09c-5a5131a33564";
-        when(userRepository.nextIdentify()).thenReturn(UserId.fromString(userId));
-        when(passwordEncoder.encode(user.password())).thenReturn("hashedPassword");
-        when(clock.currentTime()).thenReturn(LocalDateTime.of(2024,10,23,18,23));
-        doNothing().when(userRepository).save(any(UserEntity.class));
 
+        final UserRegistrationRequest registrationRequest = new UserRegistrationRequest("Ali",
+                "rezaiee",
+                "ali@gmail.com",
+                "@Abcd1234",
+                "09112427000");
 
-        assertThatNoException().isThrownBy(() -> registeringUserAccount.register(user));
-        verify(passwordEncoder).encode(user.password());
-        verify(clock).currentTime();
-        verify(userRepository).save(argThat(entity -> {
-            assertThat(entity.getPassword()).isEqualTo("hashedPassword");
-            assertThat(entity.getId()).isEqualTo(userId);
-            return true;
-        }));
+        assertThatNoException().isThrownBy(() -> registeringUserAccount.register(registrationRequest));
     }
 
     @Test
@@ -91,6 +81,15 @@ class RegisteringUserAccountTests {
     }
 
     @Test
+    void can_not_register_user_without_valid_phone_number() {
+        final String invalidPhoneNumber = "09112379";
+        final UserRegistrationRequest registrationRequest = aUser().withPhoneNumber(invalidPhoneNumber).buildDTO();
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(() -> registeringUserAccount.register(registrationRequest));
+    }
+
+    @Test
     void can_not_register_user_without_valid_email() {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(() -> registeringUserAccount.register(aUser().withNullEmail()));
@@ -105,15 +104,12 @@ class RegisteringUserAccountTests {
     @Test
     void can_not_register_user_with_repetitive_email() {
         final String mail = "amirrahmani@gmail.com";
+        final UserRegistrationRequest newUser = aUser().withEmail(mail).buildDTO();
 
-        when(userRepository.isUserAlreadyExists(mail)).thenReturn(true);
-
-        final UserRegistrationRequest newUser = aUser().withEmail("amirrahmani@gmail.com").buildDTO();
+        registeringUserAccount.register(newUser);
 
         assertThatExceptionOfType(CouldNotRegisterUser.class)
-                .isThrownBy(() -> registeringUserAccount.register(newUser));
-
-        verify(userRepository, never()).save(any());
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withEmail(mail).buildDTO()));
     }
 
     @Test

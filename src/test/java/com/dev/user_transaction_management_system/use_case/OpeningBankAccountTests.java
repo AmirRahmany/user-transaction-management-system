@@ -35,7 +35,7 @@ class OpeningBankAccountTests {
                 new BankAccountRepositoryFake(),
                 new AccountNumberProviderStub(),
                 userRepository,
-                new CustomEventPublisher(),
+                new FakeEventPublisher(),
                 new FakeClock()
         );
     }
@@ -58,10 +58,8 @@ class OpeningBankAccountTests {
 
     @Test
     void cannot_open_account_without_any_user() {
-        final AccountRequest accountRequest = accountRequest().withNoUser().open();
-
         assertThatExceptionOfType(CouldNotFoundUser.class)
-                .isThrownBy(() -> openingBankAccount.open(accountRequest));
+                .isThrownBy(() -> openingBankAccount.open(accountRequest().withNoUser().open()));
     }
 
     @Test

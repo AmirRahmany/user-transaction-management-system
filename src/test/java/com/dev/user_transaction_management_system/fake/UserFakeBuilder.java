@@ -9,11 +9,11 @@ public class UserFakeBuilder {
     public static final String BLANK = " ";
 
     private String userId = "8c5148ea-857b-4996-a09c-5a5131a33564";
-    private String firstName;
-    private String lastName;
-    private String email;
-    private String plainPassword;
-    private String phoneNumber;
+    private String firstName = "sara";
+    private String lastName = "bahrami";
+    private String email = "cyber9511@gmail.com";
+    private String plainPassword = "@abcD1234#";
+    private String phoneNumber =  "09101456585";
     private UserStatus userStatus = UserStatus.DISABLE;
     private final Date createdAt = Date.fromCurrentTime((new FakeClock()).currentTime());
 
@@ -38,15 +38,6 @@ public class UserFakeBuilder {
     }
 
     private UserFakeBuilder getUser() {
-        return new UserFakeBuilder("sara",
-                "bahrami",
-                "amirrahmani7017@gmail.com",
-                "@abcD1234#",
-                "09907994339");
-    }
-
-    public UserFakeBuilder withUSerId(String userId) {
-        this.userId = userId;
         return this;
     }
 
@@ -134,4 +125,13 @@ public class UserFakeBuilder {
         return new UserRegistrationRequest(firstName, lastName, email, plainPassword, phoneNumber);
     }
 
+    public UserFakeBuilder withUserId(String userId) {
+        this.userId = userId;
+        return this;
+    }
+
+    public UserRegistrationRequest withUnknownUser() {
+        this.email = FakeUser.UNKNOWN_USER;
+        return buildDTO();
+    }
 }

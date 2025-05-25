@@ -70,4 +70,38 @@ class AuthenticateUserTests {
         assertThatExceptionOfType(IllegalArgumentException.class)
                 .isThrownBy(()->authenticateUser.authenticate(loginRequest));
     }
+
+    @Test
+    void cannot_authenticate_user_when_username_is_null() {
+        final String username = null;
+        final String password = "@Abcd1234";
+        final LoginRequest loginRequest = new LoginRequest(username, password);
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(()->{
+                    UserDetails userDetails = new User(username, password, Collections.emptyList());
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    when(authenticationManager.authenticate(any())).thenReturn(authentication);
+                    authenticateUser.authenticate(loginRequest);
+                });
+    }
+
+    @Test
+    void cannot_authenticate_user_when_password_is_null() {
+        final String username = "amir@gmail.com";
+        final String password = null;
+
+        final LoginRequest loginRequest = new LoginRequest(username, password);
+
+
+        assertThatExceptionOfType(IllegalArgumentException.class)
+                .isThrownBy(()->{
+                    UserDetails userDetails = new User(username, password, Collections.emptyList());
+                    Authentication authentication = new UsernamePasswordAuthenticationToken(
+                            userDetails, null, userDetails.getAuthorities());
+                    when(authenticationManager.authenticate(any())).thenReturn(authentication);
+                    authenticateUser.authenticate(loginRequest);
+                });
+    }
 }

@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
+import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
@@ -39,7 +40,7 @@ public class ActivatingUserAccount {
     }
 
     private User finUserBy(String username) {
-        final UserEntity userEntity = userRepository.findByEmail(username)
+        final UserEntity userEntity = userRepository.findByEmail(Email.of(username))
                 .orElseThrow(() -> CouldNotFoundUser.withId(username));
         return userMapper.toDomain(userEntity);
     }

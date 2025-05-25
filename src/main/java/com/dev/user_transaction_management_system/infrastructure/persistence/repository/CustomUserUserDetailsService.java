@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.infrastructure.persistence.repository;
 
+import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -18,7 +19,7 @@ public class CustomUserUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByEmail(username)
+        return userRepository.findByEmail(Email.of(username))
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
     }
 }

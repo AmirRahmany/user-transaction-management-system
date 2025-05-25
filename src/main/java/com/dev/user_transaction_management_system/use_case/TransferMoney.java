@@ -16,7 +16,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
-@Deprecated
+@Deprecated(forRemoval = true)
 //I don't like this feature implementation
 public class TransferMoney {
 
@@ -44,7 +44,7 @@ public class TransferMoney {
 
         final BankAccount from = finAccountBy(fromAccountNumber);
         final BankAccount to = finAccountBy(toAccountNumber);
-        String referenceNumber = transactionRepository.generateReferenceNumber();
+        ReferenceNumber referenceNumber = transactionRepository.generateReferenceNumber();
 
         final Amount amount = Amount.of(request.amount());
         from.decreaseBalance(amount);
@@ -59,7 +59,7 @@ public class TransferMoney {
 
         return TransferReceipt.
                 makeOf(amount.asDouble(), fromAccountNumber.toString(), toAccountNumber.toString(),
-                referenceNumber, createdAt.asString());
+                referenceNumber.toString(), createdAt.asString());
     }
 
 
@@ -69,7 +69,7 @@ public class TransferMoney {
         return bankAccountMapper.toDomain(fromEntity);
     }
 
-    private Transaction initiateTransaction(TransferMoneyRequest request, String referenceNumber, Date createdAt) {
+    private Transaction initiateTransaction(TransferMoneyRequest request, ReferenceNumber referenceNumber, Date createdAt) {
         final Amount amount = Amount.of(request.amount());
         final String description = request.description();
         final TransactionDetail transactionDetail = TransactionDetail.of(amount, TransactionType.DEPOSIT, description);
@@ -78,7 +78,7 @@ public class TransferMoney {
                 TransactionId.autoGenerateByDb(),
                 AccountNumber.of(request.fromAccountNumber()),
                 transactionDetail,
-                ReferenceNumber.fromString(referenceNumber),
+                referenceNumber,
                 createdAt);
     }
 }
