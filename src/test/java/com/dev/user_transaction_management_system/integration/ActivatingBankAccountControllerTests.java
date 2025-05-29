@@ -30,7 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.not;
 import static org.mockito.ArgumentMatchers.any;

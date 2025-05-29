@@ -13,7 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -40,13 +40,13 @@ class ActivatingBankAccountTests {
     }
 
     @Test
-    void cant_un_existed_user_bank_account() {
+    void cant_activate_un_existed_user_bank_account() {
         assertThatExceptionOfType(CouldNotFindBankAccount.class)
                 .isThrownBy(() -> activatingBankAccount.activate("0300457896321"));
     }
 
     @Test
-    void should_not_persist_when_account_is_already_enabled() {
+    void does_not_reactivate_already_enabled_bank_account() {
         var bankAccount = bankAccountHelper.havingEnabledAccount();
         final BankAccountRepository repository = mock(BankAccountRepository.class);
         final ActivatingBankAccount accountActivation = new ActivatingBankAccount(repository,eventPublisher);

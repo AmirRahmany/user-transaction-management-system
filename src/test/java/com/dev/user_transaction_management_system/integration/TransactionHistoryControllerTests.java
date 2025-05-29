@@ -2,7 +2,7 @@ package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
+import com.dev.user_transaction_management_system.test_builder.DepositRequestTestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.use_case.DepositingMoney;
 import com.dev.user_transaction_management_system.use_case.ViewTransactionHistory;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -112,7 +112,7 @@ class TransactionHistoryControllerTests {
     }
 
     private void depositFundsInto(String accountNumber) {
-        final DepositRequest depositRequest = DepositRequestBuilder.aDepositRequest()
+        final DepositRequest depositRequest = DepositRequestTestBuilder.aDepositRequest()
                 .withAmount(300)
                 .withAccountNumber(accountNumber)
                 .withDescription(TRANSACTION_DESCRIPTION)

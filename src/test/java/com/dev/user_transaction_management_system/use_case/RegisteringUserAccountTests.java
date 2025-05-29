@@ -1,33 +1,26 @@
 package com.dev.user_transaction_management_system.use_case;
 
-import com.dev.user_transaction_management_system.domain.Clock;
-import com.dev.user_transaction_management_system.domain.user.Email;
-import com.dev.user_transaction_management_system.domain.user.UserId;
 import com.dev.user_transaction_management_system.fake.FakeClock;
 import com.dev.user_transaction_management_system.fake.FakeEventPublisher;
 import com.dev.user_transaction_management_system.fake.PasswordEncoderStub;
 import com.dev.user_transaction_management_system.fake.UserRepositoryFake;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotRegisterUser;
-import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.ValueSources;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.security.crypto.password.PasswordEncoder;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
-import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
+import static com.dev.user_transaction_management_system.test_builder.UserTestBuilder.aUser;
 import static java.time.LocalDateTime.now;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class RegisteringUserAccountTests {
@@ -55,19 +48,20 @@ class RegisteringUserAccountTests {
         assertThatNoException().isThrownBy(() -> registeringUserAccount.register(registrationRequest));
     }
 
-    @Test
-    void can_not_register_user_without_any_name() {
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"","  "})
+    void can_not_register_user_without_any_first_name(String firstName) {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> registeringUserAccount.register(aUser().withFirstName(null).buildDTO()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withFirstName(firstName).buildDTO()));
+    }
 
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = {"","  "})
+    void can_not_register_user_without_any_last_name(String lastName) {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> registeringUserAccount.register(aUser().withLastName(null).buildDTO()));
-
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> registeringUserAccount.register(aUser().withFirstName(" ").buildDTO()));
-
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> registeringUserAccount.register(aUser().withLastName(" ").buildDTO()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withLastName(lastName).buildDTO()));
     }
 
     @Test
@@ -121,12 +115,11 @@ class RegisteringUserAccountTests {
                 .isThrownBy(() -> registeringUserAccount.register(aUser().withEmptyPassword()));
     }
 
-    @Test
-    void can_not_register_user_with_invalid_password() {
-        assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> registeringUserAccount.register(aUser().withPassword("12345").buildDTO()));
 
+    @ParameterizedTest(name = "password")
+    @ValueSource(strings = {"12345","abc12345","ABC45678","@abc123456"})
+    void can_not_register_user_with_invalid_password(String password) {
         assertThatExceptionOfType(IllegalArgumentException.class)
-                .isThrownBy(() -> registeringUserAccount.register(aUser().withPassword("12345678").buildDTO()));
+                .isThrownBy(() -> registeringUserAccount.register(aUser().withPassword(password).buildDTO()));
     }
 }

@@ -1,34 +1,34 @@
-package com.dev.user_transaction_management_system.fake;
+package com.dev.user_transaction_management_system.test_builder;
 
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
 
-public class TransferMoneyRequestBuilder {
+public class TransferMoneyRequestTestBuilder {
     private double amount = 1000;
     private String fromAccountNumber;
     private String toAccountNumber;
     private String description = "transaction description!";
 
-    public static TransferMoneyRequestBuilder aTransferMoneyRequest() {
-        return new TransferMoneyRequestBuilder();
+    public static TransferMoneyRequestTestBuilder aTransferMoneyRequest() {
+        return new TransferMoneyRequestTestBuilder();
     }
 
-    public TransferMoneyRequestBuilder withAmount(double amount) {
+    public TransferMoneyRequestTestBuilder withAmount(double amount) {
         this.amount = amount;
         return this;
     }
 
-    public TransferMoneyRequestBuilder withFromAccount(BankAccount fromAccount) {
+    public TransferMoneyRequestTestBuilder withFromAccount(BankAccount fromAccount) {
         this.fromAccountNumber = fromAccount.accountNumberAsString();
         return this;
     }
 
-    public TransferMoneyRequestBuilder withToAccount(BankAccount toAccount) {
+    public TransferMoneyRequestTestBuilder withToAccount(BankAccount toAccount) {
         this.toAccountNumber = toAccount.accountNumberAsString();
         return this;
     }
 
-    public TransferMoneyRequestBuilder withDescription(String description) {
+    public TransferMoneyRequestTestBuilder withDescription(String description) {
         this.description = description;
         return this;
     }

@@ -1,27 +1,27 @@
-package com.dev.user_transaction_management_system.fake;
+package com.dev.user_transaction_management_system.test_builder;
 
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 
-public class DepositRequestBuilder {
+public class DepositRequestTestBuilder {
     private double amount = 1000;
     private String accountNumber;
     private String description = "transaction description!";
 
-    public static DepositRequestBuilder aDepositRequest() {
-        return new DepositRequestBuilder();
+    public static DepositRequestTestBuilder aDepositRequest() {
+        return new DepositRequestTestBuilder();
     }
 
-    public DepositRequestBuilder withAmount(double amount) {
+    public DepositRequestTestBuilder withAmount(double amount) {
         this.amount = amount;
         return this;
     }
 
-    public DepositRequestBuilder withAccountNumber(String accountNumber) {
+    public DepositRequestTestBuilder withAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
         return this;
     }
 
-    public DepositRequestBuilder withDescription(String description) {
+    public DepositRequestTestBuilder withDescription(String description) {
         this.description = description;
         return this;
     }

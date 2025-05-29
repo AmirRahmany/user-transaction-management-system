@@ -7,7 +7,7 @@ import com.dev.user_transaction_management_system.domain.event.Notifier;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
+import com.dev.user_transaction_management_system.test_builder.DepositRequestTestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
@@ -25,7 +25,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -72,7 +72,7 @@ class DepositMoneyControllerTests {
         final BankAccount to = bankAccountHelper.havingOpened(anAccount().enabled().withUser(userAccount)
                 .withAccountNumber("0300654789123").withBalance(500));
 
-        final DepositRequest transferMoneyRequest = DepositRequestBuilder.aDepositRequest()
+        final DepositRequest transferMoneyRequest = DepositRequestTestBuilder.aDepositRequest()
                 .withAmount(300)
                 .withAccountNumber(to.accountNumberAsString())
                 .withDescription("transaction description")

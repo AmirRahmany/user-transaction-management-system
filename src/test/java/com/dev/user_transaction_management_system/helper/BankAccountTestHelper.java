@@ -5,12 +5,12 @@ import com.dev.user_transaction_management_system.domain.bank_account.AccountSta
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
-import com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder;
+import com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Component;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
 
 
 @Component
@@ -23,8 +23,8 @@ public class BankAccountTestHelper {
     }
 
     @Transactional
-    public BankAccount havingOpened(BankAccountFakeBuilder bankAccountFakeBuilder) {
-        final BankAccount account = bankAccountFakeBuilder.open();
+    public BankAccount havingOpened(BankAccountTestBuilder bankAccountTestBuilder) {
+        final BankAccount account = bankAccountTestBuilder.open();
 
         accountRepository.save(account.toEntity());
         return account;

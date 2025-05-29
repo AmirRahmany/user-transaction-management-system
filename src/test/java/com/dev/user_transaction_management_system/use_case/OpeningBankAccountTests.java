@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
-import static com.dev.user_transaction_management_system.fake.AccountRequestFakeBuilder.accountRequest;
-import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
+import static com.dev.user_transaction_management_system.test_builder.AccountRequestTestBuilder.accountRequest;
+import static com.dev.user_transaction_management_system.test_builder.UserTestBuilder.aUser;
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,9 +23,6 @@ class OpeningBankAccountTests {
     private OpeningBankAccount openingBankAccount;
 
     private UserAccountRegistrationTestHelper helper;
-
-    @Mock
-    private ApplicationEventPublisher publisher;
 
     @BeforeEach
     void setUp() {

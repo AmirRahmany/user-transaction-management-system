@@ -61,9 +61,7 @@ class AuthenticateUserTests {
 
     @Test
     void cannot_authenticate_user_when_authentication_fails() {
-        final String username = "amir@gmail.com";
-        final String password = "@Abcd1234";
-        final LoginRequest loginRequest = new LoginRequest(username, password);
+        final LoginRequest loginRequest = new LoginRequest("amir@gmail.com", "@Abcd1234");
 
         when(authenticationManager.authenticate(any())).thenThrow(IllegalArgumentException.class);
 

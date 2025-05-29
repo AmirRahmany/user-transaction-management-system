@@ -1,10 +1,11 @@
-package com.dev.user_transaction_management_system.fake;
+package com.dev.user_transaction_management_system.test_builder;
 
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.user.*;
+import com.dev.user_transaction_management_system.fake.FakeClock;
 import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
 
-public class UserFakeBuilder {
+public class UserTestBuilder {
 
     public static final String BLANK = " ";
 
@@ -18,53 +19,41 @@ public class UserFakeBuilder {
     private final Date createdAt = Date.fromCurrentTime((new FakeClock()).currentTime());
 
 
-    private UserFakeBuilder(String firstName,
-                            String lastName,
-                            String email,
-                            String password,
-                            String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.plainPassword = password;
-        this.phoneNumber = phoneNumber;
+    private UserTestBuilder() {
     }
 
-    private UserFakeBuilder() {
+    public static UserTestBuilder aUser() {
+        return new UserTestBuilder().getUser();
     }
 
-    public static UserFakeBuilder aUser() {
-        return new UserFakeBuilder().getUser();
-    }
-
-    private UserFakeBuilder getUser() {
+    private UserTestBuilder getUser() {
         return this;
     }
 
-    public UserFakeBuilder withFirstName(String firstName) {
+    public UserTestBuilder withFirstName(String firstName) {
         this.firstName = firstName;
 
         return this;
     }
 
-    public UserFakeBuilder withLastName(String lastName) {
+    public UserTestBuilder withLastName(String lastName) {
         this.lastName = lastName;
         return this;
     }
 
-    public UserFakeBuilder withEmail(String email) {
+    public UserTestBuilder withEmail(String email) {
         this.email = email;
 
         return this;
     }
 
-    public UserFakeBuilder withPassword(String password) {
+    public UserTestBuilder withPassword(String password) {
         this.plainPassword = password;
 
         return this;
     }
 
-    public UserFakeBuilder withPhoneNumber(String phoneNumber) {
+    public UserTestBuilder withPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
 
         return this;
@@ -100,12 +89,12 @@ public class UserFakeBuilder {
         return aUser().withPassword(BLANK).buildDTO();
     }
 
-    public UserFakeBuilder withDisabledStatus() {
+    public UserTestBuilder withDisabledStatus() {
         this.userStatus = UserStatus.DISABLE;
         return this;
     }
 
-    public UserFakeBuilder withEnabledStatus() {
+    public UserTestBuilder withEnabledStatus() {
         this.userStatus = UserStatus.ENABLE;
         return this;
     }
@@ -125,13 +114,4 @@ public class UserFakeBuilder {
         return new UserRegistrationRequest(firstName, lastName, email, plainPassword, phoneNumber);
     }
 
-    public UserFakeBuilder withUserId(String userId) {
-        this.userId = userId;
-        return this;
-    }
-
-    public UserRegistrationRequest withUnknownUser() {
-        this.email = FakeUser.UNKNOWN_USER;
-        return buildDTO();
-    }
 }
