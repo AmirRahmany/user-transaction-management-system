@@ -4,12 +4,12 @@ import com.dev.user_transaction_management_system.UserAccountFixture;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.test_builder.DepositRequestTestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.use_case.DepositingMoney;
-import com.dev.user_transaction_management_system.use_case.ViewTransactionHistory;
-import com.dev.user_transaction_management_system.use_case.WithdrawingMoney;
-import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
-import com.dev.user_transaction_management_system.use_case.dto.TransactionHistory;
-import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
+import com.dev.user_transaction_management_system.use_case.deposit_money.DepositMoney;
+import com.dev.user_transaction_management_system.use_case.view_transaction_history.ViewTransactionHistory;
+import com.dev.user_transaction_management_system.use_case.withdraw_money.WithdrawMoney;
+import com.dev.user_transaction_management_system.use_case.deposit_money.DepositRequest;
+import com.dev.user_transaction_management_system.use_case.view_transaction_history.TransactionHistory;
+import com.dev.user_transaction_management_system.use_case.withdraw_money.WithdrawalRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -56,10 +56,10 @@ class TransactionHistoryControllerTests {
     private UserAccountFixture userAccountFixture;
 
     @Autowired
-    private DepositingMoney depositingMoney;
+    private DepositMoney depositMoney;
 
     @Autowired
-    private WithdrawingMoney withdrawingMoney;
+    private WithdrawMoney withdrawMoney;
 
     @Autowired
     private BankAccountTestHelper bankAccountHelper;
@@ -108,7 +108,7 @@ class TransactionHistoryControllerTests {
         final WithdrawalRequest withdrawalRequest =
                 new WithdrawalRequest(200, accountNumber, TRANSACTION_DESCRIPTION);
 
-        withdrawingMoney.withdraw(withdrawalRequest);
+        withdrawMoney.withdraw(withdrawalRequest);
     }
 
     private void depositFundsInto(String accountNumber) {
@@ -118,7 +118,7 @@ class TransactionHistoryControllerTests {
                 .withDescription(TRANSACTION_DESCRIPTION)
                 .initiate();
 
-        depositingMoney.deposit(depositRequest);
+        depositMoney.deposit(depositRequest);
     }
 
     private List<TransactionHistory> readTransactionHistoriesFrom(MvcResult mvcResult)

@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.test_builder;
 
-import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
+import com.dev.user_transaction_management_system.use_case.deposit_money.DepositRequest;
 
 public class DepositRequestTestBuilder {
     private double amount = 1000;

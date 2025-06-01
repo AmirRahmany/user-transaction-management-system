@@ -2,8 +2,9 @@ package com.dev.user_transaction_management_system.use_case;
 
 
 import com.dev.user_transaction_management_system.infrastructure.util.jwt.JwtTokenUtils;
-import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
-import com.dev.user_transaction_management_system.use_case.dto.UserAuthenticationResponse;
+import com.dev.user_transaction_management_system.use_case.authenticate_user.AuthenticateUser;
+import com.dev.user_transaction_management_system.use_case.authenticate_user.LoginRequest;
+import com.dev.user_transaction_management_system.use_case.authenticate_user.UserAuthenticationResponse;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;

@@ -5,7 +5,9 @@ import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake
 import com.dev.user_transaction_management_system.fake.FakeClock;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.use_case.dto.*;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoney;
+import com.dev.user_transaction_management_system.use_case.view_transaction_history.TransactionHistory;
+import com.dev.user_transaction_management_system.use_case.view_transaction_history.ViewTransactionHistory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

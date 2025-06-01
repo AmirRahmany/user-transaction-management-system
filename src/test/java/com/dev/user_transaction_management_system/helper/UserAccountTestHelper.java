@@ -4,10 +4,10 @@ import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.infrastructure.util.mapper.UserMapper;
 import com.dev.user_transaction_management_system.test_builder.UserTestBuilder;
-import com.dev.user_transaction_management_system.use_case.ActivatingUserAccount;
-import com.dev.user_transaction_management_system.use_case.AuthenticateUser;
-import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
-import com.dev.user_transaction_management_system.use_case.dto.UserAuthenticationResponse;
+import com.dev.user_transaction_management_system.use_case.activate_user_account.ActivateUserAccount;
+import com.dev.user_transaction_management_system.use_case.authenticate_user.AuthenticateUser;
+import com.dev.user_transaction_management_system.use_case.authenticate_user.LoginRequest;
+import com.dev.user_transaction_management_system.use_case.authenticate_user.UserAuthenticationResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class UserAccountTestHelper {
     private MockMvc mockMvc;
 
     @Autowired
-    private ActivatingUserAccount activatingUserAccount;
+    private ActivateUserAccount activateUserAccount;
 
     @Autowired
     protected ObjectMapper objectMapper;

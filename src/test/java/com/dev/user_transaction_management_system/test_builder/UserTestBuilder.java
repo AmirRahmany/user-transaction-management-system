@@ -3,7 +3,7 @@ package com.dev.user_transaction_management_system.test_builder;
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.user.*;
 import com.dev.user_transaction_management_system.fake.FakeClock;
-import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
+import com.dev.user_transaction_management_system.use_case.register_user_account.UserRegistrationRequest;
 
 public class UserTestBuilder {
 

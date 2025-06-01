@@ -8,7 +8,8 @@ import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake
 import com.dev.user_transaction_management_system.fake.FakeClock;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoney;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoneyRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;

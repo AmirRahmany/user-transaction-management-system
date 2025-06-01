@@ -5,13 +5,14 @@ import com.dev.user_transaction_management_system.domain.event.Message;
 import com.dev.user_transaction_management_system.domain.event.Subject;
 import com.dev.user_transaction_management_system.domain.event.Notifier;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
+import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.use_case.open_bank_account.AccountRequest;
-import com.dev.user_transaction_management_system.use_case.open_bank_account.AccountOpenedResponse;
+import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.dev.user_transaction_management_system.use_case.activate_bank_account.BankAccountActivationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -20,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
@@ -28,7 +30,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.not;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atLeastOnce;
@@ -37,11 +41,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 @SpringBootTest
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
+@AutoConfigureMockMvc
 @Transactional
+@Import(UserAccountFixture.class)
 @Tag("INTEGRATION")
-class BankAccountControllerTests {
+class ActivateBankAccountControllerTests {
+
     @Autowired
     private MockMvc mockMvc;
 
@@ -52,43 +58,48 @@ class BankAccountControllerTests {
     private BankAccountRepository accountRepository;
 
     @Autowired
+    private BankAccountTestHelper accountHelper;
+
+    @Autowired
     private UserAccountFixture userAccountFixture;
 
     @MockitoSpyBean
     @Qualifier("fakeEmailNotifier")
-    private Notifier emailNotifier;
+    private Notifier notifier;
 
-    private Object token;
 
+    private String token;
     private User userAccount;
-
 
     @BeforeEach
     void setUp() {
-        var userAndToken = userAccountFixture.givenActivatedSignedInUserWithToken();
-        token = userAndToken.token();
-        userAccount = userAndToken.user();
+        var userWithToken = userAccountFixture.havingRegisteredUserWithToken("amirrahmani7017@gmail.com", "@Abcd137854");
+        token = userWithToken.token();
+        userAccount = userWithToken.user();
     }
+
 
     @Test
-    void open_an_account_successfully() throws Exception {
-        final AccountRequest accountRequest = new AccountRequest(userAccount.email().asString(), 5000);
-        final String response = mockMvc.perform(post("/api/account")
-                        .contentType(MediaType.APPLICATION_JSON)
+    void activate_user_bank_account_successfully() throws Exception {
+        final BankAccount bankAccount = accountHelper.havingOpened(anAccount().withUser(userAccount));
+
+        final BankAccountActivationRequest activationRequest =
+                new BankAccountActivationRequest(bankAccount.accountNumberAsString());
+
+        mockMvc.perform(post("/api/account/activate")
+                .contentType(MediaType.APPLICATION_JSON)
                         .header("Authorization",token)
-                        .content(objectMapper.writeValueAsString(accountRequest)))
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
+                .content(objectMapper.writeValueAsString(activationRequest)))
+                .andExpect(status().isOk());
+
+        AccountNumber accountNumber = bankAccount.accountNumber();
+        final Optional<BankAccountEntity> savedBankAccount = accountRepository.findByAccountNumber(accountNumber);
+
+        assertThat(savedBankAccount).isPresent();
+        assertThat(savedBankAccount.get().getStatus()).isEqualTo(AccountStatus.ENABLE);
 
 
-        final JsonNode path = objectMapper.readTree(response).path("data");
-        var openingAccountResponse = objectMapper.readValue(path.toString(), AccountOpenedResponse.class);
-        assertThat(openingAccountResponse).isNotNull();
-
-        final AccountNumber accountNumber = AccountNumber.of(openingAccountResponse.accountNumber());
-        final Optional<BankAccountEntity> accountEntity = accountRepository.findByAccountNumber(accountNumber);
-
-        assertThat(accountEntity).isPresent();
-        then(emailNotifier).should(atLeastOnce()).sendSimpleMessage(any(Subject.class),any(Message.class),any(Email.class));
+        then(notifier).should(atLeastOnce()).sendSimpleMessage(any(Subject.class),any(Message.class),any(Email.class));
     }
+
 }

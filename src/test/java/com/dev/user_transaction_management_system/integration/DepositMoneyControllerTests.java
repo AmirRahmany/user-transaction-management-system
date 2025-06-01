@@ -10,7 +10,7 @@ import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.test_builder.DepositRequestTestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
+import com.dev.user_transaction_management_system.use_case.deposit_money.DepositRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;

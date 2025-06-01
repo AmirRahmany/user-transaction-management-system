@@ -4,14 +4,12 @@ import com.dev.user_transaction_management_system.UserAccountFixture;
 import com.dev.user_transaction_management_system.domain.event.Message;
 import com.dev.user_transaction_management_system.domain.event.Subject;
 import com.dev.user_transaction_management_system.domain.event.Notifier;
-import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.use_case.open_bank_account.AccountRequest;
-import com.dev.user_transaction_management_system.use_case.open_bank_account.AccountOpenedResponse;
-import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
-import com.fasterxml.jackson.databind.JsonNode;
+import com.dev.user_transaction_management_system.domain.user.UserRepository;
+import com.dev.user_transaction_management_system.domain.user.UserStatus;
+import com.dev.user_transaction_management_system.infrastructure.persistence.model.UserEntity;
+import com.dev.user_transaction_management_system.use_case.activate_user_account.UserActivationRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -28,28 +26,27 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
 @SpringBootTest
-@AutoConfigureMockMvc
 @ActiveProfiles("test")
+@AutoConfigureMockMvc
 @Transactional
 @Tag("INTEGRATION")
-class BankAccountControllerTests {
+class ActivateUserAccountControllerTests {
+
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private ObjectMapper objectMapper;
-
-    @Autowired
-    private BankAccountRepository accountRepository;
+    private UserRepository userRepository;
 
     @Autowired
     private UserAccountFixture userAccountFixture;
@@ -58,37 +55,34 @@ class BankAccountControllerTests {
     @Qualifier("fakeEmailNotifier")
     private Notifier emailNotifier;
 
-    private Object token;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private User userAccount;
-
+    private String token;
 
     @BeforeEach
     void setUp() {
-        var userAndToken = userAccountFixture.givenActivatedSignedInUserWithToken();
-        token = userAndToken.token();
+        var userAndToken = userAccountFixture.havingRegisteredUserWithToken("amirrhmani7017@gmail.com", "@Abcd137728");
         userAccount = userAndToken.user();
+        token = userAndToken.token();
     }
 
+
     @Test
-    void open_an_account_successfully() throws Exception {
-        final AccountRequest accountRequest = new AccountRequest(userAccount.email().asString(), 5000);
-        final String response = mockMvc.perform(post("/api/account")
+    void activate_user_account_successfully() throws Exception {
+        final UserActivationRequest userActivationRequest = new UserActivationRequest(userAccount.email().asString());
+
+        mockMvc.perform(post("/api/user/activate")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .header("Authorization",token)
-                        .content(objectMapper.writeValueAsString(accountRequest)))
-                .andExpect(status().isCreated())
-                .andReturn().getResponse().getContentAsString();
+                        .header("Authorization", token)
+                        .content(objectMapper.writeValueAsString(userActivationRequest)))
+                .andExpect(status().isOk());
 
+        final Optional<UserEntity> userEntity = userRepository.findByEmail(userAccount.email());
 
-        final JsonNode path = objectMapper.readTree(response).path("data");
-        var openingAccountResponse = objectMapper.readValue(path.toString(), AccountOpenedResponse.class);
-        assertThat(openingAccountResponse).isNotNull();
-
-        final AccountNumber accountNumber = AccountNumber.of(openingAccountResponse.accountNumber());
-        final Optional<BankAccountEntity> accountEntity = accountRepository.findByAccountNumber(accountNumber);
-
-        assertThat(accountEntity).isPresent();
+        assertThat(userEntity).isPresent();
+        assertThat(userEntity.get().getUserStatus()).isEqualTo(UserStatus.ENABLE);
         then(emailNotifier).should(atLeastOnce()).sendSimpleMessage(any(Subject.class),any(Message.class),any(Email.class));
     }
 }
