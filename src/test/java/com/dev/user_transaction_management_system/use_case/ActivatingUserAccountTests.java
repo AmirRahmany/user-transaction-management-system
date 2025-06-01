@@ -4,7 +4,7 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotActi
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFoundUser;
 import com.dev.user_transaction_management_system.domain.user.UserRepository;
 import com.dev.user_transaction_management_system.domain.user.UserStatus;
-import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
+import com.dev.user_transaction_management_system.fake.FakeEventPublisher;
 import com.dev.user_transaction_management_system.fake.PasswordEncoderStub;
 import com.dev.user_transaction_management_system.fake.UserRepositoryFake;
 import com.dev.user_transaction_management_system.helper.UserAccountRegistrationTestHelper;
@@ -15,9 +15,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
-import java.util.UUID;
 
-import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
+import static com.dev.user_transaction_management_system.test_builder.FakeUser.UNKNOWN_USER;
+import static com.dev.user_transaction_management_system.test_builder.UserTestBuilder.aUser;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -29,33 +29,32 @@ class ActivatingUserAccountTests {
     private final ActivatingUserAccount activatingUserAccount;
 
     private final UserAccountRegistrationTestHelper helper;
-    private final CustomEventPublisher publisher;
+    private final FakeEventPublisher publisher;
 
 
     public ActivatingUserAccountTests() {
-        publisher = new CustomEventPublisher();
+        publisher = new FakeEventPublisher();
         UserRepository userRepository = new UserRepositoryFake();
         activatingUserAccount = new ActivatingUserAccount(userRepository, publisher,new UserMapper());
         helper = new UserAccountRegistrationTestHelper(userRepository, new PasswordEncoderStub());
     }
 
     @Test
-    void enabling_user_account_successfully() {
+    void enable_user_account_successfully() {
         final UserEntity entity = helper.havingRegistered(aUser());
 
         assertThatNoException().isThrownBy(() -> activatingUserAccount.activate(entity.getUsername()));
     }
 
     @Test
-    void cant_enabling_an_unknown_user_account() {
+    void cant_enable_an_unknown_user_account() {
         assertThatExceptionOfType(CouldNotFoundUser.class).isThrownBy(() -> {
-            final String unknownUser = UUID.randomUUID().toString();
-            activatingUserAccount.activate(unknownUser);
+            activatingUserAccount.activate(UNKNOWN_USER);
         });
     }
 
     @Test
-    void should_not_persist_when_user_account_is_already_enabled() {
+    void does_not_reactivate_already_enabled_user_account() {
         final UserEntity entity = helper.havingRegistered(aUser());
         entity.setUserStatus(UserStatus.ENABLE);
 
@@ -66,6 +65,6 @@ class ActivatingUserAccountTests {
 
         assertThatExceptionOfType(CouldNotActivateUserAccount.class)
                 .isThrownBy(()->userAccount.activate(entity.getUsername()));
-        then(repository).shouldHaveNoMoreInteractions();
+        verify(repository, times(0)).save(entity);
     }
 }

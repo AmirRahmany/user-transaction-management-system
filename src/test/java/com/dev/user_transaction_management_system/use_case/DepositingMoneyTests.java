@@ -3,7 +3,7 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
-import com.dev.user_transaction_management_system.fake.CustomEventPublisher;
+import com.dev.user_transaction_management_system.fake.FakeEventPublisher;
 import com.dev.user_transaction_management_system.fake.FakeClock;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
@@ -12,8 +12,8 @@ import com.dev.user_transaction_management_system.use_case.dto.TransactionReceip
 import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
 import org.junit.jupiter.api.Test;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
-import static com.dev.user_transaction_management_system.fake.DepositRequestBuilder.aDepositRequest;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.DepositRequestTestBuilder.aDepositRequest;
 import static org.assertj.core.api.Assertions.*;
 
 class DepositingMoneyTests  {
@@ -26,7 +26,7 @@ class DepositingMoneyTests  {
 
         this.depositingMoney = new DepositingMoney(new TransactionRepositoryFake(),
                 accountRepository,
-                new CustomEventPublisher(),
+                new FakeEventPublisher(),
                 new BankAccountMapper(),
                 new FakeClock());
         this.bankAccountTestHelper = new BankAccountTestHelper(accountRepository);
@@ -62,7 +62,7 @@ class DepositingMoneyTests  {
     }
 
     @Test
-    void can_not_deposit_money_to_non_existed_account() {
+    void can_not_deposit_money_to_non_existed_bank_account() {
         String nonRegisteredAccountNumber = "0300456578451";
         final DepositRequest depositRequest = aDepositRequest()
                 .withAccountNumber(nonRegisteredAccountNumber).initiate();
@@ -72,7 +72,7 @@ class DepositingMoneyTests  {
     }
 
     @Test
-    void cannot_deposit_money_to_disable_account() {
+    void cannot_deposit_money_to_disable_bank_account() {
         var disableAccount = bankAccountTestHelper.havingOpened(anAccount().disabled());
 
         final DepositRequest depositRequest = aDepositRequest()

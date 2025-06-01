@@ -10,9 +10,9 @@ public interface UserRepository {
 
     void save(UserEntity user);
 
-    Optional<UserEntity> findByEmail(String email);
+    Optional<UserEntity> findByEmail(Email email);
 
-    boolean isUserAlreadyExists(String email);
+    boolean isUserAlreadyExists(Email email);
 
     UserId nextIdentify();
 }

@@ -1,7 +1,5 @@
 package com.dev.user_transaction_management_system.use_case.dto;
 
-import java.time.LocalDateTime;
-
 public record TransactionReceipt(
         double amount,
         String referenceNumber,

@@ -1,4 +1,4 @@
-package com.dev.user_transaction_management_system.fake;
+package com.dev.user_transaction_management_system.test_builder;
 
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountStatus;
@@ -7,14 +7,15 @@ import com.dev.user_transaction_management_system.domain.bank_account.AccountId;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
+import com.dev.user_transaction_management_system.fake.FakeClock;
 
 import java.util.UUID;
 
 import static com.dev.user_transaction_management_system.domain.bank_account.AccountStatus.DISABLE;
 import static com.dev.user_transaction_management_system.domain.bank_account.AccountStatus.ENABLE;
-import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
+import static com.dev.user_transaction_management_system.test_builder.UserTestBuilder.aUser;
 
-public class BankAccountFakeBuilder {
+public class BankAccountTestBuilder {
     private final UUID accountId = UUID.randomUUID();
     private String accountNumber = "0300123002145";
     private User user = aUser().build();
@@ -22,36 +23,36 @@ public class BankAccountFakeBuilder {
     private AccountStatus accountStatus = DISABLE;
     private final Date createdAt = Date.fromCurrentTime(new FakeClock().currentTime());
 
-    public static BankAccountFakeBuilder anAccount() {
-        return new BankAccountFakeBuilder();
+    public static BankAccountTestBuilder anAccount() {
+        return new BankAccountTestBuilder();
     }
 
-    public BankAccountFakeBuilder withUser(User user) {
+    public BankAccountTestBuilder withUser(User user) {
         this.user = user;
         return this;
     }
 
-    public BankAccountFakeBuilder withAccountNumber(String accountNumber) {
+    public BankAccountTestBuilder withAccountNumber(String accountNumber) {
         this.accountNumber = accountNumber;
         return this;
     }
 
-    public BankAccountFakeBuilder withBalance(double balance) {
+    public BankAccountTestBuilder withBalance(double balance) {
         this.balance = Amount.of(balance);
         return this;
     }
 
-    public BankAccountFakeBuilder withInsufficientBalance() {
+    public BankAccountTestBuilder withInsufficientBalance() {
         this.balance = Amount.of(200);
         return this;
     }
 
-    public BankAccountFakeBuilder enabled(){
+    public BankAccountTestBuilder enabled(){
         this.accountStatus = ENABLE;
         return this;
     }
 
-    public BankAccountFakeBuilder disabled() {
+    public BankAccountTestBuilder disabled() {
         this.accountStatus = DISABLE;
         return this;
     }

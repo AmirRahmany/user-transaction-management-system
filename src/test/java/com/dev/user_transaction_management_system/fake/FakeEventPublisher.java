@@ -4,7 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
 
 @Slf4j
-public class CustomEventPublisher implements ApplicationEventPublisher {
+public class FakeEventPublisher implements ApplicationEventPublisher {
 
     @Override
     public void publishEvent(Object event) {

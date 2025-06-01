@@ -41,11 +41,11 @@ public class WithdrawingMoney {
 
     @Transactional
     public TransactionReceipt withdraw(WithdrawalRequest request) {
-        Assert.notNull(request,"withdraw request cannot be null");
+        Assert.notNull(request, "withdraw request cannot be null");
 
         AccountNumber fromAccountNumber = AccountNumber.of(request.fromAccountNumber());
         final BankAccount account = finAccountBy(request.fromAccountNumber());
-        String referenceNumber = transactionRepository.generateReferenceNumber();
+        final var referenceNumber = transactionRepository.generateReferenceNumber();
         final Date currentTime = Date.fromCurrentTime(clock.currentTime());
 
         final Amount amount = Amount.of(request.funds());
@@ -55,18 +55,19 @@ public class WithdrawingMoney {
         accountRepository.save(account.toEntity());
         transactionRepository.save(transaction.toEntity());
         account.releaseEvents().forEach(eventPublisher::publishEvent);
-        return TransactionReceipt.makeOf(amount.asDouble(),referenceNumber,fromAccountNumber.asString(),currentTime.asString());
+        return TransactionReceipt.makeOf(amount.asDouble(), referenceNumber.toString(), fromAccountNumber.asString(), currentTime.asString());
     }
 
     private Transaction initiateTransaction(WithdrawalRequest request,
-                                                   AccountNumber fromAccountNumber,
-                                                   Amount amount, String referenceNumber,
-                                                   Date createdAt) {
+                                            AccountNumber fromAccountNumber,
+                                            Amount amount,
+                                            ReferenceNumber referenceNumber,
+                                            Date createdAt) {
         return Transaction.of(
                 TransactionId.autoGenerateByDb(),
                 fromAccountNumber,
                 TransactionDetail.of(amount, TransactionType.WITHDRAWAL, request.description()),
-                ReferenceNumber.fromString(referenceNumber),
+                referenceNumber,
                 createdAt);
     }
 

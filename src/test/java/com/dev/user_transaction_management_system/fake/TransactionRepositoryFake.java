@@ -1,6 +1,7 @@
 package com.dev.user_transaction_management_system.fake;
 
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
+import com.dev.user_transaction_management_system.domain.transaction.ReferenceNumber;
 import com.dev.user_transaction_management_system.domain.transaction.TransactionRepository;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
 
@@ -19,14 +20,8 @@ public class TransactionRepositoryFake implements TransactionRepository {
     }
 
     @Override
-    public Optional<TransactionEntity> findById(Integer transactionId) {
-        return transactions.values().stream().filter(transactionEntity -> transactionEntity.getTransactionId()
-                .equals(transactionId)).findFirst();
-    }
-
-    @Override
-    public String generateReferenceNumber() {
-        return "03004565879851";
+    public ReferenceNumber generateReferenceNumber() {
+        return ReferenceNumber.fromString("03004565879851");
     }
 
     @Override

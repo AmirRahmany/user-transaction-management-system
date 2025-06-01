@@ -4,6 +4,7 @@ import com.dev.user_transaction_management_system.domain.Clock;
 import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.*;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
+import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.infrastructure.util.mapper.UserMapper;
 import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
@@ -63,7 +64,7 @@ public class OpeningBankAccount {
     }
 
     private User findUserBy(String email) {
-        UserEntity userEntity = userRepository.findByEmail(email)
+        UserEntity userEntity = userRepository.findByEmail(Email.of(email))
                 .orElseThrow(() -> CouldNotFoundUser.withEmail(email));
 
         return userMapper.toDomain(userEntity);

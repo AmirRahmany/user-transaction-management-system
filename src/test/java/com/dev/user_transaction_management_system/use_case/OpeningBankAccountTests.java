@@ -14,8 +14,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.ApplicationEventPublisher;
 
-import static com.dev.user_transaction_management_system.fake.AccountRequestFakeBuilder.accountRequest;
-import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
+import static com.dev.user_transaction_management_system.test_builder.AccountRequestTestBuilder.accountRequest;
+import static com.dev.user_transaction_management_system.test_builder.UserTestBuilder.aUser;
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -23,9 +23,6 @@ class OpeningBankAccountTests {
     private OpeningBankAccount openingBankAccount;
 
     private UserAccountRegistrationTestHelper helper;
-
-    @Mock
-    private ApplicationEventPublisher publisher;
 
     @BeforeEach
     void setUp() {
@@ -35,7 +32,7 @@ class OpeningBankAccountTests {
                 new BankAccountRepositoryFake(),
                 new AccountNumberProviderStub(),
                 userRepository,
-                new CustomEventPublisher(),
+                new FakeEventPublisher(),
                 new FakeClock()
         );
     }
@@ -58,10 +55,8 @@ class OpeningBankAccountTests {
 
     @Test
     void cannot_open_account_without_any_user() {
-        final AccountRequest accountRequest = accountRequest().withNoUser().open();
-
         assertThatExceptionOfType(CouldNotFoundUser.class)
-                .isThrownBy(() -> openingBankAccount.open(accountRequest));
+                .isThrownBy(() -> openingBankAccount.open(accountRequest().withNoUser().open()));
     }
 
     @Test
