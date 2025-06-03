@@ -1,7 +1,7 @@
 package com.dev.user_transaction_management_system.test_builder;
 
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
-import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoneyRequest;
 
 public class TransferMoneyRequestTestBuilder {
     private double amount = 1000;

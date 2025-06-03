@@ -2,11 +2,11 @@ package com.dev.user_transaction_management_system.infrastructure.web.controller
 
 import com.dev.user_transaction_management_system.domain.exceptions.UserFriendlyException;
 import com.dev.user_transaction_management_system.infrastructure.web.response.HttpResponse;
-import com.dev.user_transaction_management_system.use_case.AuthenticateUser;
-import com.dev.user_transaction_management_system.use_case.RegisteringUserAccount;
-import com.dev.user_transaction_management_system.use_case.dto.LoginRequest;
-import com.dev.user_transaction_management_system.use_case.dto.UserRegistrationRequest;
-import com.dev.user_transaction_management_system.use_case.dto.UserAuthenticationResponse;
+import com.dev.user_transaction_management_system.use_case.authenticate_user.AuthenticateUser;
+import com.dev.user_transaction_management_system.use_case.register_user_account.RegisterUserAccount;
+import com.dev.user_transaction_management_system.use_case.authenticate_user.LoginRequest;
+import com.dev.user_transaction_management_system.use_case.register_user_account.UserRegistrationRequest;
+import com.dev.user_transaction_management_system.use_case.authenticate_user.UserAuthenticationResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,17 +25,17 @@ public class AuthController {
 
     private final AuthenticateUser authenticateUser;
 
-    private final RegisteringUserAccount registeringUserAccount;
+    private final RegisterUserAccount registerUserAccount;
 
-    public AuthController(AuthenticateUser authenticateUser, RegisteringUserAccount registeringUserAccount) {
+    public AuthController(AuthenticateUser authenticateUser, RegisterUserAccount registerUserAccount) {
         this.authenticateUser = authenticateUser;
-        this.registeringUserAccount = registeringUserAccount;
+        this.registerUserAccount = registerUserAccount;
     }
 
     @PostMapping("/register")
     public ResponseEntity<HttpResponse> register(@RequestBody UserRegistrationRequest request) {
         try {
-            registeringUserAccount.register(request);
+            registerUserAccount.register(request);
             final HttpResponse response = HttpResponse.builder().timestamps(LocalDateTime.now().toString()).
                     data(request)
                     .message("User registered")

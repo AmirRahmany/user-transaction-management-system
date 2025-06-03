@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.test_builder;
 
-import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
+import com.dev.user_transaction_management_system.use_case.open_bank_account.AccountRequest;
 
 import static com.dev.user_transaction_management_system.test_builder.UserTestBuilder.aUser;
 
@@ -27,7 +27,7 @@ public class AccountRequestTestBuilder {
     }
 
     public AccountRequestTestBuilder withNoUser() {
-        this.email = FakeUser.UNKNOWN_USER;
+        this.email = FakeAccount.User.UNKNOWN;
         return this;
     }
 

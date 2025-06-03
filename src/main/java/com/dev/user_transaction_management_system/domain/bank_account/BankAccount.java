@@ -6,7 +6,7 @@ import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProc
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
+import com.dev.user_transaction_management_system.use_case.open_bank_account.AccountOpenedResponse;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.util.Assert;
@@ -149,8 +149,8 @@ public class BankAccount {
         return bankAccountEntity;
     }
 
-    public OpeningAccountResponse toResponse(String fullName) {
-        return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.asDouble(), createdAt.asString(), status);
+    public AccountOpenedResponse toResponse(String fullName) {
+        return new AccountOpenedResponse(accountNumber.toString(), fullName, balance.asDouble(), createdAt.asString(), status);
     }
 
     public List<NotifiableEvent> releaseEvents() {
