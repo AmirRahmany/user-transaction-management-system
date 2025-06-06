@@ -97,7 +97,7 @@ class RegisterUserAccountTests {
 
     @Test
     void can_not_register_user_with_repetitive_email() {
-        final String mail = "amirrahmani@gmail.com";
+        final String mail = "jacid20853@besibali.com";
         final UserRegistrationRequest newUser = aUser().withEmail(mail).buildDTO();
 
         registerUserAccount.register(newUser);

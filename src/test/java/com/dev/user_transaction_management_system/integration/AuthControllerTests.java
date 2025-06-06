@@ -78,7 +78,7 @@ class AuthControllerTests {
 
     @Test
     void sign_in_user_successfully() throws Exception {
-        final String username = "amirrahmani7017@gmail.com";
+        final String username = "jacid20853@besibali.com";
         final String password = "@Abcd1234";
         accountTestUtil.havingRegistered(aUser().withEmail(username).withPassword(password));
         final LoginRequest loginRequest = new LoginRequest(username, password);

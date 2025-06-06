@@ -23,7 +23,7 @@ public class UserAccountFixture {
     }
 
     public UserAndToken givenActivatedSignedInUserWithToken(){
-        String username = "amirrahmani7017@gamial.com";
+        String username = "jacid20853@besibali.com";
         String password = "@Abcd137824";
         final UserTestBuilder userTestBuilder = aUser()
                 .withEnabledStatus()

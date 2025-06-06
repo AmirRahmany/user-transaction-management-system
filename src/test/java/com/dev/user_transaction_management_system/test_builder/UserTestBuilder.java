@@ -12,7 +12,7 @@ public class UserTestBuilder {
     private String userId = "8c5148ea-857b-4996-a09c-5a5131a33564";
     private String firstName = "sara";
     private String lastName = "bahrami";
-    private String email = "cyber9511@gmail.com";
+    private String email = "jacid20853@besibali.com";
     private String plainPassword = "@abcD1234#";
     private String phoneNumber =  "09101456585";
     private UserStatus userStatus = UserStatus.DISABLE;

@@ -63,7 +63,7 @@ class ActivateUserAccountControllerTests {
 
     @BeforeEach
     void setUp() {
-        var userAndToken = userAccountFixture.havingRegisteredUserWithToken("amirrhmani7017@gmail.com", "@Abcd137728");
+        var userAndToken = userAccountFixture.havingRegisteredUserWithToken("jacid20853@besibali.com", "@Abcd137728");
         userAccount = userAndToken.user();
         token = userAndToken.token();
     }
