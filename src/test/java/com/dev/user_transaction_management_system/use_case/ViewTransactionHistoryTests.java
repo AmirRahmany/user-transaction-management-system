@@ -2,15 +2,20 @@ package com.dev.user_transaction_management_system.use_case;
 
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.FakeClock;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.use_case.dto.*;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoney;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoneyRequest;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferReceipt;
+import com.dev.user_transaction_management_system.use_case.view_transaction_history.TransactionHistory;
+import com.dev.user_transaction_management_system.use_case.view_transaction_history.ViewTransactionHistory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class ViewTransactionHistoryTests {
@@ -19,12 +24,14 @@ class ViewTransactionHistoryTests {
 
     private TransferMoney transactionService;
     private ViewTransactionHistory viewTransactionHistory;
+    private FakeClock calendar;
 
     @BeforeEach
     void setUp() {
         TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
         final BankAccountRepositoryFake repositoryFake = new BankAccountRepositoryFake();
-        this.transactionService = new TransferMoney(transactionRepository, repositoryFake);
+        calendar = new FakeClock();
+        this.transactionService = new TransferMoney(transactionRepository, repositoryFake, calendar);
         this.viewTransactionHistory = new ViewTransactionHistory(transactionRepository);
         this.helper = new BankAccountTestHelper(repositoryFake);
     }
@@ -42,8 +49,8 @@ class ViewTransactionHistoryTests {
 
         final List<TransactionHistory> histories = viewTransactionHistory.getHistoryByAccountNumber(from.accountNumberAsString());
 
-        TransactionHistory expectedHistory = new TransactionHistory("DEPOSIT", receipt.createdAt(),
-                100,receipt.referenceNumber());
+        var expectedHistory =
+                new TransactionHistory("DEPOSIT", receipt.createdAt(), 100,receipt.referenceNumber());
         assertThat(histories).containsOnly(expectedHistory);
 
     }

@@ -7,13 +7,15 @@ import java.util.Objects;
 
 @EqualsAndHashCode
 public class Password {
+    private static final String PASSWORD_VALIDATION_MESSAGE="your password not valid";
     private static final String PATTERN =
             "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*()_+=\\-`~\\[\\]{}|;':\",./<>?]).{8,}$";
     private final String plainPassword;
 
 
     private Password(String password) {
-        Assert.hasText(password, "password cannot be null or empty");
+        Assert.notNull(password, "password cannot be null");
+        Assert.hasText(password, "password cannot be empty");
 
         this.plainPassword = password;
     }
@@ -24,13 +26,14 @@ public class Password {
     }
 
     public static Password fromPlainPassword(String password) {
-        validatePassword(password);
-        return new Password(password);
+        final var createdPassword = new Password(password);
+        validatePassword(createdPassword.toString());
+        return createdPassword;
     }
 
     private static void validatePassword(String password) {
         if (!isValid(password))
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("password not valid");
     }
 
     private static boolean isValid(String password) {

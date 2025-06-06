@@ -2,14 +2,14 @@ package com.dev.user_transaction_management_system.integration;
 
 import com.dev.user_transaction_management_system.UserAccountFixture;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.fake.DepositRequestBuilder;
+import com.dev.user_transaction_management_system.test_builder.DepositRequestTestBuilder;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.use_case.DepositingMoney;
-import com.dev.user_transaction_management_system.use_case.ViewTransactionHistory;
-import com.dev.user_transaction_management_system.use_case.WithdrawingMoney;
-import com.dev.user_transaction_management_system.use_case.dto.DepositRequest;
-import com.dev.user_transaction_management_system.use_case.dto.TransactionHistory;
-import com.dev.user_transaction_management_system.use_case.dto.WithdrawalRequest;
+import com.dev.user_transaction_management_system.use_case.deposit_money.DepositMoney;
+import com.dev.user_transaction_management_system.use_case.view_transaction_history.ViewTransactionHistory;
+import com.dev.user_transaction_management_system.use_case.withdraw_money.WithdrawMoney;
+import com.dev.user_transaction_management_system.use_case.deposit_money.DepositRequest;
+import com.dev.user_transaction_management_system.use_case.view_transaction_history.TransactionHistory;
+import com.dev.user_transaction_management_system.use_case.withdraw_money.WithdrawalRequest;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.type.CollectionType;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -56,10 +56,10 @@ class TransactionHistoryControllerTests {
     private UserAccountFixture userAccountFixture;
 
     @Autowired
-    private DepositingMoney depositingMoney;
+    private DepositMoney depositMoney;
 
     @Autowired
-    private WithdrawingMoney withdrawingMoney;
+    private WithdrawMoney withdrawMoney;
 
     @Autowired
     private BankAccountTestHelper bankAccountHelper;
@@ -108,17 +108,17 @@ class TransactionHistoryControllerTests {
         final WithdrawalRequest withdrawalRequest =
                 new WithdrawalRequest(200, accountNumber, TRANSACTION_DESCRIPTION);
 
-        withdrawingMoney.withdraw(withdrawalRequest);
+        withdrawMoney.withdraw(withdrawalRequest);
     }
 
     private void depositFundsInto(String accountNumber) {
-        final DepositRequest depositRequest = DepositRequestBuilder.aDepositRequest()
+        final DepositRequest depositRequest = DepositRequestTestBuilder.aDepositRequest()
                 .withAmount(300)
                 .withAccountNumber(accountNumber)
                 .withDescription(TRANSACTION_DESCRIPTION)
                 .initiate();
 
-        depositingMoney.deposit(depositRequest);
+        depositMoney.deposit(depositRequest);
     }
 
     private List<TransactionHistory> readTransactionHistoriesFrom(MvcResult mvcResult)

@@ -1,6 +1,6 @@
 spring:
   profiles:
-    active: ${ACTIVE_PROFILE:prod}
+    active: ${ACTIVE_PROFILE:dev}
   h2:
     console:
       enabled: true

@@ -7,8 +7,8 @@ import com.dev.user_transaction_management_system.domain.event.Notifier;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.domain.user.Email;
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.use_case.dto.AccountRequest;
-import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
+import com.dev.user_transaction_management_system.use_case.open_bank_account.AccountRequest;
+import com.dev.user_transaction_management_system.use_case.open_bank_account.AccountOpenedResponse;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -82,7 +82,7 @@ class BankAccountControllerTests {
 
 
         final JsonNode path = objectMapper.readTree(response).path("data");
-        var openingAccountResponse = objectMapper.readValue(path.toString(),OpeningAccountResponse.class);
+        var openingAccountResponse = objectMapper.readValue(path.toString(), AccountOpenedResponse.class);
         assertThat(openingAccountResponse).isNotNull();
 
         final AccountNumber accountNumber = AccountNumber.of(openingAccountResponse.accountNumber());

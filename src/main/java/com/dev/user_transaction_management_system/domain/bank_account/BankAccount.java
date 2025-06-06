@@ -1,20 +1,16 @@
 package com.dev.user_transaction_management_system.domain.bank_account;
 
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.event.NotifiableEvent;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
 import com.dev.user_transaction_management_system.domain.transaction.Amount;
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.use_case.dto.OpeningAccountResponse;
-import com.dev.user_transaction_management_system.domain.event.BankAccountActivated;
-import com.dev.user_transaction_management_system.domain.event.BankAccountOpened;
-import com.dev.user_transaction_management_system.domain.event.FundsDeposited;
-import com.dev.user_transaction_management_system.domain.event.FundsWithdrawn;
+import com.dev.user_transaction_management_system.use_case.open_bank_account.AccountOpenedResponse;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import org.springframework.util.Assert;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,14 +28,14 @@ public class BankAccount {
     private final AccountNumber accountNumber;
     private final User user;
     private Amount balance;
-    private final LocalDateTime createdAt;
+    private final Date createdAt;
     private AccountStatus status;
     private final List<NotifiableEvent> events;
 
     private BankAccount(AccountId accountId,
                         AccountNumber accountNumber,
                         User user, Amount balance,
-                        LocalDateTime createdAt,
+                        Date createdAt,
                         AccountStatus status) {
 
         Assert.notNull(accountId, "account id cannot be null");
@@ -58,7 +54,7 @@ public class BankAccount {
         this.status = status;
         this.events = new ArrayList<>();
         this.events.add(
-                new BankAccountOpened(user.fullName(), accountNumber.asString(), user.email().asString(), user.phoneNumber())
+                new BankAccountWasOpened(user.fullName(), accountNumber.asString(), user.email().asString(), user.phoneNumber())
         );
     }
 
@@ -76,7 +72,7 @@ public class BankAccount {
                                    User user,
                                    Amount balance,
                                    AccountStatus status,
-                                   LocalDateTime createdAt) {
+                                   Date createdAt) {
         return new BankAccount(accountId, accountNumber, user, balance, createdAt, status);
     }
 
@@ -89,13 +85,13 @@ public class BankAccount {
         this.events.add(fundsDeposited(amount.asDouble()));
     }
 
-    private FundsDeposited fundsDeposited(double increaseValue) {
-        return new FundsDeposited(increaseValue,
+    private FundsWereDeposited fundsDeposited(double increaseValue) {
+        return new FundsWereDeposited(increaseValue,
                 accountNumber.last4Ending(),
                 user.email().asString(),
                 user.phoneNumber(),
                 balance.asDouble(),
-                createdAt);
+                createdAt.asString());
     }
 
     private boolean isAccountDisable() {
@@ -111,12 +107,12 @@ public class BankAccount {
         events.add(fundsWithdrawn(amount));
     }
 
-    private FundsWithdrawn fundsWithdrawn(Amount amount) {
-        return new FundsWithdrawn(amount.asDouble(),
+    private FundsWereWithdrawn fundsWithdrawn(Amount amount) {
+        return new FundsWereWithdrawn(amount.asDouble(),
                 accountNumber.last4Ending(),
                 user.email().asString(),
                 user.phoneNumber(),
-                createdAt, balance.asDouble());
+                createdAt.asString(), balance.asDouble());
     }
 
     private void ensureSufficientBalanceFor(Amount amount) {
@@ -131,7 +127,7 @@ public class BankAccount {
 
     public void enable() {
         this.status = AccountStatus.ENABLE;
-        this.events.add(new BankAccountActivated(user.fullName(), accountNumber.asString(), user.email().asString()));
+        this.events.add(new BankAccountWasActivated(user.fullName(), accountNumber.asString(), user.email().asString()));
     }
 
     public AccountNumber accountNumber() {
@@ -149,12 +145,12 @@ public class BankAccount {
         bankAccountEntity.setUser(user.toEntity());
         bankAccountEntity.setBalance(balance.asDouble());
         bankAccountEntity.setStatus(status);
-        bankAccountEntity.setCreatedAt(createdAt);
+        bankAccountEntity.setCreatedAt(createdAt.asLocalDateTime());
         return bankAccountEntity;
     }
 
-    public OpeningAccountResponse toResponse(String fullName) {
-        return new OpeningAccountResponse(accountNumber.toString(), fullName, balance.asDouble(), createdAt, status);
+    public AccountOpenedResponse toResponse(String fullName) {
+        return new AccountOpenedResponse(accountNumber.toString(), fullName, balance.asDouble(), createdAt.asString(), status);
     }
 
     public List<NotifiableEvent> releaseEvents() {

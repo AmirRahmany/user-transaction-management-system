@@ -1,8 +1,8 @@
 package com.dev.user_transaction_management_system.infrastructure.web.controller;
 
-import com.dev.user_transaction_management_system.use_case.TransferMoney;
-import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
-import com.dev.user_transaction_management_system.use_case.dto.TransferReceipt;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoney;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoneyRequest;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferReceipt;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

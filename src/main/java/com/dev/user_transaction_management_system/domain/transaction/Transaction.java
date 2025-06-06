@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.domain.transaction;
 
+import com.dev.user_transaction_management_system.domain.Date;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.TransactionEntity;
 import org.springframework.util.Assert;
@@ -11,14 +12,14 @@ public class Transaction {
     private final TransactionId transactionId;
     private TransactionDetail transactionDetail;
     private final AccountNumber accountNumber;
-    private final LocalDateTime createdAt;
+    private final Date createdAt;
     private final ReferenceNumber referenceNumber;
 
     public Transaction(
             TransactionId transactionId,
             AccountNumber fromAccountNumber,
             TransactionDetail transactionDetail,
-            LocalDateTime createdAt,
+            Date createdAt,
             ReferenceNumber referenceNumber) {
 
         Assert.notNull(transactionId, "transaction id cannot be null");
@@ -38,7 +39,7 @@ public class Transaction {
             AccountNumber accountNumber,
             TransactionDetail transactionDetail,
             ReferenceNumber referenceNumber,
-            LocalDateTime createdAt) {
+            Date createdAt) {
 
         return new Transaction(transactionId,
                 accountNumber,
@@ -55,7 +56,7 @@ public class Transaction {
         entity.setTransactionType(transactionDetail.transactionType());
         entity.setAccountNumber(accountNumber.toString());
         entity.setReferenceNumber(referenceNumber.toString());
-        entity.setCreatedAt(createdAt);
+        entity.setCreatedAt(createdAt.asLocalDateTime());
         return entity;
     }
 }

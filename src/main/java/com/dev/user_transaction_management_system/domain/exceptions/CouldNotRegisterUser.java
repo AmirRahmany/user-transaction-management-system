@@ -1,6 +1,6 @@
 package com.dev.user_transaction_management_system.domain.exceptions;
 
-public class CouldNotRegisterUser extends RuntimeException {
+public class CouldNotRegisterUser extends UserFriendlyException {
     public CouldNotRegisterUser() {
     }
 
@@ -9,6 +9,6 @@ public class CouldNotRegisterUser extends RuntimeException {
     }
 
     public static CouldNotRegisterUser becauseUserAlreadyExisted() {
-        return new CouldNotRegisterUser();
+        return new CouldNotRegisterUser("user already existed!");
     }
 }

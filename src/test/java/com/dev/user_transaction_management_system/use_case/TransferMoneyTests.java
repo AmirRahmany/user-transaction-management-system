@@ -3,17 +3,19 @@ package com.dev.user_transaction_management_system.use_case;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotFindBankAccount;
 import com.dev.user_transaction_management_system.domain.exceptions.CouldNotProcessTransaction;
-import com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder;
+import com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder;
 import com.dev.user_transaction_management_system.fake.BankAccountRepositoryFake;
+import com.dev.user_transaction_management_system.fake.FakeClock;
 import com.dev.user_transaction_management_system.fake.TransactionRepositoryFake;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
-import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoney;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoneyRequest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
-import static com.dev.user_transaction_management_system.fake.TransferMoneyRequestBuilder.aTransferMoneyRequest;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.TransferMoneyRequestTestBuilder.aTransferMoneyRequest;
 import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,7 +28,8 @@ class TransferMoneyTests {
         final BankAccountRepositoryFake accountRepository = new BankAccountRepositoryFake();
 
         final TransactionRepositoryFake transactionRepository = new TransactionRepositoryFake();
-        this.transactionService = new TransferMoney(transactionRepository, accountRepository);
+        this.transactionService = new TransferMoney(transactionRepository,
+                accountRepository, new FakeClock());
         this.helper = new BankAccountTestHelper(accountRepository);
     }
 
@@ -104,7 +107,7 @@ class TransferMoneyTests {
     }
 
 
-    private BankAccount havingUnOpened(BankAccountFakeBuilder accountBuilder) {
+    private BankAccount havingUnOpened(BankAccountTestBuilder accountBuilder) {
         return accountBuilder.open();
     }
 }

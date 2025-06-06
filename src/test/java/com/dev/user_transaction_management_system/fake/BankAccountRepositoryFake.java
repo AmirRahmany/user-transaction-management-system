@@ -1,5 +1,6 @@
 package com.dev.user_transaction_management_system.fake;
 
+import com.dev.user_transaction_management_system.domain.bank_account.AccountId;
 import com.dev.user_transaction_management_system.domain.bank_account.AccountNumber;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
 import com.dev.user_transaction_management_system.domain.bank_account.BankAccountRepository;
@@ -30,7 +31,7 @@ public class BankAccountRepositoryFake implements BankAccountRepository {
     }
 
     @Override
-    public UUID nextIdentify() {
-        return UUID.fromString("edca4145-0748-4a3b-9c63-e658bc85d12a");
+    public AccountId nextIdentify() {
+        return AccountId.fromUUID(UUID.fromString("edca4145-0748-4a3b-9c63-e658bc85d12a"));
     }
 }

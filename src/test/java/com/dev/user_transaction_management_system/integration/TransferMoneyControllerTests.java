@@ -5,7 +5,7 @@ import com.dev.user_transaction_management_system.domain.bank_account.BankAccoun
 import com.dev.user_transaction_management_system.domain.user.User;
 import com.dev.user_transaction_management_system.helper.BankAccountTestHelper;
 import com.dev.user_transaction_management_system.infrastructure.persistence.model.BankAccountEntity;
-import com.dev.user_transaction_management_system.use_case.dto.TransferMoneyRequest;
+import com.dev.user_transaction_management_system.use_case.transfer_money.TransferMoneyRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Tag;
@@ -18,8 +18,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
-import static com.dev.user_transaction_management_system.fake.BankAccountFakeBuilder.anAccount;
-import static com.dev.user_transaction_management_system.fake.TransferMoneyRequestBuilder.aTransferMoneyRequest;
+import static com.dev.user_transaction_management_system.test_builder.BankAccountTestBuilder.anAccount;
+import static com.dev.user_transaction_management_system.test_builder.TransferMoneyRequestTestBuilder.aTransferMoneyRequest;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;

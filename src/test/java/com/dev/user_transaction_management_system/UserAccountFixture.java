@@ -1,40 +1,40 @@
 package com.dev.user_transaction_management_system;
 
 import com.dev.user_transaction_management_system.domain.user.User;
-import com.dev.user_transaction_management_system.fake.UserFakeBuilder;
-import com.dev.user_transaction_management_system.helper.UserAccountTestUtil;
+import com.dev.user_transaction_management_system.test_builder.UserTestBuilder;
+import com.dev.user_transaction_management_system.helper.UserAccountTestHelper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import static com.dev.user_transaction_management_system.fake.UserFakeBuilder.aUser;
+import static com.dev.user_transaction_management_system.test_builder.UserTestBuilder.aUser;
 
 @Component
 public class UserAccountFixture {
 
     @Autowired
-    private UserAccountTestUtil util;
+    private UserAccountTestHelper util;
 
     public UserAndToken havingRegisteredUserWithToken(String email, String password) {
-        final UserFakeBuilder userFakeBuilder = aUser()
+        final UserTestBuilder userTestBuilder = aUser()
                 .withEmail(email)
                 .withPassword(password);
 
-        return createUserWithToken(email, password, userFakeBuilder);
+        return createUserWithToken(email, password, userTestBuilder);
     }
 
     public UserAndToken givenActivatedSignedInUserWithToken(){
-        String username = "amirrahmani7017@gamial.com";
+        String username = "jacid20853@besibali.com";
         String password = "@Abcd137824";
-        final UserFakeBuilder userFakeBuilder = aUser()
+        final UserTestBuilder userTestBuilder = aUser()
                 .withEnabledStatus()
                 .withEmail(username)
                 .withPassword(password);
 
-        return createUserWithToken(username,password,userFakeBuilder);
+        return createUserWithToken(username,password, userTestBuilder);
     }
 
-    private UserAndToken createUserWithToken(String email, String password, UserFakeBuilder userFakeBuilder) {
-        final var user = util.havingRegistered(userFakeBuilder);
+    private UserAndToken createUserWithToken(String email, String password, UserTestBuilder userTestBuilder) {
+        final var user = util.havingRegistered(userTestBuilder);
         var token = util.signIn(email, password);
         return new UserAndToken(user, token);
     }
